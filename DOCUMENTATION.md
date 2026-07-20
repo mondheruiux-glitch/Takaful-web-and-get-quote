@@ -528,6 +528,7 @@ Detects mobile breakpoint. Used to conditionally render mobile vs desktop layout
 | 2026-07-20 | `ReferenceError: AnimatePresence is not defined` | `app/get-quote/page.tsx` | Added `AnimatePresence` to `framer-motion` import |
 | 2026-07-20 | `ReferenceError: ArrowLeft is not defined` | `app/get-quote/page.tsx` | Added `ArrowLeft` to `lucide-react` import |
 | 2026-07-20 | Form input labels unreadable in dark mode | `components/ui/minimal-auth-page.tsx` | Changed label colour to `text-white/90` |
+| 2026-07-20 | **Deployment build crash** — `EBADPLATFORM` error: `@next/swc-darwin-arm64`, `@tailwindcss/oxide-darwin-arm64`, `lightningcss-darwin-arm64` are macOS ARM64 binaries that cannot install on Linux x64 Docker build server | `package.json` | Moved all three macOS-specific packages from `dependencies` to `optionalDependencies` — npm silently skips optional packages on non-matching platforms |
 
 ---
 
@@ -541,6 +542,7 @@ Detects mobile breakpoint. Used to conditionally render mobile vs desktop layout
 - **Feature:** Embedded payment flow (`PayFormEmbed`) integrated directly into `QuoteReadyCard` — users can complete payment inline on `/get-quote` without navigating to `/pay`
 - **Repository:** Initial codebase pushed to `https://github.com/mondheruiux-glitch/Takaful-project`
 - **Documentation:** This `DOCUMENTATION.md` file created and added to project root
+- **Deployment fix:** Moved `@next/swc-darwin-arm64`, `@tailwindcss/oxide-darwin-arm64`, and `lightningcss-darwin-arm64` from `dependencies` to `optionalDependencies` in `package.json` to fix `EBADPLATFORM` crash on Linux x64 Docker build servers
 
 ---
 

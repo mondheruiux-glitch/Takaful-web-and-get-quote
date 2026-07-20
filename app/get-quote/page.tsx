@@ -2,7 +2,7 @@
 
 
 import React, { useState, Suspense, useRef, useEffect } from 'react';
-import { motion, useSpring, useTransform, useInView } from 'framer-motion';
+import { motion, useSpring, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Particles } from '@/components/ui/particles';
@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/tooltip';
 import {
   Home, Building2, Layers, Trees, Building,
-  Plus, Minus, MapPin, CheckCircle2, ArrowRight,
+  Plus, Minus, MapPin, CheckCircle2, ArrowRight, ArrowLeft,
   HeartHandshake, Info, Bed, Bath, Sofa, ChefHat,
   Grid, Calendar, ShieldCheck, Laptop, Gem, Tv,
   User, Mail, Phone, AlertTriangle, Shield, Check,
@@ -29,6 +29,7 @@ import {
   BriefcaseBusiness, Zap, Scale, Wrench, ChevronDown, Pencil,
   Key, Thermometer, Activity, Clock, Sparkles, CircleSlash,
   Share, Copy, BarChart2, TrendingUp, Home as HomeIcon, CreditCard,
+  ChevronRight, BadgeCheck, Hash, AlertCircle,
 } from 'lucide-react';
 
 // ─── Quote Ready Card ─────────────────────────────────────────────────────────
@@ -41,6 +42,287 @@ function AnimatedCounter({ value }: { value: number }) {
   );
   useEffect(() => { if (isInView) spring.set(value); }, [spring, value, isInView]);
   return <motion.span ref={ref}>{display}</motion.span>;
+}
+
+// ─── Payment Flow Subcomponents (Embedded) ───────────────────────────────────
+function PayField({
+  label, id, placeholder, type = 'text', maxLength, value, onChange, icon: Icon,
+}: {
+  label: string; id: string; placeholder: string; type?: string;
+  maxLength?: number; value: string; onChange: (v: string) => void;
+  icon?: React.ElementType;
+}) {
+  return (
+    <div className="space-y-1.5 text-left">
+      <label htmlFor={id} className="text-xs font-medium text-gray-400">{label}</label>
+      <div className="relative">
+        {Icon && <Icon size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />}
+        <input
+          id={id}
+          type={type}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          maxLength={maxLength}
+          autoComplete="off"
+          className={`w-full ${Icon ? 'pl-9' : 'pl-3.5'} pr-3.5 py-2.5 rounded-xl border border-white/10 bg-neutral-900/60 text-white placeholder:text-gray-600 focus:outline-none focus:border-[#00c685]/60 focus:ring-2 focus:ring-[#00c685]/10 transition-all text-sm h-10`}
+        />
+      </div>
+    </div>
+  );
+}
+
+function PaySteps({ current }: { current: number }) {
+  const steps = ['Details', 'Direct debit', 'Confirm'];
+  return (
+    <div className="flex items-center gap-0 w-full mb-6">
+      {steps.map((s, i) => (
+        <React.Fragment key={s}>
+          <div className="flex flex-col items-center gap-1">
+            <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all ${
+              i < current ? 'bg-[#00c685] border-[#00c685] text-[#0a1a14]'
+              : i === current ? 'border-[#00c685] text-[#00c685] bg-transparent'
+              : 'border-white/15 text-gray-600 bg-transparent'
+            }`}>
+              {i < current ? <CheckCircle2 size={14} /> : i + 1}
+            </div>
+            <span className={`text-[9px] font-semibold tracking-wide ${i === current ? 'text-[#00c685]' : 'text-gray-600'}`}>
+              {s}
+            </span>
+          </div>
+          {i < steps.length - 1 && (
+            <div className={`flex-1 h-px mx-2 mb-4 transition-all ${i < current ? 'bg-[#00c685]/60' : 'bg-white/8'}`} />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
+function PaySuccessScreen({ quoteRef, plan, pc }: { quoteRef: string; plan: string; pc: string }) {
+  const router = useRouter();
+  const label = plan === 'buildings' ? 'Buildings Only' : plan === 'contents' ? 'Contents Only' : 'Buildings & Contents';
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="text-center space-y-6 py-4"
+    >
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.2, type: 'spring', stiffness: 180, damping: 12 }}
+        className="w-20 h-20 rounded-full bg-[#00c685]/15 border-2 border-[#00c685]/40 flex items-center justify-center mx-auto"
+      >
+        <CheckCircle2 size={36} className="text-[#00c685]" />
+      </motion.div>
+
+      <div className="space-y-2">
+        <h2 className="text-2xl font-bold text-white">Cover Activated!</h2>
+        <p className="text-sm text-gray-400 leading-relaxed max-w-xs mx-auto">
+          Your Takaful <span className="text-white font-medium">{label}</span> cover
+          for <span className="text-white font-mono font-semibold">{pc}</span> is now active.
+        </p>
+      </div>
+
+      <div className="rounded-2xl border border-[#00c685]/20 bg-[#00c685]/5 px-5 py-4 space-y-1 text-left">
+        <p className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Reference</p>
+        <p className="text-white font-mono font-bold text-lg">{quoteRef}</p>
+        <p className="text-[11px] text-gray-500">Keep this for your records. A confirmation email is on its way.</p>
+      </div>
+
+      <div className="space-y-2 pt-1">
+        <button
+          type="button"
+          onClick={() => router.push('/')}
+          className="w-full py-3 rounded-xl bg-[#00c685] hover:bg-[#00b576] text-[#0a1a14] font-bold text-sm transition-colors cursor-pointer"
+        >
+          Go to Dashboard
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+function PayFormEmbed({
+  quoteRef, coverType, postcode, emailAddress, monthlyEstimate, onBack
+}: {
+  quoteRef: string; coverType: string; postcode: string; emailAddress: string; monthlyEstimate: string; onBack: () => void;
+}) {
+  const [step, setStep] = useState(0);
+  const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Step 0 — personal
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState(emailAddress || '');
+  const [phone, setPhone] = useState('');
+  const [dob, setDob] = useState('');
+
+  // Step 1 — direct debit
+  const [sortCode, setSortCode] = useState('');
+  const [accNum, setAccNum] = useState('');
+  const [bankName, setBankName] = useState('');
+
+  const validateStep0 = () => {
+    if (!fullName.trim()) { setError('Please enter your full name.'); return false; }
+    if (!email.trim() || !email.includes('@')) { setError('Please enter a valid email address.'); return false; }
+    return true;
+  };
+
+  const validateStep1 = () => {
+    const sc = sortCode.replace(/\D/g, '');
+    const an = accNum.replace(/\D/g, '');
+    if (sc.length !== 6) { setError('Sort code must be 6 digits (e.g. 20-00-00).'); return false; }
+    if (an.length !== 8) { setError('Account number must be 8 digits.'); return false; }
+    return true;
+  };
+
+  const handleNext = () => {
+    setError('');
+    if (step === 0 && !validateStep0()) return;
+    if (step === 1 && !validateStep1()) return;
+    if (step === 2) {
+      setLoading(true);
+      setTimeout(() => { setLoading(false); setDone(true); }, 1800);
+      return;
+    }
+    setStep(s => s + 1);
+  };
+
+  const handleSortCode = (v: string) => {
+    const digits = v.replace(/\D/g, '').slice(0, 6);
+    const formatted = digits.replace(/(\d{2})(?=\d)/g, '$1-').slice(0, 8);
+    setSortCode(formatted);
+  };
+
+  if (done) {
+    return <PaySuccessScreen quoteRef={quoteRef} plan={coverType} pc={postcode} />;
+  }
+
+  const label = coverType === 'both' ? 'Buildings & Contents' : coverType === 'buildings' ? 'Buildings Only' : 'Contents Only';
+
+  const stepContent = [
+    // Step 0: Personal
+    <div key="step0" className="space-y-4">
+      <PayField label="Full name" id="fullName" placeholder="John Smith" value={fullName} onChange={setFullName} icon={User} />
+      <PayField label="Email address" id="email" type="email" placeholder="you@example.com" value={email} onChange={setEmail} />
+      <div className="grid grid-cols-2 gap-3">
+        <PayField label="Phone (optional)" id="phone" type="tel" placeholder="+44 7700 000000" value={phone} onChange={setPhone} />
+        <PayField label="Date of birth" id="dob" type="date" placeholder="" value={dob} onChange={setDob} icon={Calendar} />
+      </div>
+    </div>,
+
+    // Step 1: Direct Debit
+    <div key="step1" className="space-y-4">
+      <div className="rounded-xl border border-[#00c685]/20 bg-[#00c685]/5 p-3.5 flex gap-3 text-xs text-gray-400 leading-relaxed text-left">
+        <ShieldCheck size={14} className="text-[#00c685] shrink-0 mt-0.5" />
+        <span>Your bank details are encrypted and never stored on our servers. Direct debit is processed under the UK Direct Debit Guarantee.</span>
+      </div>
+      <PayField label="Bank / Building society name" id="bankName" placeholder="e.g. HSBC" value={bankName} onChange={setBankName} icon={Building2} />
+      <div className="grid grid-cols-2 gap-3">
+        <PayField label="Sort code" id="sortCode" placeholder="20-00-00" value={sortCode} onChange={handleSortCode} maxLength={8} icon={Hash} />
+        <PayField label="Account number" id="accNum" placeholder="12345678" value={accNum} onChange={v => setAccNum(v.replace(/\D/g, '').slice(0, 8))} maxLength={8} icon={Hash} />
+      </div>
+      <p className="text-[11px] text-gray-600 text-left">
+        By continuing, you authorise Takaful UK Ltd to collect <span className="text-white font-semibold">£{monthlyEstimate}</span> monthly from your account under Service User Number 123456. You can cancel at any time.
+      </p>
+    </div>,
+
+    // Step 2: Confirm
+    <div key="step2" className="space-y-4">
+      <div className="rounded-xl border border-white/8 bg-white/[0.02] divide-y divide-white/5 text-sm">
+        {[
+          ['Quote reference', quoteRef],
+          ['Policy holder',   fullName || '—'],
+          ['Email',           email    || '—'],
+          ['Cover type',      label],
+          ['Postcode',        postcode],
+          ['Bank',            bankName || '—'],
+          ['Account',         accNum   ? `••••••${accNum.slice(-2)}` : '—'],
+          ['Monthly amount',  `£${monthlyEstimate}`],
+          ['First payment',   'Today'],
+        ].map(([k, v]) => (
+          <div key={k} className="flex items-center justify-between px-4 py-2.5">
+            <span className="text-gray-500 text-xs">{k}</span>
+            <span className="text-gray-100 text-xs font-semibold text-right max-w-[55%] truncate">{v}</span>
+          </div>
+        ))}
+      </div>
+      <p className="text-[11px] text-gray-500 leading-relaxed text-left">
+        By clicking <span className="text-white">"Confirm & Activate"</span> you agree to Takaful's Terms of Participation and the Direct Debit mandate above.
+      </p>
+    </div>,
+  ];
+
+  return (
+    <div className="space-y-6">
+      <PaySteps current={step} />
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.22 }}
+        >
+          {stepContent[step]}
+        </motion.div>
+      </AnimatePresence>
+
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-start gap-2.5 rounded-xl border border-red-500/25 bg-red-500/8 px-3.5 py-3 text-xs text-red-400 text-left"
+        >
+          <AlertCircle size={13} className="shrink-0 mt-0.5" />
+          {error}
+        </motion.div>
+      )}
+
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setError('');
+            if (step > 0) {
+              setStep(s => s - 1);
+            } else {
+              onBack();
+            }
+          }}
+          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-sm text-gray-400 transition-colors cursor-pointer"
+        >
+          <ArrowLeft size={13} /> Back
+        </button>
+        <motion.button
+          type="button"
+          onClick={handleNext}
+          disabled={loading}
+          whileHover={{ scale: loading ? 1 : 1.015 }}
+          whileTap={{ scale: loading ? 1 : 0.97 }}
+          className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#00c685] to-[#00a871] hover:from-[#00d690] hover:to-[#00b87a] disabled:opacity-60 text-[#0a1a14] font-bold py-3 rounded-xl transition-all shadow-lg shadow-[#00c685]/20 cursor-pointer text-sm"
+        >
+          {loading ? (
+            <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="40" strokeDashoffset="10" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <>
+              {step === 2
+                ? <><BadgeCheck size={15} /> Confirm &amp; Activate</>
+                : <>{step === 0 ? 'Continue' : 'Review & Confirm'} <ChevronRight size={14} /></>
+              }
+            </>
+          )}
+        </motion.button>
+      </div>
+    </div>
+  );
 }
 
 interface QuoteReadyCardProps {
@@ -84,6 +366,7 @@ function QuoteReadyCard({
 
   const [shareOpen, setShareOpen] = React.useState(false);
   const [linkCopied, setLinkCopied] = React.useState(false);
+  const [showPayment, setShowPayment] = React.useState(false);
 
   const quoteRef = React.useMemo(() => `TK-${Date.now().toString(36).toUpperCase().slice(-6)}`, []);
   const paymentLink = typeof window !== 'undefined'
@@ -145,230 +428,251 @@ function QuoteReadyCard({
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-white/5">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#00c685]/15 border border-[#00c685]/30 flex items-center justify-center">
-              <TrendingUp size={15} className="text-[#00c685]" />
+              {showPayment ? (
+                <ShieldCheck size={15} className="text-[#00c685]" />
+              ) : (
+                <TrendingUp size={15} className="text-[#00c685]" />
+              )}
             </div>
-            <span className="text-xs font-semibold tracking-wide text-gray-300">Quote Summary</span>
+            <span className="text-xs font-semibold tracking-wide text-gray-300">
+              {showPayment ? 'Activate Your Cover' : 'Quote Summary'}
+            </span>
           </div>
           <span className="text-[10px] font-bold tracking-[0.12em] uppercase text-[#00c685]/60 font-mono bg-[#00c685]/5 border border-[#00c685]/15 px-2.5 py-1 rounded-full">
             Takaful · {coverLabel}
           </span>
         </div>
 
-        <div className="px-6 py-5 space-y-5">
-
-          {/* ── Main Metric ── */}
-          <div className="flex items-center justify-between gap-6">
-            <div>
-              <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-gray-500 font-mono mb-1">Monthly Contribution</p>
-              <p className="text-[3.2rem] font-bold tracking-tight text-white leading-none">
-                £<AnimatedCounter value={val} />
-              </p>
-              <p className="text-xs text-[#00c685] font-medium mt-1.5 flex items-center gap-1">
-                <BarChart2 size={11} />
-                Interest-Free · Sharia-Certified
-              </p>
-            </div>
+        {showPayment ? (
+          <div className="px-6 py-5">
+            <PayFormEmbed
+              quoteRef={quoteRef}
+              coverType={coverType}
+              postcode={postcode}
+              emailAddress={email}
+              monthlyEstimate={monthlyEstimate}
+              onBack={() => setShowPayment(false)}
+            />
           </div>
+        ) : (
+          <div className="px-6 py-5 space-y-5">
 
-          {/* ── Cover breakdown ── */}
-          <div className="rounded-xl border border-white/6 bg-white/[0.025] divide-y divide-white/5">
-            {[
-              ['Cover type', coverLabel],
-              ['Bedrooms', `${bedrooms} bedroom${bedrooms !== 1 ? 's' : ''}`],
-              ['Add-ons', addons.length ? addons.join(', ') : 'None'],
-              ['Postcode', postcode || '—'],
-            ].map(([k, v]) => (
-              <div key={k} className="flex items-center justify-between px-4 py-2.5">
-                <span className="text-xs text-gray-500">{k}</span>
-                <span className="text-xs font-semibold text-gray-200 text-right max-w-[55%] truncate">{v}</span>
+            {/* ── Main Metric ── */}
+            <div className="flex items-center justify-between gap-6">
+              <div>
+                <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-gray-500 font-mono mb-1">Monthly Contribution</p>
+                <p className="text-[3.2rem] font-bold tracking-tight text-white leading-none">
+                  £<AnimatedCounter value={val} />
+                </p>
+                <p className="text-xs text-[#00c685] font-medium mt-1.5 flex items-center gap-1">
+                  <BarChart2 size={11} />
+                  Interest-Free · Sharia-Certified
+                </p>
               </div>
-            ))}
-          </div>
-
-          {/* ── Community contribution range ── */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[11px] font-semibold text-gray-400 flex items-center gap-1.5">
-                <BarChart2 size={12} className="text-gray-500" />
-                Where your quote sits
-              </h3>
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                isLow
-                  ? 'text-blue-400 border-blue-400/30 bg-blue-400/10'
-                  : isTypical
-                  ? 'text-[#00c685] border-[#00c685]/30 bg-[#00c685]/10'
-                  : 'text-amber-400 border-amber-400/30 bg-amber-400/10'
-              }`}>
-                {isLow ? 'Below typical' : isTypical ? 'Typical range' : 'Above typical'}
-              </span>
             </div>
 
-            {/* Slider track */}
-            <div className="relative h-5 flex items-center">
-              {/* Background track */}
-              <div className="w-full h-1.5 rounded-full bg-white/8 relative overflow-hidden">
-                {/* Typical zone highlight */}
-                <motion.div
-                  className="absolute h-full bg-[#00c685]/25 rounded-full"
-                  style={{ left: `${typicalStartPct}%`, width: `${typicalWidthPct}%` }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: isInView ? 1 : 0 }}
-                  transition={{ delay: 0.4 }}
-                />
+            {/* ── Cover breakdown ── */}
+            <div className="rounded-xl border border-white/6 bg-white/[0.025] divide-y divide-white/5">
+              {[
+                ['Cover type', coverLabel],
+                ['Bedrooms', `${bedrooms} bedroom${bedrooms !== 1 ? 's' : ''}`],
+                ['Add-ons', addons.length ? addons.join(', ') : 'None'],
+                ['Postcode', postcode || '—'],
+              ].map(([k, v]) => (
+                <div key={k} className="flex items-center justify-between px-4 py-2.5">
+                  <span className="text-xs text-gray-500">{k}</span>
+                  <span className="text-xs font-semibold text-gray-200 text-right max-w-[55%] truncate">{v}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Community contribution range ── */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-[11px] font-semibold text-gray-400 flex items-center gap-1.5">
+                  <BarChart2 size={12} className="text-gray-500" />
+                  Where your quote sits
+                </h3>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                  isLow
+                    ? 'text-blue-400 border-blue-400/30 bg-blue-400/10'
+                    : isTypical
+                    ? 'text-[#00c685] border-[#00c685]/30 bg-[#00c685]/10'
+                    : 'text-amber-400 border-amber-400/30 bg-amber-400/10'
+                }`}>
+                  {isLow ? 'Below typical' : isTypical ? 'Typical range' : 'Above typical'}
+                </span>
               </div>
 
-              {/* User's quote dot */}
-              <motion.div
-                className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full border-2 shadow-lg ${
-                  isTypical
-                    ? 'bg-[#00c685] border-[#00c685] shadow-[#00c685]/40'
-                    : isLow
-                    ? 'bg-blue-400 border-blue-400 shadow-blue-400/40'
-                    : 'bg-amber-400 border-amber-400 shadow-amber-400/40'
-                }`}
-                style={{ left: `${positionPct}%` }}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: isInView ? 1 : 0, opacity: isInView ? 1 : 0 }}
-                transition={{ delay: 0.7, type: 'spring', stiffness: 200, damping: 14 }}
-              >
-                {/* Inner pulse ring */}
+              {/* Slider track */}
+              <div className="relative h-5 flex items-center">
+                {/* Background track */}
+                <div className="w-full h-1.5 rounded-full bg-white/8 relative overflow-hidden">
+                  {/* Typical zone highlight */}
+                  <motion.div
+                    className="absolute h-full bg-[#00c685]/25 rounded-full"
+                    style={{ left: `${typicalStartPct}%`, width: `${typicalWidthPct}%` }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isInView ? 1 : 0 }}
+                    transition={{ delay: 0.4 }}
+                  />
+                </div>
+
+                {/* User's quote dot */}
                 <motion.div
-                  className={`absolute inset-0 rounded-full ${
-                    isTypical ? 'bg-[#00c685]' : isLow ? 'bg-blue-400' : 'bg-amber-400'
+                  className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full border-2 shadow-lg ${
+                    isTypical
+                      ? 'bg-[#00c685] border-[#00c685] shadow-[#00c685]/40'
+                      : isLow
+                      ? 'bg-blue-400 border-blue-400 shadow-blue-400/40'
+                      : 'bg-amber-400 border-amber-400 shadow-amber-400/40'
                   }`}
-                  animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
-                  transition={{ duration: 2.2, repeat: Infinity, delay: 1 }}
-                />
-              </motion.div>
+                  style={{ left: `${positionPct}%` }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: isInView ? 1 : 0, opacity: isInView ? 1 : 0 }}
+                  transition={{ delay: 0.7, type: 'spring', stiffness: 200, damping: 14 }}
+                >
+                  {/* Inner pulse ring */}
+                  <motion.div
+                    className={`absolute inset-0 rounded-full ${
+                      isTypical ? 'bg-[#00c685]' : isLow ? 'bg-blue-400' : 'bg-amber-400'
+                    }`}
+                    animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
+                    transition={{ duration: 2.2, repeat: Infinity, delay: 1 }}
+                  />
+                </motion.div>
+              </div>
+
+              {/* Scale labels */}
+              <div className="flex justify-between text-[10px] text-gray-600 -mt-1">
+                <span>£{scaleMin}/mo</span>
+                <span className="text-[#00c685]/60 text-[9px]">Typical £{typicalLow}–£{typicalHigh}</span>
+                <span>£{scaleMax}/mo</span>
+              </div>
+
+              {/* Plain-English summary */}
+              <p className="text-[11px] text-gray-500 leading-relaxed pt-0.5">
+                Your contribution of{' '}
+                <span className="text-white font-semibold">£{monthlyEstimate}/mo</span>{' '}
+                is{' '}
+                <span className={isTypical ? 'text-[#00c685]' : isLow ? 'text-blue-400' : 'text-amber-400'}>
+                  {positionLabel}
+                </span>{' '}
+                for your property type in our community pool.
+              </p>
             </div>
 
-            {/* Scale labels */}
-            <div className="flex justify-between text-[10px] text-gray-600 -mt-1">
-              <span>£{scaleMin}/mo</span>
-              <span className="text-[#00c685]/60 text-[9px]">Typical £{typicalLow}–£{typicalHigh}</span>
-              <span>£{scaleMax}/mo</span>
-            </div>
-
-            {/* Plain-English summary */}
-            <p className="text-[11px] text-gray-500 leading-relaxed pt-0.5">
-              Your contribution of{' '}
-              <span className="text-white font-semibold">£{monthlyEstimate}/mo</span>{' '}
-              is{' '}
-              <span className={isTypical ? 'text-[#00c685]' : isLow ? 'text-blue-400' : 'text-amber-400'}>
-                {positionLabel}
-              </span>{' '}
-              for your property type in our community pool.
-            </p>
-          </div>
-
-          {/* ── Primary Pay CTA ── */}
-          <motion.button
-            type="button"
-            whileHover={{ scale: 1.015, boxShadow: '0 0 32px rgba(0,198,133,0.35)' }}
-            whileTap={{ scale: 0.97 }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
-            className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-[#00c685] to-[#00a871] hover:from-[#00d690] hover:to-[#00b87a] text-[#03120d] font-bold py-4 rounded-2xl transition-all shadow-xl shadow-[#00c685]/25 cursor-pointer group relative overflow-hidden"
-          >
-            {/* shimmer sweep */}
-            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-            <div className="flex items-center gap-2.5 relative z-10">
-              <div className="w-8 h-8 rounded-full bg-[#0a1a14]/20 flex items-center justify-center">
-                <CreditCard size={16} />
-              </div>
-              <div className="text-left">
-                <p className="text-[15px] font-extrabold leading-tight">Activate Cover &amp; Pay</p>
-                <p className="text-[11px] font-semibold opacity-75 leading-tight">&pound;{monthlyEstimate} / month &bull; Start today</p>
-              </div>
-              <ArrowRight size={16} className="ml-auto opacity-80 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </motion.button>
-
-          {/* Trust badges */}
-          <div className="flex items-center justify-center gap-5 py-0.5">
-            {[
-              { icon: Lock,        text: 'Secure checkout' },
-              { icon: ShieldCheck, text: 'Sharia-certified' },
-              { icon: Zap,         text: 'Instant activation' },
-            ].map(({ icon: Icon, text }) => (
-              <div key={text} className="flex items-center gap-1.5 text-[10px] text-gray-500">
-                <Icon size={11} className="text-[#00c685]/60" />
-                {text}
-              </div>
-            ))}
-          </div>
-
-          {/* ── Action buttons ── */}
-          <div className="flex gap-2 pt-1 relative">
+            {/* ── Primary Pay CTA ── */}
             <motion.button
               type="button"
-              onClick={onBack}
-              whileHover={{ scale: 1.02 }}
+              onClick={() => setShowPayment(true)}
+              whileHover={{ scale: 1.015, boxShadow: '0 0 32px rgba(0,198,133,0.35)' }}
               whileTap={{ scale: 0.97 }}
-              className="flex-1 flex items-center justify-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-sm text-gray-300 font-semibold py-2.5 rounded-xl transition-colors cursor-pointer"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.4 }}
+              className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-[#00c685] to-[#00a871] hover:from-[#00d690] hover:to-[#00b87a] text-[#03120d] font-bold py-4 rounded-2xl transition-all shadow-xl shadow-[#00c685]/25 cursor-pointer group relative overflow-hidden"
             >
-              <HomeIcon size={14} /> Back to Home
+              {/* shimmer sweep */}
+              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+              <div className="flex items-center gap-2.5 relative z-10">
+                <div className="w-8 h-8 rounded-full bg-[#0a1a14]/20 flex items-center justify-center">
+                  <CreditCard size={16} />
+                </div>
+                <div className="text-left">
+                  <p className="text-[15px] font-extrabold leading-tight">Activate Cover &amp; Pay</p>
+                  <p className="text-[11px] font-semibold opacity-75 leading-tight">&pound;{monthlyEstimate} / month &bull; Start today</p>
+                </div>
+                <ArrowRight size={16} className="ml-auto opacity-80 group-hover:translate-x-1 transition-transform" />
+              </div>
             </motion.button>
 
-            {/* Share button + popover */}
-            <div className="relative">
+            {/* Trust badges */}
+            <div className="flex items-center justify-center gap-5 py-0.5">
+              {[
+                { icon: Lock,        text: 'Secure checkout' },
+                { icon: ShieldCheck, text: 'Sharia-certified' },
+                { icon: Zap,         text: 'Instant activation' },
+              ].map(({ icon: Icon, text }) => (
+                <div key={text} className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                  <Icon size={11} className="text-[#00c685]/60" />
+                  {text}
+                </div>
+              ))}
+            </div>
+
+            {/* ── Action buttons ── */}
+            <div className="flex gap-2 pt-1 relative">
               <motion.button
                 type="button"
-                onClick={() => setShareOpen(v => !v)}
+                onClick={onBack}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
-                className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-semibold transition-colors cursor-pointer ${shareOpen ? 'border-[#00c685]/40 bg-[#00c685]/10 text-[#00c685]' : 'border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-gray-300'}`}
+                className="flex-1 flex items-center justify-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-sm text-gray-300 font-semibold py-2.5 rounded-xl transition-colors cursor-pointer"
               >
-                <Share size={14} /> Share
+                <HomeIcon size={14} /> Back to Home
               </motion.button>
 
-              {/* Platform picker dropdown */}
-              {shareOpen && (
-                <>
-                  {/* click-away backdrop */}
-                  <div className="fixed inset-0 z-40" onClick={() => setShareOpen(false)} />
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-                    className="absolute bottom-full right-0 mb-2 w-58 min-w-[220px] rounded-2xl border border-white/10 bg-[#0d2117]/95 backdrop-blur-xl shadow-2xl p-2 z-50"
-                  >
-                    <p className="text-[10px] font-bold tracking-widest uppercase text-gray-500 px-2 pb-1.5 pt-0.5">
-                      Share your quote
-                    </p>
-                    {shareOptions.map(opt => (
-                      <a
-                        key={opt.label}
-                        href={opt.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => setShareOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent text-sm text-gray-400 transition-all cursor-pointer ${opt.color}`}
-                      >
-                        {opt.icon}
-                        <span>{opt.label}</span>
-                      </a>
-                    ))}
+              {/* Share button + popover */}
+              <div className="relative">
+                <motion.button
+                  type="button"
+                  onClick={() => setShareOpen(v => !v)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-semibold transition-colors cursor-pointer ${shareOpen ? 'border-[#00c685]/40 bg-[#00c685]/10 text-[#00c685]' : 'border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-gray-300'}`}
+                >
+                  <Share size={14} /> Share
+                </motion.button>
 
-                    <div className="border-t border-white/6 mt-1.5 pt-1.5">
-                      <button
-                        type="button"
-                        onClick={handleCopyLink}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-[#00c685]/10 hover:border-[#00c685]/25 text-sm text-gray-400 hover:text-[#00c685] transition-all cursor-pointer"
-                      >
-                        {linkCopied
-                          ? <><Check size={15} className="text-[#00c685] shrink-0" /><span className="text-[#00c685]">Link copied!</span></>
-                          : <><Copy size={15} className="shrink-0" /><span>Copy payment link</span></>
-                        }
-                      </button>
-                    </div>
-                  </motion.div>
-                </>
-              )}
+                {/* Platform picker dropdown */}
+                {shareOpen && (
+                  <>
+                    {/* click-away backdrop */}
+                    <div className="fixed inset-0 z-40" onClick={() => setShareOpen(false)} />
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                      className="absolute bottom-full right-0 mb-2 w-58 min-w-[220px] rounded-2xl border border-white/10 bg-[#0d2117]/95 backdrop-blur-xl shadow-2xl p-2 z-50"
+                    >
+                      <p className="text-[10px] font-bold tracking-widest uppercase text-gray-500 px-2 pb-1.5 pt-0.5">
+                        Share your quote
+                      </p>
+                      {shareOptions.map(opt => (
+                        <a
+                          key={opt.label}
+                          href={opt.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setShareOpen(false)}
+                          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent text-sm text-gray-400 transition-all cursor-pointer ${opt.color}`}
+                        >
+                          {opt.icon}
+                          <span>{opt.label}</span>
+                        </a>
+                      ))}
+
+                      <div className="border-t border-white/6 mt-1.5 pt-1.5">
+                        <button
+                          type="button"
+                          onClick={handleCopyLink}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:bg-[#00c685]/10 hover:border-[#00c685]/25 text-sm text-gray-400 hover:text-[#00c685] transition-all cursor-pointer"
+                        >
+                          {linkCopied
+                            ? <><Check size={15} className="text-[#00c685] shrink-0" /><span className="text-[#00c685]">Link copied!</span></>
+                            : <><Copy size={15} className="shrink-0" /><span>Copy payment link</span></>
+                          }
+                        </button>
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
 
         {/* Footer */}
         <div className="px-6 py-3.5 border-t border-white/5 bg-white/[0.01] flex items-center justify-between">
