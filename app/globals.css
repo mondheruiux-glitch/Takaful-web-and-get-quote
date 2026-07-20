@@ -1,0 +1,247 @@
+@import "tailwindcss";
+
+@keyframes heroReveal {
+  0% { opacity: 0; transform: translateY(28px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroFadeUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroZoom {
+  0% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+
+.hero-anim {
+  opacity: 0;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-reveal {
+  animation-name: heroReveal;
+  animation-duration: 1.1s;
+}
+
+.hero-fade {
+  animation-name: heroFadeUp;
+  animation-duration: 1s;
+}
+
+.hero-zoom {
+  animation: heroZoom 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+  contain: layout style paint;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-anim, .hero-zoom {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --animate-meteor-effect: meteor 5s linear infinite;
+
+  @keyframes meteor {
+    0% {
+      transform: rotate(215deg) translateX(0);
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      transform: rotate(215deg) translateX(-500px);
+      opacity: 0;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #09090b;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+    --primary: #18181b;
+    --primary-foreground: #fafafa;
+  }
+  .dark {
+    --background: #09090b;
+    --foreground: #fafafa;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --primary: #fafafa;
+    --primary-foreground: #18181b;
+  }
+}
+
+/* ── Moving Dot Card Styles ────────────────────────────────────────────────── */
+@keyframes moveDot {
+  0%, 100% {
+    top: 6px;
+    left: calc(100% - 14px);
+  }
+  25% {
+    top: 6px;
+    left: 6px;
+  }
+  50% {
+    top: calc(100% - 14px);
+    left: 6px;
+  }
+  75% {
+    top: calc(100% - 14px);
+    left: calc(100% - 14px);
+  }
+}
+
+.outer {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
+  padding: 1px;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.outer:hover {
+  transform: translateY(-2px);
+  border-color: rgba(12, 242, 160, 0.2);
+}
+
+.dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #0CF2A0;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #0CF2A0, 0 0 18px #0CF2A0;
+  animation: moveDot 6s linear infinite;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  background: #09120e;
+  border-radius: 11px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.ray {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle 120px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(12, 242, 160, 0.08), transparent 80%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.outer:hover .ray {
+  opacity: 1;
+}
+
+.text {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  transition: color 0.3s ease;
+}
+
+.outer:hover .text {
+  color: #0CF2A0;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #9ca3af;
+  margin-top: 12px;
+}
+
+.line {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(12, 242, 160, 0.15), transparent);
+  transition: all 0.3s ease;
+}
+
+.topl {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateX(-100%);
+}
+
+.leftl {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateY(100%);
+  background: linear-gradient(180deg, transparent, rgba(12, 242, 160, 0.15), transparent);
+}
+
+.bottoml {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateX(100%);
+}
+
+.rightl {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateY(-100%);
+  background: linear-gradient(180deg, transparent, rgba(12, 242, 160, 0.15), transparent);
+}
+
+.outer:hover .topl {
+  transform: translateX(100%);
+  transition: transform 1.5s linear infinite;
+}
+
+.outer:hover .leftl {
+  transform: translateY(-100%);
+  transition: transform 1.5s linear infinite;
+}
+
+.outer:hover .bottoml {
+  transform: translateX(-100%);
+  transition: transform 1.5s linear infinite;
+}
+
+.outer:hover .rightl {
+  transform: translateY(100%);
+  transition: transform 1.5s linear infinite;
+}

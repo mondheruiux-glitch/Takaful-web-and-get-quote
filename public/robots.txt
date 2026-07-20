@@ -1,0 +1,14 @@
+User-agent: *
+
+# Allow public marketing pages
+Allow: /
+Allow: /how-it-works
+
+# Disallow transactional / private routes
+Disallow: /get-quote
+Disallow: /pay
+Disallow: /signup
+Disallow: /dashboard
+
+# Sitemap
+Sitemap: https://takaful.com/sitemap.xml
