@@ -61,7 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
 
         {/* Preload critical LCP background images */}
-        <link rel="preload" href="/bg-image-1.webp" as="image" type="image/webp" />
+        <link rel="preload" href="/hero-bg.webp" as="image" type="image/webp" />
         <link rel="preload" href="/bg-image-2.webp" as="image" type="image/webp" />
 
         {/* Preconnect for external images */}

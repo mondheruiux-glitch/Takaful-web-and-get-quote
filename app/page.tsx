@@ -52,7 +52,7 @@ const HoverFooter = dynamic(() => import('@/components/ui/hover-footer-demo').th
 // Inline section fallback
 const SectionFallback = () => <div className="h-48 bg-white animate-pulse" />;
 
-const BG_IMAGE_1 = '/bg-image-1.webp';
+const BG_IMAGE_1 = '/hero-bg.webp';
 const BG_IMAGE_2 = '/bg-image-2.webp';
 const SPOTLIGHT_R = 260;
 

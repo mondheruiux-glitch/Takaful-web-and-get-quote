@@ -137,7 +137,7 @@ The main marketing page. Composed of these sections (in scroll order):
 
 **Key behaviours:**
 - `ScrollAwareNav` uses `requestAnimationFrame` to throttle scroll events and avoids layout reflow by reading `data-dark="true"` attributes instead of `getComputedStyle`.
-- Background images (`/bg-image-1.webp`, `/bg-image-2.webp`) are `<link rel="preload">` in the root layout for LCP optimisation.
+- Background images (`/hero-bg.webp`, `/bg-image-2.webp`) are `<link rel="preload">` in the root layout for LCP optimisation.
 - Cursor spotlight effect (260px radius) follows the mouse on the hero split section.
 - UK address autocomplete via `UKAddressAutocomplete` component (backed by `api.postcodes.io`).
 
@@ -412,7 +412,7 @@ const ACCENT      = '#00c685';
 - `BackgroundBeams` — above-the-fold hero visual
 - `LightningSplit` — hero split component
 - Google Fonts (non-blocking, swap)
-- `/bg-image-1.webp` and `/bg-image-2.webp` — `<link rel="preload">`
+- `/hero-bg.webp` and `/bg-image-2.webp` — `<link rel="preload">`
 
 ### Below-the-Fold (Lazy Load via `next/dynamic`)
 
@@ -543,6 +543,7 @@ Detects mobile breakpoint. Used to conditionally render mobile vs desktop layout
 - **Repository:** Initial codebase pushed to `https://github.com/mondheruiux-glitch/Takaful-project`
 - **Documentation:** This `DOCUMENTATION.md` file created and added to project root
 - **Deployment fix:** Moved `@next/swc-darwin-arm64`, `@tailwindcss/oxide-darwin-arm64`, and `lightningcss-darwin-arm64` from `dependencies` to `optionalDependencies` in `package.json` to fix `EBADPLATFORM` crash on Linux x64 Docker build servers
+- **Assets:** Renamed the hero background image from `bg-image-1.webp` to `hero-bg.webp` and updated all preloads, constants, and references across layout files and documentation
 
 ---
 
