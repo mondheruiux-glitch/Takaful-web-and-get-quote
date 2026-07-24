@@ -108,7 +108,7 @@ function Nav() {
   }, []);
 
   const onDark = !scrolled;
-  const links = [['Home', '/'], ['How it Works', '/how-it-works'], ['Compare Plans', '/compare-plans'], ['About Us', '/#about'], ['Contact', '/#contact']];
+  const links = [['Home', '/'], ['How it Works', '/how-it-works'], ['Compare Plans', '/compare-plans'], ['About Us', '/about'], ['Contact', '/#contact']];
 
   return (
     <>

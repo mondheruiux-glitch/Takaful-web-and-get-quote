@@ -19,10 +19,10 @@ export function HoverFooter() {
     {
       title: "About Us",
       links: [
-        { label: "Company History", href: "#" },
-        { label: "Meet the Team", href: "#" },
-        { label: "Our Values", href: "#" },
-        { label: "Careers", href: "#" },
+        { label: "Company History", href: "/about#our-story" },
+        { label: "Meet the Team", href: "/about" },
+        { label: "Our Values", href: "/about" },
+        { label: "Careers", href: "/about" },
       ],
     },
     {
