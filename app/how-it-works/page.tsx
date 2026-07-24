@@ -108,7 +108,7 @@ function Nav() {
   }, []);
 
   const onDark = !scrolled;
-  const links = [['Home', '/'], ['How it Works', '/how-it-works'], ['Compare', '/#compare'], ['About Us', '/#about'], ['Contact', '/#contact']];
+  const links = [['Home', '/'], ['How it Works', '/how-it-works'], ['Compare Plans', '/compare-plans'], ['About Us', '/#about'], ['Contact', '/#contact']];
 
   return (
     <>
@@ -167,13 +167,13 @@ function Hero() {
   const mousePositionRef = useRef<{ x: number | null; y: number | null }>({ x: null, y: null });
 
   const DOT_SPACING = 25;
-  const BASE_OPACITY_MIN = 0.20;
-  const BASE_OPACITY_MAX = 0.35;
-  const BASE_RADIUS = 1;
+  const BASE_OPACITY_MIN = 0.40;
+  const BASE_OPACITY_MAX = 0.65;
+  const BASE_RADIUS = 1.5;
   const INTERACTION_RADIUS = 150;
   const INTERACTION_RADIUS_SQ = INTERACTION_RADIUS * INTERACTION_RADIUS;
-  const OPACITY_BOOST = 0.5;
-  const RADIUS_BOOST = 2.0;
+  const OPACITY_BOOST = 0.6;
+  const RADIUS_BOOST = 2.5;
   const GRID_CELL_SIZE = Math.max(50, Math.floor(INTERACTION_RADIUS / 1.5));
 
   const handleMouseMove = useCallback((event: globalThis.MouseEvent) => {
@@ -337,7 +337,7 @@ function Hero() {
 
   return (
     <section className="relative w-full flex flex-col items-center justify-center bg-black overflow-hidden pt-32 pb-24">
-      <canvas ref={canvasRef} className="absolute inset-0 z-10 pointer-events-none opacity-40" />
+      <canvas ref={canvasRef} className="absolute inset-0 z-10 pointer-events-none" />
       <div className="absolute inset-0 bg-[#0a1a14] z-0 hero-zoom" />
       <div className="absolute inset-0 z-20 bg-gradient-to-b from-black/40 via-black/20 to-black/70" />
       

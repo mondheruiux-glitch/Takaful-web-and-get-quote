@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { Menu, MapPin, ChevronRight, Check, Shield, Scale, Lock, Star, X, ChevronDown, Facebook, Twitter, Instagram, Linkedin, Users, PieChart, UserPlus, RefreshCcw, Building2, TrendingDown, PiggyBank, ArrowRightLeft, EyeOff, Percent, HeartHandshake, Gift, Leaf, Eye, ShieldCheck } from 'lucide-react';
+import { Menu, MapPin, ChevronRight, ArrowRight, Check, Shield, Scale, Lock, Star, X, ChevronDown, Facebook, Twitter, Instagram, Linkedin, Users, PieChart, UserPlus, RefreshCcw, Building2, TrendingDown, PiggyBank, ArrowRightLeft, EyeOff, Percent, HeartHandshake, Gift, Leaf, Eye, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { AnimatedTooltip } from '@/components/ui/animated-tooltip';
 import { PillBadge } from '@/components/ui/pill-badge';
@@ -108,7 +108,7 @@ function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'cen
   const navItems = [
     { label: 'Home', href: '/' },
     { label: 'How it Works', href: '/how-it-works' },
-    { label: 'Compare', href: '/#compare' },
+    { label: 'Compare Plans', href: '/compare-plans' },
     { label: 'About Us', href: '/#about' },
     { label: 'Contact', href: '/#contact' },
   ];
@@ -657,7 +657,17 @@ const Comparison = () => {
           </motion.div>
 
           {/* Hint */}
-          <p className="text-center text-gray-400 text-[11px] mt-3 font-mono tracking-[0.08em]">// drag left or right to compare</p>
+          <p className="text-center text-gray-400 text-[11px] mt-3 mb-10 font-mono tracking-[0.08em]">// drag left or right to compare</p>
+
+          {/* Button to Compare Plans */}
+          <div className="text-center">
+            <Link
+              href="/compare-plans"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#00c685] hover:bg-[#00a871] text-[#0a1a14] font-bold text-sm shadow-[0_4px_20px_rgba(0,198,133,0.25)] hover:shadow-[0_4px_25px_rgba(0,198,133,0.4)] transition-all hover:scale-105"
+            >
+              Compare Detailed Plans <ArrowRight className="w-4.5 h-4.5" />
+            </Link>
+          </div>
         </div>
       </div>
     </section>

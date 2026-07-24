@@ -25,7 +25,8 @@ export function ShaderAnimation() {
       }
     `
 
-    // Fragment shader
+    // Fragment shader — outputs bright glow lines with transparent dark areas
+    // so the card's background color (#C5D1C0) shows through
     const fragmentShader = `
       #define TWO_PI 6.2831853072
       #define PI 3.14159265359
@@ -36,25 +37,28 @@ export function ShaderAnimation() {
 
       void main(void) {
         vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
-        float t = time*0.05;
+        float t = time * 0.05;
         float lineWidth = 0.002;
 
         vec3 color = vec3(0.0);
         for(int j = 0; j < 3; j++){
-          for(int i=0; i < 5; i++){
-            color[j] += lineWidth*float(i*i) / abs(fract(t - 0.01*float(j)+float(i)*0.01)*5.0 - length(uv) + mod(uv.x+uv.y, 0.2));
+          for(int i = 0; i < 5; i++){
+            color[j] += lineWidth * float(i * i) / abs(
+              fract(t - 0.01 * float(j) + float(i) * 0.01) * 5.0
+              - length(uv)
+              + mod(uv.x + uv.y, 0.2)
+            );
           }
         }
 
-        vec3 bgColor = vec3(0.784, 0.820, 0.757); // #C8D1C1
-        vec3 lineColor = vec3(0.0, 0.776, 0.522); // #00c685
-        
-        float lineIntensity = clamp((color[0] + color[1] + color[2]) * 0.2, 0.0, 1.0);
-        
-        // Blend the base color with the lines
-        vec3 finalColor = mix(bgColor, lineColor, lineIntensity * 0.4);
-        
-        gl_FragColor = vec4(finalColor, 1.0);
+        // Tint the glow toward the brand green (#00c685 ≈ 0.0, 0.78, 0.52)
+        vec3 tinted = mix(color, color * vec3(0.3, 1.2, 0.9), 0.6);
+
+        // Use brightness as alpha — dark areas become transparent
+        float brightness = max(max(tinted.r, tinted.g), tinted.b);
+        float alpha = clamp(brightness * 3.0, 0.0, 0.75);
+
+        gl_FragColor = vec4(tinted, alpha);
       }
     `
 
@@ -74,13 +78,16 @@ export function ShaderAnimation() {
       uniforms: uniforms,
       vertexShader: vertexShader,
       fragmentShader: fragmentShader,
+      transparent: true,
     })
 
     const mesh = new THREE.Mesh(geometry, material)
     scene.add(mesh)
 
+    // alpha: true → transparent canvas background so card bg shows through
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setClearColor(0x000000, 0) // fully transparent clear
 
     container.appendChild(renderer.domElement)
 
@@ -143,7 +150,7 @@ export function ShaderAnimation() {
       ref={containerRef}
       className="absolute inset-0 w-full h-full"
       style={{
-        background: "#C8D1C1",
+        background: "transparent",
         overflow: "hidden",
       }}
     />

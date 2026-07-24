@@ -463,8 +463,8 @@ export const InteractiveHero: React.FC = () => {
 
    const DOT_SPACING = 25;
    const BASE_OPACITY_MIN = 0.40;
-   const BASE_OPACITY_MAX = 0.50;
-   const BASE_RADIUS = 1;
+   const BASE_OPACITY_MAX = 0.65;
+   const BASE_RADIUS = 1.5;
    const INTERACTION_RADIUS = 150;
    const INTERACTION_RADIUS_SQ = INTERACTION_RADIUS * INTERACTION_RADIUS;
    const OPACITY_BOOST = 0.6;
@@ -701,7 +701,7 @@ export const InteractiveHero: React.FC = () => {
 
   return (
     <div className="pt-[100px] relative bg-[#111111] text-gray-300 min-h-screen flex flex-col overflow-x-hidden">
-        <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none opacity-80" />
+        <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
         <div className="absolute inset-0 z-1 pointer-events-none" style={{
             background: 'linear-gradient(to bottom, transparent 0%, #111111 90%), radial-gradient(ellipse at center, transparent 40%, #111111 95%)'
         }}></div>
