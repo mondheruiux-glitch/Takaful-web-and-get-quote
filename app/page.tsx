@@ -110,7 +110,7 @@ function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'cen
     { label: 'How it Works', href: '/how-it-works' },
     { label: 'Compare Plans', href: '/compare-plans' },
     { label: 'About Us', href: '/about' },
-    { label: 'Contact', href: '/#contact' },
+    { label: 'Contact', href: '/contact' },
   ];
 
   return (

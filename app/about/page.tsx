@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 import {
   Menu, ChevronRight, Check, X,
   Heart, Shield, Eye, Users, Zap, Leaf,
-  ArrowRight, Star, Globe, Lock,
+  ArrowRight, Star, Globe, Lock, CheckCircle,
 } from 'lucide-react';
 import { PillBadge } from '@/components/ui/pill-badge';
 
@@ -48,30 +48,38 @@ function Nav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
+    let rafId: number | null = null;
+
+    const checkScroll = () => {
       const isInitialDark = window.scrollY <= window.innerHeight * 0.7;
-      const sections = Array.from(document.querySelectorAll('section, footer, header'));
+      const sections = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-dark="true"]')
+      );
       let isOverlappingDark = false;
       for (const sec of sections) {
         const rect = sec.getBoundingClientRect();
         if (rect.top <= 60 && rect.bottom >= 20) {
-          const style = window.getComputedStyle(sec);
-          const bg = style.backgroundColor;
-          if (bg === 'rgb(10, 26, 20)' || bg === 'rgb(0, 0, 0)' || bg.includes('rgba(10, 26, 20')) {
-            isOverlappingDark = true;
-            break;
-          }
+          isOverlappingDark = true;
+          break;
         }
       }
       setScrolled(!isInitialDark && !isOverlappingDark);
+      rafId = null;
+    };
+
+    const handleScroll = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(checkScroll);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
-    handleScroll();
+    window.addEventListener('resize', handleScroll, { passive: true });
+    checkScroll();
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
+      if (rafId !== null) cancelAnimationFrame(rafId);
     };
   }, []);
 
@@ -81,7 +89,7 @@ function Nav() {
     ['How it Works', '/how-it-works'],
     ['Compare Plans', '/compare-plans'],
     ['About Us', '/about'],
-    ['Contact', '/#contact'],
+    ['Contact', '/contact'],
   ];
 
   return (
@@ -93,11 +101,10 @@ function Nav() {
             <Link
               key={label}
               href={href}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${
-                i === 3
-                  ? onDark ? 'bg-white/20 text-white' : 'bg-white text-gray-900 shadow-sm'
-                  : onDark ? 'text-white/80 hover:bg-white/30 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900'
-              }`}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${i === 3
+                ? onDark ? 'bg-white/20 text-white' : 'bg-white text-gray-900 shadow-sm'
+                : onDark ? 'text-white/80 hover:bg-white/30 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900'
+                }`}
             >
               {label}
             </Link>
@@ -241,7 +248,12 @@ function Hero() {
           interactionFactor = t * t;
         }
       }
-      const finalOpacity = Math.min(1, dot.currentOpacity + interactionFactor * OPACITY_BOOST);
+      const finalOpacity = (mouseX !== null && mouseY !== null && interactionFactor > 0)
+        ? Math.min(1, dot.currentOpacity + interactionFactor * OPACITY_BOOST)
+        : 0;
+
+      if (finalOpacity <= 0) return;
+
       dot.currentRadius = dot.baseRadius + interactionFactor * RADIUS_BOOST;
       ctx.beginPath();
       ctx.fillStyle = `rgba(0, 198, 133, ${finalOpacity.toFixed(3)})`;
@@ -267,7 +279,7 @@ function Hero() {
   }, [handleResize, handleMouseMove, animateDots]);
 
   return (
-    <section className="relative w-full flex flex-col items-center justify-center bg-black overflow-hidden pt-36 pb-28 min-h-[88vh]">
+    <section data-dark="true" className="relative w-full flex flex-col items-center justify-center bg-black overflow-hidden pt-36 pb-28 min-h-[88vh]">
       <canvas ref={canvasRef} className="absolute inset-0 z-10 pointer-events-none" />
       <div className="absolute inset-0 bg-[#0a1a14] z-0 hero-zoom" />
       <div className="absolute inset-0 z-20 bg-gradient-to-b from-black/40 via-black/10 to-black/70" />
@@ -302,7 +314,7 @@ function Hero() {
           className="text-white/70 text-lg md:text-xl leading-relaxed max-w-2xl hero-anim hero-fade"
           style={{ animationDelay: '0.65s' }}
         >
-          We are a community of believers building an ethical alternative to conventional home insurance —
+          We are a community of believers building an ethical alternative to conventional home insurance
           rooted in Sharia values, powered by technology, and driven by trust.
         </p>
 
@@ -357,11 +369,11 @@ function OriginStory() {
                 <PillBadge text="How We Started" className="mb-6" />
               </motion.div>
               <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-6 leading-[1.15] tracking-[-0.02em]">
-                Born from a gap in the market — and a gap in conscience.
+                Born from a gap in the market and a gap in conscience.
               </motion.h2>
               {[
                 'In 2023, our founders struggled to find home insurance that aligned with their faith. Every product available charged interest, kept profits, and gave nothing back.',
-                'So we built Takaful: a community-owned protection model where every member contributes to a shared pool — managed transparently, and returned if unused.',
+                'So we built Takaful: a community-owned protection model where every member contributes to a shared pool managed transparently, and returned if unused.',
                 'Today, over 50,000 homes across the UK are protected by their community, not a corporation. We are just getting started.',
               ].map((line, i) => (
                 <motion.p key={i} variants={itemVariants} className="text-gray-600 leading-relaxed text-[1.0625rem] mb-4">
@@ -380,38 +392,130 @@ function OriginStory() {
             </motion.div>
           </div>
 
-          {/* Image column */}
-          <motion.div
-            ref={ref}
-            className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/10"
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={inView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.8, delay: 0.15, ease }}
-          >
-            <img src="/transparent-flower.jpg" alt="Community Protection" className="w-full h-[480px] object-cover" />
-            {/* Floating card overlay */}
-            <div className="absolute bottom-6 left-6 right-6 p-5 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xl">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: `${GREEN}20` }}>
-                  <Users size={16} style={{ color: GREEN }} />
-                </div>
-                <div>
-                  <p className="text-[13px] font-bold text-gray-900">50,000+ Protected Homes</p>
-                  <p className="text-[11px] text-gray-500">Across the United Kingdom</p>
-                </div>
+          {/* Orbit Animation column */}
+          <div ref={ref} className="relative flex items-center justify-center overflow-hidden" style={{ height: '560px' }}>
+            <div className="relative w-[42rem] h-[42rem] flex items-center justify-center translate-x-[20%]">
+              {/* Center Logo */}
+              <img alt="Takaful" className="absolute z-20 h-7 w-auto bg-white p-1 rounded-lg shadow-sm" src="/logo-dark.png" />
+
+              {/* Orbit 1 */}
+              <div className="absolute rounded-full border-2 border-dashed border-gray-300 pointer-events-none" style={{ width: '17rem', height: '17rem', animation: 'orbit-spin 18s linear infinite' }}>
+                {[
+                  { label: 'Sarah', color: 'rgb(239, 68, 68)', photo: 'https://randomuser.me/api/portraits/women/44.jpg', left: '100%', top: '50%' },
+                  { label: 'Leo', color: 'rgb(59, 130, 246)', photo: 'https://randomuser.me/api/portraits/men/32.jpg', left: '50%', top: '100%' },
+                  { label: 'Elena', color: 'rgb(139, 92, 246)', photo: 'https://randomuser.me/api/portraits/women/68.jpg', left: '0%', top: '50%' },
+                  { label: 'Marcus', color: 'rgb(245, 158, 11)', photo: 'https://randomuser.me/api/portraits/men/75.jpg', left: '50%', top: '0%' },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="absolute transition-transform duration-300 pointer-events-auto flex flex-col items-center"
+                    style={{
+                      left: item.left,
+                      top: item.top,
+                      transform: 'translate(-50%, -50%)',
+                      animation: `orbit-counter 18s linear infinite`,
+                    }}
+                  >
+                    <div
+                      className="w-11 h-11 rounded-full flex items-center justify-center shadow-md cursor-pointer transition-all duration-300 overflow-hidden border-2"
+                      style={{ borderColor: item.color }}
+                    >
+                      <img
+                        src={item.photo}
+                        alt={item.label}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <p className="text-center mt-1 font-semibold leading-tight text-gray-500" style={{ fontSize: '11px', maxWidth: '60px' }}>
+                      {item.label}
+                    </p>
+                  </div>
+                ))}
               </div>
-              <div className="w-full h-1.5 rounded-full bg-gray-100 overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{ background: `linear-gradient(90deg, ${GREEN}, #62D2A2)` }}
-                  initial={{ width: 0 }}
-                  animate={inView ? { width: '94%' } : {}}
-                  transition={{ duration: 1.2, delay: 0.6, ease: 'easeOut' }}
-                />
+
+              {/* Orbit 2 */}
+              <div className="absolute rounded-full border-2 border-dashed border-gray-300 pointer-events-none" style={{ width: '24rem', height: '24rem', animation: 'orbit-spin 26s linear infinite' }}>
+                {[
+                  { label: 'Sophia', color: 'rgb(6, 182, 212)', photo: 'https://randomuser.me/api/portraits/women/26.jpg', left: '100%', top: '50%' },
+                  { label: 'Lucas', color: 'rgb(16, 185, 129)', photo: 'https://randomuser.me/api/portraits/men/46.jpg', left: '50%', top: '100%' },
+                  { label: 'Zara', color: 'rgb(249, 115, 22)', photo: 'https://randomuser.me/api/portraits/women/55.jpg', left: '0%', top: '50%' },
+                  { label: 'Kai', color: 'rgb(0, 198, 133)', photo: 'https://randomuser.me/api/portraits/men/18.jpg', left: '50%', top: '0%' },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="absolute transition-transform duration-300 pointer-events-auto flex flex-col items-center"
+                    style={{
+                      left: item.left,
+                      top: item.top,
+                      transform: 'translate(-50%, -50%)',
+                      animation: `orbit-counter 26s linear infinite`,
+                    }}
+                  >
+                    <div
+                      className="w-11 h-11 rounded-full flex items-center justify-center shadow-md cursor-pointer transition-all duration-300 overflow-hidden border-2"
+                      style={{ borderColor: item.color }}
+                    >
+                      <img
+                        src={item.photo}
+                        alt={item.label}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <p className="text-center mt-1 font-semibold leading-tight text-gray-500" style={{ fontSize: '11px', maxWidth: '60px' }}>
+                      {item.label}
+                    </p>
+                  </div>
+                ))}
               </div>
-              <p className="text-[10px] text-gray-400 mt-1.5 font-mono">Community trust score: 94 / 100</p>
+
+              {/* Orbit 3 */}
+              <div className="absolute rounded-full border-2 border-dashed border-gray-300 pointer-events-none" style={{ width: '31rem', height: '31rem', animation: 'orbit-spin 34s linear infinite' }}>
+                {[
+                  { label: 'Maya', color: 'rgb(99, 102, 241)', photo: 'https://randomuser.me/api/portraits/women/12.jpg', left: '100%', top: '50%' },
+                  { label: 'Zayd', color: 'rgb(236, 72, 153)', photo: 'https://randomuser.me/api/portraits/men/62.jpg', left: '50%', top: '100%' },
+                  { label: 'Chloe', color: 'rgb(100, 116, 139)', photo: 'https://randomuser.me/api/portraits/women/33.jpg', left: '0%', top: '50%' },
+                  { label: 'Ryan', color: 'rgb(234, 179, 8)', photo: 'https://randomuser.me/api/portraits/men/91.jpg', left: '50%', top: '0%' },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="absolute transition-transform duration-300 pointer-events-auto flex flex-col items-center"
+                    style={{
+                      left: item.left,
+                      top: item.top,
+                      transform: 'translate(-50%, -50%)',
+                      animation: `orbit-counter 34s linear infinite`,
+                    }}
+                  >
+                    <div
+                      className="w-11 h-11 rounded-full flex items-center justify-center shadow-md cursor-pointer transition-all duration-300 overflow-hidden border-2"
+                      style={{ borderColor: item.color }}
+                    >
+                      <img
+                        src={item.photo}
+                        alt={item.label}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <p className="text-center mt-1 font-semibold leading-tight text-gray-500" style={{ fontSize: '11px', maxWidth: '60px' }}>
+                      {item.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
             </div>
-          </motion.div>
+
+            <style>{`
+              @keyframes orbit-spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+              }
+              @keyframes orbit-counter {
+                from { transform: translate(-50%, -50%) rotate(0deg); }
+                to { transform: translate(-50%, -50%) rotate(-360deg); }
+              }
+            `}</style>
+          </div>
 
         </div>
       </div>
@@ -422,7 +526,7 @@ function OriginStory() {
 /* ─── Mission & Vision ───────────────────────────────────────────────────── */
 function MissionVision() {
   return (
-    <section className="py-24 md:py-32 bg-gray-50 overflow-hidden">
+    <section className="py-24 md:py-32 bg-white overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           className="text-center max-w-2xl mx-auto mb-16"
@@ -440,44 +544,39 @@ function MissionVision() {
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Mission */}
-          <motion.div
-            initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease }} viewport={{ once: true, margin: '-80px' }}
-            className="group p-8 rounded-3xl bg-white border border-gray-200 shadow-sm hover:shadow-xl hover:border-[#00c685]/30 transition-all duration-500"
-          >
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300" style={{ background: `${GREEN}15` }}>
-              <Heart size={22} style={{ color: GREEN }} />
-            </div>
-            <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-gray-400 mb-3">Our Mission</div>
-            <h3 className="text-2xl md:text-3xl font-normal font-playfair italic text-gray-900 mb-4 leading-tight">
-              Make ethical home protection accessible to every family.
-            </h3>
-            <p className="text-gray-500 leading-relaxed">
-              We exist to offer a Sharia-compliant, transparent, and genuinely community-owned home protection model —
-              where every contribution matters, every claim is honoured, and every surplus is returned.
-            </p>
-          </motion.div>
-
-          {/* Vision */}
-          <motion.div
-            initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15, ease }} viewport={{ once: true, margin: '-80px' }}
-            className="group p-8 rounded-3xl bg-[#0a1a14] border border-white/5 hover:border-[#00c685]/30 transition-all duration-500"
-          >
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300" style={{ background: `${GREEN}20` }}>
-              <Globe size={22} style={{ color: GREEN }} />
-            </div>
-            <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-white/30 mb-3">Our Vision</div>
-            <h3 className="text-2xl md:text-3xl font-normal font-playfair italic text-white mb-4 leading-tight">
-              The world's most trusted ethical insurance ecosystem.
-            </h3>
-            <p className="text-white/50 leading-relaxed">
-              A future where the Takaful model replaces conventional insurance globally — starting in the UK,
-              expanding across Europe, and ultimately serving the 1.8 billion Muslims who deserve better options.
-            </p>
-          </motion.div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {[
+            {
+              icon: Heart,
+              title: 'Our Mission',
+              color: GREEN,
+              desc: 'We exist to make ethical home protection accessible to every family in the UK and beyond. Our Sharia-compliant model puts members at the centre — every contribution is transparent, every claim is honoured with fairness, and every surplus at year-end is returned to the community that created it. We believe protection should be a right, not a profit centre.',
+            },
+            {
+              icon: Globe,
+              title: 'Our Vision',
+              color: '#7C3AED',
+              desc: 'A world where the Takaful model becomes the global standard for ethical insurance. Starting in the UK, we are building the infrastructure, trust, and community needed to expand across Europe and ultimately serve the 1.8 billion Muslims who deserve financial products aligned with their values — without compromise, without complexity, without hidden agendas.',
+            },
+          ].map((feat, i) => {
+            const Icon = feat.icon;
+            return (
+              <motion.div
+                key={i}
+                className="group relative p-7 rounded-2xl border border-gray-100 bg-white hover:-translate-y-1 transition-all duration-500"
+                style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
+                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.12, ease }} viewport={{ once: true }}
+              >
+                <div className="absolute top-0 inset-x-0 h-[2px] rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `linear-gradient(90deg, transparent, ${feat.color}, transparent)` }} />
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-110" style={{ background: `${feat.color}15` }}>
+                  <Icon size={20} style={{ color: feat.color }} />
+                </div>
+                <h3 className="text-[1.0625rem] font-bold text-gray-900 mb-3 leading-tight">{feat.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{feat.desc}</p>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -494,7 +593,7 @@ const impactStats = [
 
 function ImpactNumbers() {
   return (
-    <section className="w-full bg-[#0a1a14] text-white py-24 relative overflow-hidden">
+    <section data-dark="true" className="w-full bg-[#0a1a14] text-white py-24 relative overflow-hidden">
       <div className="absolute inset-0 w-full h-full bg-[#0a1a14] z-20 [mask-image:radial-gradient(transparent,white)] pointer-events-none" />
       <Boxes />
       <div className="max-w-6xl mx-auto px-6 md:px-10 relative z-30 pointer-events-none">
@@ -542,31 +641,37 @@ function ImpactNumbers() {
 const values = [
   {
     icon: Users,
+    color: GREEN,
     title: 'Community First',
     desc: 'Every product decision starts with one question: does this genuinely serve our members? We are the community, not a company serving the community.',
   },
   {
     icon: Eye,
+    color: '#2563EB',
     title: 'Radical Transparency',
-    desc: 'Every dirham is tracked publicly. Pool size, claims paid, surplus accumulated — all live on your dashboard. No hidden fees, ever.',
+    desc: 'Every Pound is tracked publicly. Pool size, claims paid, surplus accumulated all live on your dashboard. No hidden fees, ever.',
   },
   {
     icon: Shield,
+    color: '#7C3AED',
     title: 'Ethical by Design',
     desc: 'Sharia compliance is not a checkbox for us. It is the foundation. Every product, investment, and process is reviewed by independent scholars.',
   },
   {
     icon: Zap,
+    color: '#F59E0B',
     title: 'Technology-Powered',
-    desc: 'We use modern AI and automation to make our process faster, fairer, and cheaper — passing all savings directly to our members.',
+    desc: 'We use modern AI and automation to make our process faster, fairer, and cheaper passing all savings directly to our members.',
   },
   {
     icon: Lock,
+    color: '#EF4444',
     title: 'Trust & Security',
     desc: 'Bank-level encryption, FCA-registered operations, and full GDPR compliance. Your data and your money are always protected.',
   },
   {
     icon: Leaf,
+    color: '#10B981',
     title: 'Long-term Thinking',
     desc: 'We optimise for community health over generations, not quarterly earnings. Our surplus model ensures we grow with our members, not at their expense.',
   },
@@ -588,7 +693,7 @@ function CoreValues() {
             Six values. One unbreakable promise.
           </motion.h2>
           <motion.p variants={itemVariants} className="text-gray-500 text-lg leading-relaxed">
-            These are not aspirations — they are the operating principles we hold ourselves accountable to, every day.
+            These are not aspirations they are the operating principles we hold ourselves accountable to, every day.
           </motion.p>
         </motion.div>
 
@@ -598,16 +703,16 @@ function CoreValues() {
             return (
               <motion.div
                 key={val.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: i * 0.08, ease }}
-                viewport={{ once: true, margin: '-60px' }}
-                className="group p-7 rounded-2xl border border-gray-200 bg-white hover:border-[#00c685]/30 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 cursor-default"
+                className="group relative p-7 rounded-2xl border border-gray-100 bg-white hover:-translate-y-1 transition-all duration-500"
+                style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
+                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.07, ease }} viewport={{ once: true }}
               >
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300" style={{ background: `${GREEN}15` }}>
-                  <Icon size={20} style={{ color: GREEN }} />
+                <div className="absolute top-0 inset-x-0 h-[2px] rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `linear-gradient(90deg, transparent, ${val.color}, transparent)` }} />
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-110" style={{ background: `${val.color}15` }}>
+                  <Icon size={20} style={{ color: val.color }} />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 tracking-tight">{val.title}</h3>
+                <h3 className="text-[1.0625rem] font-bold text-gray-900 mb-2 leading-tight">{val.title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{val.desc}</p>
               </motion.div>
             );
@@ -714,188 +819,10 @@ function Team() {
   );
 }
 
-/* ─── Milestones / Our Journey ───────────────────────────────────────────── */
-const milestones = [
-  {
-    year: '2023',
-    quarter: 'Q1',
-    title: 'The Idea',
-    desc: 'Frustrated by a market that ignored Muslim homeowners, three founders met in a London coffee shop and decided to build the alternative.',
-    img: '/step1.jpg',
-  },
-  {
-    year: '2023',
-    quarter: 'Q3',
-    title: 'Regulatory Approval',
-    desc: 'After 8 months of work, Takaful received FCA registration and AAOIFI Sharia certification — making it one of the first in the UK.',
-    img: '/step3.jpg',
-  },
-  {
-    year: '2024',
-    quarter: 'Q1',
-    title: 'First 1,000 Members',
-    desc: 'We launched publicly and reached 1,000 protected homes within 60 days. £420K in surplus was returned at the first year-end.',
-    img: '/step4.jpg',
-  },
-  {
-    year: '2025',
-    quarter: 'Now',
-    title: '50K+ Homes & Growing',
-    desc: 'Today we protect over 50,000 families. We are expanding coverage types, launching in France and Germany, and hiring for our next chapter.',
-    img: '/step5.jpg',
-  },
-];
-
-function OurJourney() {
-  return (
-    <section className="py-24 md:py-32 bg-white overflow-hidden">
-      <div className="max-w-5xl mx-auto px-6">
-        <motion.div
-          className="text-center max-w-2xl mx-auto mb-20"
-          initial="hidden" whileInView="visible" variants={containerVariants}
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          <motion.div variants={itemVariants}>
-            <PillBadge text="Our Journey" className="mb-6" />
-          </motion.div>
-          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
-            Two years. Thousands of families. One mission.
-          </motion.h2>
-        </motion.div>
-
-        <div className="relative">
-          {/* Vertical line */}
-          <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-4 bottom-4 w-px bg-gray-200" />
-
-          {milestones.map((m, i) => {
-            const isEven = i % 2 === 0;
-            return (
-              <MilestoneRow key={m.title} milestone={m} index={i} isEven={isEven} />
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function MilestoneRow({ milestone, index, isEven }: { milestone: typeof milestones[0]; index: number; isEven: boolean }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-
-  return (
-    <div ref={ref} className="relative flex items-start mb-16 last:mb-0">
-      {/* LEFT */}
-      <motion.div
-        className={`flex-1 ${isEven ? 'md:pr-16' : 'md:order-2 md:pl-16'}`}
-        initial={{ opacity: 0, x: isEven ? -32 : 32 }}
-        animate={inView ? { opacity: 1, x: 0 } : {}}
-        transition={{ duration: 0.7, ease }}
-      >
-        {isEven ? (
-          <div className="group p-6 rounded-2xl border border-gray-200 bg-white hover:border-[#00c685]/30 hover:shadow-lg transition-all duration-500">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-[11px] font-bold tracking-[0.12em] uppercase" style={{ color: GREEN }}>{milestone.quarter} {milestone.year}</span>
-            </div>
-            <h3 className="text-xl font-normal font-playfair italic text-gray-900 mb-2 leading-tight">{milestone.title}</h3>
-            <p className="text-gray-500 text-sm leading-relaxed">{milestone.desc}</p>
-          </div>
-        ) : (
-          <div className="hidden md:block">
-            <img src={milestone.img} alt={milestone.title} className="w-full h-56 object-cover rounded-2xl shadow-xl" />
-          </div>
-        )}
-        {/* Mobile: always show card then image */}
-        <div className="md:hidden mt-4">
-          {isEven ? (
-            <img src={milestone.img} alt={milestone.title} className="w-full h-44 object-cover rounded-2xl shadow-lg" />
-          ) : (
-            <div className="group p-6 rounded-2xl border border-gray-200 bg-white hover:border-[#00c685]/30 transition-all duration-500">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-[11px] font-bold tracking-[0.12em] uppercase" style={{ color: GREEN }}>{milestone.quarter} {milestone.year}</span>
-              </div>
-              <h3 className="text-xl font-normal font-playfair italic text-gray-900 mb-2">{milestone.title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{milestone.desc}</p>
-            </div>
-          )}
-        </div>
-      </motion.div>
-
-      {/* Center dot */}
-      <motion.div
-        className="hidden md:flex w-12 h-12 rounded-full items-center justify-center shrink-0 z-10 font-mono font-bold text-[11px] mx-1"
-        style={{ background: `${GREEN}15`, color: GREEN, boxShadow: `0 0 0 4px white, 0 8px 24px ${GREEN}30` }}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={inView ? { scale: 1, opacity: 1 } : {}}
-        transition={{ duration: 0.5, delay: 0.2, ease }}
-      >
-        {String(index + 1).padStart(2, '0')}
-      </motion.div>
-
-      {/* RIGHT */}
-      <motion.div
-        className={`flex-1 ${isEven ? 'md:order-2 md:pl-16' : 'md:pr-16'}`}
-        initial={{ opacity: 0, x: isEven ? 32 : -32 }}
-        animate={inView ? { opacity: 1, x: 0 } : {}}
-        transition={{ duration: 0.7, delay: 0.1, ease }}
-      >
-        {isEven ? (
-          <div className="hidden md:block">
-            <img src={milestone.img} alt={milestone.title} className="w-full h-56 object-cover rounded-2xl shadow-xl" />
-          </div>
-        ) : (
-          <div className="group p-6 rounded-2xl border border-gray-200 bg-white hover:border-[#00c685]/30 hover:shadow-lg transition-all duration-500">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-[11px] font-bold tracking-[0.12em] uppercase" style={{ color: GREEN }}>{milestone.quarter} {milestone.year}</span>
-            </div>
-            <h3 className="text-xl font-normal font-playfair italic text-gray-900 mb-2 leading-tight">{milestone.title}</h3>
-            <p className="text-gray-500 text-sm leading-relaxed">{milestone.desc}</p>
-          </div>
-        )}
-      </motion.div>
-    </div>
-  );
-}
-
-/* ─── Trust Bar ─────────────────────────────────────────────────────────── */
-function TrustBar() {
-  const badges = [
-    { icon: Shield, label: 'AAOIFI Sharia Certified' },
-    { icon: Globe, label: 'FCA Registered' },
-    { icon: Lock, label: 'ISO 27001 Secured' },
-    { icon: Star, label: '4.9 / 5 Trustpilot' },
-    { icon: Check, label: 'No Hidden Fees' },
-  ];
-
-  return (
-    <section className="py-12 bg-gray-50 border-y border-gray-200">
-      <div className="max-w-5xl mx-auto px-6">
-        <motion.div
-          className="flex flex-wrap items-center justify-center gap-6"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.7 }}
-          viewport={{ once: true }}
-        >
-          {badges.map(({ icon: Icon, label }, i) => (
-            <div key={label} className="flex items-center gap-2 text-sm font-semibold text-gray-500">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: `${GREEN}15` }}>
-                <Icon size={13} style={{ color: GREEN }} />
-              </div>
-              {label}
-              {i < badges.length - 1 && <span className="hidden sm:block ml-4 text-gray-200">·</span>}
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
 /* ─── Final CTA (exact pattern from how-it-works) ───────────────────────── */
 function FinalCTA() {
   return (
-    <section className="py-24 relative overflow-hidden" style={{ background: BG_DARK }}>
+    <section data-dark="true" className="py-24 relative overflow-hidden" style={{ background: BG_DARK }}>
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-80 h-80 rounded-full blur-[140px] opacity-10" style={{ background: GREEN }} />
         <div className="absolute bottom-0 left-0 w-60 h-60 rounded-full blur-[120px] opacity-[0.08]" style={{ background: '#62D2A2' }} />
@@ -935,6 +862,40 @@ function FinalCTA() {
     </section>
   );
 }
+/* ─── Trust Bar ─────────────────────────────────────────────────────────── */
+function TrustBar() {
+  const badges = [
+    { icon: Shield, label: 'AAOIFI Sharia Certified' },
+    { icon: Globe, label: 'FCA Registered' },
+    { icon: Lock, label: 'ISO 27001 Secured' },
+    { icon: Star, label: '4.9 / 5 Trustpilot' },
+    { icon: Check, label: 'No Hidden Fees' },
+  ];
+
+  return (
+    <section className="py-12 bg-gray-50 border-y border-gray-200">
+      <div className="max-w-5xl mx-auto px-6">
+        <motion.div
+          className="flex flex-wrap items-center justify-center gap-6"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+        >
+          {badges.map(({ icon: Icon, label }, i) => (
+            <div key={label} className="flex items-center gap-2 text-sm font-semibold text-gray-500">
+              <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: `${GREEN}15` }}>
+                <Icon size={13} style={{ color: GREEN }} />
+              </div>
+              {label}
+              {i < badges.length - 1 && <span className="hidden sm:block ml-4 text-gray-200">·</span>}
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
 
 /* ─── Page ──────────────────────────────────────────────────────────────── */
 export default function AboutPage() {
@@ -946,10 +907,9 @@ export default function AboutPage() {
       <MissionVision />
       <ImpactNumbers />
       <CoreValues />
-      <Team />
-      <OurJourney />
-      <TrustBar />
       <FinalCTA />
+      <Team />
+      <TrustBar />
       <HoverFooter />
     </main>
   );

@@ -596,18 +596,23 @@ export const InteractiveHero: React.FC = () => {
                }
            }
 
-           const finalOpacity = Math.min(1, dot.currentOpacity + interactionFactor * OPACITY_BOOST);
-           dot.currentRadius = dot.baseRadius + interactionFactor * RADIUS_BOOST;
+            const finalOpacity = (mouseX !== null && mouseY !== null && interactionFactor > 0)
+                ? Math.min(1, dot.currentOpacity + interactionFactor * OPACITY_BOOST)
+                : 0;
 
-           const colorMatch = dot.baseColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
-           const r = colorMatch ? colorMatch[1] : '87';
-           const g = colorMatch ? colorMatch[2] : '220';
-           const b = colorMatch ? colorMatch[3] : '205';
+            if (finalOpacity <= 0) return;
 
-           ctx.beginPath();
-           ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${finalOpacity.toFixed(3)})`;
-           ctx.arc(dot.x, dot.y, dot.currentRadius, 0, Math.PI * 2);
-           ctx.fill();
+            dot.currentRadius = dot.baseRadius + interactionFactor * RADIUS_BOOST;
+
+            const colorMatch = dot.baseColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+            const r = colorMatch ? colorMatch[1] : '87';
+            const g = colorMatch ? colorMatch[2] : '220';
+            const b = colorMatch ? colorMatch[3] : '205';
+
+            ctx.beginPath();
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${finalOpacity.toFixed(3)})`;
+            ctx.arc(dot.x, dot.y, dot.currentRadius, 0, Math.PI * 2);
+            ctx.fill();
        });
 
        animationFrameId.current = requestAnimationFrame(animateDots);

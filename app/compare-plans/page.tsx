@@ -96,7 +96,7 @@ function DotCanvas() {
     const active = new Set<number>();
     if (mx !== null && my !== null) {
       const cx = Math.floor(mx / CELL), cy = Math.floor(my / CELL), sr = Math.ceil(INT_R / CELL);
-      for (let i = -sr; i <= sr; i++) for (let j = -sr; j <= sr; j++) { const k = `${cx+i}_${cy+j}`; if (grid[k]) grid[k].forEach(d => active.add(d)); }
+      for (let i = -sr; i <= sr; i++) for (let j = -sr; j <= sr; j++) { const k = `${cx + i}_${cy + j}`; if (grid[k]) grid[k].forEach(d => active.add(d)); }
     }
     dots.forEach((dot, idx) => {
       dot.currentOpacity += dot.opacitySpeed;
@@ -107,8 +107,8 @@ function DotCanvas() {
       }
       let factor = 0; dot.currentRadius = dot.baseRadius;
       if (mx !== null && my !== null && active.has(idx)) {
-        const dx = dot.x - mx, dy = dot.y - my, dsq = dx*dx + dy*dy;
-        if (dsq < INT_R_SQ) { const f = 1 - Math.sqrt(dsq)/INT_R; factor = f*f; }
+        const dx = dot.x - mx, dy = dot.y - my, dsq = dx * dx + dy * dy;
+        if (dsq < INT_R_SQ) { const f = 1 - Math.sqrt(dsq) / INT_R; factor = f * f; }
       }
       ctx.beginPath();
       ctx.fillStyle = `rgba(0, 198, 133, ${Math.min(1, dot.currentOpacity + factor * O_BOOST).toFixed(3)})`;
@@ -262,8 +262,8 @@ function Nav() {
     { label: 'Home', href: '/' },
     { label: 'How it Works', href: '/how-it-works' },
     { label: 'Compare Plans', href: '/compare-plans' },
-    { label: 'About Us', href: '/#about' },
-    { label: 'Contact', href: '/#contact' },
+    { label: 'About Us', href: '/about' },
+    { label: 'Contact', href: '/contact' },
   ];
 
   return (
@@ -284,11 +284,10 @@ function Nav() {
             <Link
               key={item.label}
               href={item.href}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${
-                i === 2
-                  ? onDark ? 'bg-white/20 text-white font-semibold' : 'bg-white text-gray-900 shadow-sm font-semibold'
-                  : onDark ? 'text-white/80 hover:bg-white/30 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900'
-              }`}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${i === 2
+                ? onDark ? 'bg-white/20 text-white font-semibold' : 'bg-white text-gray-900 shadow-sm font-semibold'
+                : onDark ? 'text-white/80 hover:bg-white/30 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900'
+                }`}
             >
               {item.label}
             </Link>
@@ -746,8 +745,8 @@ export default function PlanComparisonPage() {
             className="text-white/70 text-lg md:text-xl leading-relaxed max-w-2xl hero-anim hero-fade mb-8"
             style={{ animationDelay: '0.65s' }}
           >
-            Plans powered by the cooperative Takaful model — your contributions form a mutual{' '}
-            <em>Tabarru&apos;</em> fund, and every unspent dirham is returned directly to you.
+            Find the right plan for your needs and choose the coverage that works best for you.{' '}
+
           </p>
 
           {/* Trust badges */}
@@ -780,8 +779,8 @@ export default function PlanComparisonPage() {
               <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]">
                 {([
                   { id: 'apartment' as const, label: 'Apartment', icon: Building },
-                  { id: 'villa'     as const, label: 'Villa',     icon: Home },
-                  { id: 'renter'    as const, label: 'Renter',    icon: Key },
+                  { id: 'villa' as const, label: 'Villa', icon: Home },
+                  { id: 'renter' as const, label: 'Renter', icon: Key },
                 ]).map(({ id, label, icon: Icon }) => {
                   const isSelected = homeType === id;
                   return (
@@ -1107,77 +1106,77 @@ export default function PlanComparisonPage() {
           />
           <div className="bg-[#09120e]/70 backdrop-blur-xl rounded-[1.3rem] overflow-hidden shadow-2xl">
 
-          <div className="lg:hidden p-4 border-b border-white/[0.02]">
-            <div className="grid grid-cols-3 gap-2 p-1 rounded-xl bg-white/[0.04] border border-white/[0.02]">
-              {PLAN_TIERS.map((tier) => (
-                <button
-                  key={tier.id}
-                  onClick={() => setActiveMobileTier(tier.id)}
-                  className={cn(
-                    'py-2.5 px-2 rounded-lg text-xs font-bold transition-all',
-                    activeMobileTier === tier.id ? 'bg-white text-[#0a1a14]' : 'text-white/40 hover:text-white'
-                  )}
-                >
-                  {tier.name.split(' ')[0]}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Table body */}
-          <PricingTable>
-            <PricingTableHeader className="hidden lg:table-header-group">
-              <PricingTableRow className="border-b border-white/[0.005]">
-                <PricingTableHead className="p-4 text-xs font-bold text-white/20 uppercase tracking-[0.12em] align-middle">
-                  Features &amp; Limits
-                </PricingTableHead>
+            <div className="lg:hidden p-4 border-b border-white/[0.02]">
+              <div className="grid grid-cols-3 gap-2 p-1 rounded-xl bg-white/[0.04] border border-white/[0.02]">
                 {PLAN_TIERS.map((tier) => (
-                  <PricingTableHead key={tier.id} className="p-4 text-center text-xs font-bold text-white/70 uppercase tracking-[0.12em] align-middle">
-                    {tier.name}
-                  </PricingTableHead>
+                  <button
+                    key={tier.id}
+                    onClick={() => setActiveMobileTier(tier.id)}
+                    className={cn(
+                      'py-2.5 px-2 rounded-lg text-xs font-bold transition-all',
+                      activeMobileTier === tier.id ? 'bg-white text-[#0a1a14]' : 'text-white/40 hover:text-white'
+                    )}
+                  >
+                    {tier.name.split(' ')[0]}
+                  </button>
                 ))}
-              </PricingTableRow>
-            </PricingTableHeader>
+              </div>
+            </div>
 
-            <PricingTableBody className="[&_tr]:border-b border-white/[0.005]">
-              {MATRIX_DATA.map((cat) => {
-                const CatIcon = cat.icon;
-                return (
-                  <React.Fragment key={cat.category}>
-                    <PricingTableRow className="bg-white/[0.005] border-b border-white/[0.005] hover:bg-white/[0.005]">
-                      <PricingTableCell colSpan={4} className="p-0">
-                        <div className="px-6 py-3.5 flex items-center gap-3 text-left w-full">
-                          <div className="w-6 h-6 rounded-lg bg-white/[0.06] flex items-center justify-center">
-                            <CatIcon className="w-3.5 h-3.5 text-white/40" />
+            {/* Table body */}
+            <PricingTable>
+              <PricingTableHeader className="hidden lg:table-header-group">
+                <PricingTableRow className="border-b border-white/[0.005]">
+                  <PricingTableHead className="p-4 text-xs font-bold text-white/20 uppercase tracking-[0.12em] align-middle">
+                    Features &amp; Limits
+                  </PricingTableHead>
+                  {PLAN_TIERS.map((tier) => (
+                    <PricingTableHead key={tier.id} className="p-4 text-center text-xs font-bold text-white/70 uppercase tracking-[0.12em] align-middle">
+                      {tier.name}
+                    </PricingTableHead>
+                  ))}
+                </PricingTableRow>
+              </PricingTableHeader>
+
+              <PricingTableBody className="[&_tr]:border-b border-white/[0.005]">
+                {MATRIX_DATA.map((cat) => {
+                  const CatIcon = cat.icon;
+                  return (
+                    <React.Fragment key={cat.category}>
+                      <PricingTableRow className="bg-white/[0.005] border-b border-white/[0.005] hover:bg-white/[0.005]">
+                        <PricingTableCell colSpan={4} className="p-0">
+                          <div className="px-6 py-3.5 flex items-center gap-3 text-left w-full">
+                            <div className="w-6 h-6 rounded-lg bg-white/[0.06] flex items-center justify-center">
+                              <CatIcon className="w-3.5 h-3.5 text-white/40" />
+                            </div>
+                            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/40">{cat.category}</span>
                           </div>
-                          <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/40">{cat.category}</span>
-                        </div>
-                      </PricingTableCell>
-                    </PricingTableRow>
+                        </PricingTableCell>
+                      </PricingTableRow>
 
-                    {cat.rows.map((row) => (
-                      <PricingTableRow key={row.feature} className="hover:bg-white/[0.01] transition-colors">
-                        <PricingTableHead className="p-4 align-middle font-normal">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[13px] text-white/75">{row.feature}</span>
-                            <div className="group relative cursor-help shrink-0">
-                              <Info className="w-3 h-3 text-white/20 hover:text-white/50 transition-colors" />
-                              <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block w-56 p-2.5 bg-black/95 text-[11px] text-white/70 rounded-xl shadow-xl border border-white/10 z-50 leading-relaxed pointer-events-none whitespace-normal">
-                                {row.tooltip}
+                      {cat.rows.map((row) => (
+                        <PricingTableRow key={row.feature} className="hover:bg-white/[0.01] transition-colors">
+                          <PricingTableHead className="p-4 align-middle font-normal">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[13px] text-white/75">{row.feature}</span>
+                              <div className="group relative cursor-help shrink-0">
+                                <Info className="w-3 h-3 text-white/20 hover:text-white/50 transition-colors" />
+                                <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block w-56 p-2.5 bg-black/95 text-[11px] text-white/70 rounded-xl shadow-xl border border-white/10 z-50 leading-relaxed pointer-events-none whitespace-normal">
+                                  {row.tooltip}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </PricingTableHead>
-                        <PricingTableCell>{row.basic}</PricingTableCell>
-                        <PricingTableCell className={cn(PLAN_TIERS[1].popular && "bg-white/[0.02]")}>{row.comfort}</PricingTableCell>
-                        <PricingTableCell>{row.executive}</PricingTableCell>
-                      </PricingTableRow>
-                    ))}
-                  </React.Fragment>
-                );
-              })}
-            </PricingTableBody>
-          </PricingTable>
+                          </PricingTableHead>
+                          <PricingTableCell>{row.basic}</PricingTableCell>
+                          <PricingTableCell className={cn(PLAN_TIERS[1].popular && "bg-white/[0.02]")}>{row.comfort}</PricingTableCell>
+                          <PricingTableCell>{row.executive}</PricingTableCell>
+                        </PricingTableRow>
+                      ))}
+                    </React.Fragment>
+                  );
+                })}
+              </PricingTableBody>
+            </PricingTable>
           </div>
         </div>
 

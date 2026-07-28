@@ -138,6 +138,12 @@
   animation: moveDot 6s linear infinite;
   z-index: 10;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.outer:hover .dot {
+  opacity: 1;
 }
 
 .card {

@@ -108,7 +108,7 @@ function Nav() {
   }, []);
 
   const onDark = !scrolled;
-  const links = [['Home', '/'], ['How it Works', '/how-it-works'], ['Compare Plans', '/compare-plans'], ['About Us', '/about'], ['Contact', '/#contact']];
+  const links = [['Home', '/'], ['How it Works', '/how-it-works'], ['Compare Plans', '/compare-plans'], ['About Us', '/about'], ['Contact', '/contact']];
 
   return (
     <>
@@ -301,7 +301,12 @@ function Hero() {
         }
       }
 
-      const finalOpacity = Math.min(1, dot.currentOpacity + interactionFactor * OPACITY_BOOST);
+      const finalOpacity = (mouseX !== null && mouseY !== null && interactionFactor > 0)
+        ? Math.min(1, dot.currentOpacity + interactionFactor * OPACITY_BOOST)
+        : 0;
+
+      if (finalOpacity <= 0) return;
+
       dot.currentRadius = dot.baseRadius + interactionFactor * RADIUS_BOOST;
 
       ctx.beginPath();
@@ -439,8 +444,8 @@ function IntroSection() {
             </motion.div>
           </div>
           <motion.div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/10" initial={{ opacity: 0, scale: 0.92 }} animate={inView ? { opacity: 1, scale: 1 } : {}} transition={{ duration: 0.8, delay: 0.15, ease }}>
-            <img src="/transparent-flower.jpg" alt="Community Protection" className="w-full h-[480px] object-cover" />
-            <div className="absolute bottom-6 left-6 right-6 p-5 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xl">
+            <img src="/OurApproach.png" alt="Community Protection" className="w-full h-[480px] object-cover" />
+            <div className="absolute top-6 left-6 right-6 p-5 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xl">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: `${GREEN}20` }}><Users size={16} style={{ color: GREEN }} /></div>
                 <div><p className="text-[13px] font-bold text-gray-900">50,000+ Protected Homes</p><p className="text-[11px] text-gray-500">Across the United Kingdom</p></div>
@@ -524,21 +529,30 @@ function Timeline() {
   );
 }
 
-const coverageItems = [
-  { icon: Flame,    label: 'Fire Damage',    color: '#EF4444', angle: -90  },
-  { icon: Droplets, label: 'Water Damage',   color: '#3B82F6', angle: -45  },
-  { icon: Wind,     label: 'Natural Events', color: '#8B5CF6', angle: 0    },
-  { icon: Hammer,   label: 'Structural',     color: '#F59E0B', angle: 45   },
-  { icon: Monitor,  label: 'Electronics',    color: '#06B6D4', angle: 90   },
-  { icon: Sofa,     label: 'Furniture',      color: '#10B981', angle: 135  },
-  { icon: Utensils, label: 'Kitchen',        color: '#F97316', angle: 180  },
-  { icon: Shield,   label: 'Liability',      color: GREEN,     angle: 225  },
+const orbit1Items = [
+  { label: 'Fire', color: 'rgb(239, 68, 68)', icon: Flame, left: '100%', top: '50%', ani: '18s' },
+  { label: 'Water', color: 'rgb(59, 130, 246)', icon: Droplets, left: '50%', top: '100%', ani: '18s' },
+  { label: 'Storm', color: 'rgb(139, 92, 246)', icon: Wind, left: '0%', top: '50%', ani: '18s' },
+  { label: 'Structural', color: 'rgb(245, 158, 11)', icon: Hammer, left: '50%', top: '0%', ani: '18s' },
+];
+
+const orbit2Items = [
+  { label: 'Electronics', color: 'rgb(6, 182, 212)', icon: Monitor, left: '100%', top: '50%', ani: '26s' },
+  { label: 'Furniture', color: 'rgb(16, 185, 129)', icon: Sofa, left: '50%', top: '100%', ani: '26s' },
+  { label: 'Kitchen', color: 'rgb(249, 115, 22)', icon: Utensils, left: '0%', top: '50%', ani: '26s' },
+  { label: 'Liability', color: 'rgb(0, 198, 133)', icon: ShieldCheck, left: '50%', top: '0%', ani: '26s' },
+];
+
+const orbit3Items = [
+  { label: 'Buildings', color: 'rgb(99, 102, 241)', icon: Home, left: '100%', top: '50%', ani: '34s' },
+  { label: 'Community', color: 'rgb(236, 72, 153)', icon: Heart, left: '50%', top: '100%', ani: '34s' },
+  { label: 'Security', color: 'rgb(100, 116, 139)', icon: Shield, left: '0%', top: '50%', ani: '34s' },
+  { label: 'Emergency', color: 'rgb(234, 179, 8)', icon: Zap, left: '50%', top: '0%', ani: '34s' },
 ];
 
 function CoverageViz() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-100px' });
-  const [hovered, setHovered] = useState<number | null>(null);
   return (
     <section className="py-24 md:py-32 bg-white overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
@@ -547,35 +561,124 @@ function CoverageViz() {
             <PillBadge text="What's Covered" className="mb-6" />
           </motion.div>
           <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">Complete home protection</motion.h2>
-          <motion.p variants={itemVariants} className="text-gray-500 text-lg leading-relaxed">Hover over any item to explore your coverage.</motion.p>
+          <motion.p variants={itemVariants} className="text-gray-500 text-lg leading-relaxed">Protected by a community of real people supporting each other.</motion.p>
         </motion.div>
-        <div ref={ref} className="relative flex items-center justify-center" style={{ height: '560px' }}>
-          <motion.div className="absolute z-10 w-36 h-36 rounded-3xl flex flex-col items-center justify-center bg-white border-2 shadow-2xl" style={{ borderColor: `${GREEN}40`, boxShadow: `0 20px 60px ${GREEN}20` }} initial={{ scale: 0, opacity: 0 }} animate={inView ? { scale: 1, opacity: 1 } : {}} transition={{ duration: 0.6, ease }}>
-            <img src="/logo-dark.png" alt="Protected Home" className="h-7 mb-1" />
-            <p className="text-[10px] text-gray-500 font-semibold tracking-wide uppercase">Your Home</p>
-            <div className="w-2 h-2 rounded-full mt-1" style={{ background: GREEN, boxShadow: `0 0 8px ${GREEN}` }} />
-          </motion.div>
-          {coverageItems.map((item, i) => {
-            const rad = (item.angle * Math.PI) / 180;
-            const radius = 220;
-            const x = Math.cos(rad) * radius;
-            const y = Math.sin(rad) * radius;
-            const Icon = item.icon;
-            const isHov = hovered === i;
-            return (
-              <React.Fragment key={i}>
-                <motion.div className="absolute" style={{ width: radius, height: 1, left: '50%', top: '50%', transformOrigin: '0 50%', transform: `rotate(${item.angle}deg)`, background: isHov ? item.color : `${item.color}40`, transition: 'background 0.3s' }} initial={{ scaleX: 0, opacity: 0 }} animate={inView ? { scaleX: 1, opacity: 1 } : {}} transition={{ duration: 0.6, delay: 0.1 + i * 0.08, ease }} />
-                <motion.div className="absolute flex flex-col items-center gap-1 cursor-pointer" style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)`, transform: 'translate(-50%,-50%)' }} initial={{ scale: 0, opacity: 0 }} animate={inView ? { scale: 1, opacity: 1 } : {}} transition={{ duration: 0.5, delay: 0.2 + i * 0.08, ease }} whileHover={{ scale: 1.15 }} onHoverStart={() => setHovered(i)} onHoverEnd={() => setHovered(null)}>
-                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300" style={{ background: isHov ? item.color : `${item.color}15`, boxShadow: isHov ? `0 8px 24px ${item.color}50` : undefined }}>
-                    <Icon size={20} style={{ color: isHov ? 'white' : item.color }} />
+        
+        <div ref={ref} className="relative flex items-center justify-center overflow-hidden" style={{ height: '620px' }}>
+          <div className="relative w-[42rem] h-[42rem] flex items-center justify-center translate-x-[20%]">
+            {/* Center Logo */}
+            <img alt="Takaful" className="absolute z-20 h-7 w-auto bg-white p-1 rounded-lg shadow-sm" src="/logo-dark.png" />
+
+            {/* Orbit 1 */}
+            <div className="absolute rounded-full border-2 border-dashed border-gray-300 pointer-events-none" style={{ width: '17rem', height: '17rem', animation: 'orbit-spin 18s linear infinite' }}>
+              {orbit1Items.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={idx}
+                    className="absolute transition-transform duration-300 pointer-events-auto flex flex-col items-center"
+                    style={{
+                      left: item.left,
+                      top: item.top,
+                      transform: 'translate(-50%, -50%)',
+                      animation: `orbit-counter 18s linear infinite`,
+                    }}
+                  >
+                    <div
+                      className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-sm cursor-pointer transition-all duration-300 border-2"
+                      style={{
+                        borderColor: item.color,
+                        background: `color-mix(in srgb, ${item.color} 10%, white)`,
+                      }}
+                    >
+                      <Icon size={18} style={{ color: item.color }} />
+                    </div>
+                    <p className="text-center mt-1 font-semibold leading-tight text-gray-500" style={{ fontSize: '11px', maxWidth: '60px' }}>
+                      {item.label}
+                    </p>
                   </div>
-                  <span className="text-[10px] font-semibold text-center text-gray-700 max-w-[80px] leading-tight">{item.label}</span>
-                </motion.div>
-              </React.Fragment>
-            );
-          })}
+                );
+              })}
+            </div>
+
+            {/* Orbit 2 */}
+            <div className="absolute rounded-full border-2 border-dashed border-gray-300 pointer-events-none" style={{ width: '24rem', height: '24rem', animation: 'orbit-spin 26s linear infinite' }}>
+              {orbit2Items.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={idx}
+                    className="absolute transition-transform duration-300 pointer-events-auto flex flex-col items-center"
+                    style={{
+                      left: item.left,
+                      top: item.top,
+                      transform: 'translate(-50%, -50%)',
+                      animation: `orbit-counter 26s linear infinite`,
+                    }}
+                  >
+                    <div
+                      className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-sm cursor-pointer transition-all duration-300 border-2"
+                      style={{
+                        borderColor: item.color,
+                        background: `color-mix(in srgb, ${item.color} 10%, white)`,
+                      }}
+                    >
+                      <Icon size={18} style={{ color: item.color }} />
+                    </div>
+                    <p className="text-center mt-1 font-semibold leading-tight text-gray-500" style={{ fontSize: '11px', maxWidth: '60px' }}>
+                      {item.label}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Orbit 3 */}
+            <div className="absolute rounded-full border-2 border-dashed border-gray-300 pointer-events-none" style={{ width: '31rem', height: '31rem', animation: 'orbit-spin 34s linear infinite' }}>
+              {orbit3Items.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={idx}
+                    className="absolute transition-transform duration-300 pointer-events-auto flex flex-col items-center"
+                    style={{
+                      left: item.left,
+                      top: item.top,
+                      transform: 'translate(-50%, -50%)',
+                      animation: `orbit-counter 34s linear infinite`,
+                    }}
+                  >
+                    <div
+                      className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-sm cursor-pointer transition-all duration-300 border-2"
+                      style={{
+                        borderColor: item.color,
+                        background: `color-mix(in srgb, ${item.color} 10%, white)`,
+                      }}
+                    >
+                      <Icon size={18} style={{ color: item.color }} />
+                    </div>
+                    <p className="text-center mt-1 font-semibold leading-tight text-gray-500" style={{ fontSize: '11px', maxWidth: '60px' }}>
+                      {item.label}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes orbit-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes orbit-counter {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(-360deg); }
+        }
+      `}</style>
     </section>
   );
 }
