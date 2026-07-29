@@ -8,10 +8,8 @@ import {
   Building2, Layers, RefreshCcw, Download,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useTheme } from '../layout';
 
-const GREEN = '#00c685';
-const SURFACE = '#0d2117';
-const BORDER = 'rgba(255,255,255,0.07)';
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const fadeUp = {
@@ -40,9 +38,9 @@ const TABS = [
 
 const STATUS_CONFIG: Record<string, { bg: string; text: string; dot: string }> = {
   Active:    { bg: 'bg-[#00c685]/10', text: 'text-[#00c685]', dot: 'bg-[#00c685]' },
-  Expiring:  { bg: 'bg-amber-500/10',  text: 'text-amber-400',  dot: 'bg-amber-400' },
-  Pending:   { bg: 'bg-blue-500/10',   text: 'text-blue-400',   dot: 'bg-blue-400' },
-  Cancelled: { bg: 'bg-white/5',       text: 'text-white/40',   dot: 'bg-white/20' },
+  Expiring:  { bg: 'bg-amber-500/10',  text: 'text-amber-500',  dot: 'bg-amber-500' },
+  Pending:   { bg: 'bg-blue-500/10',   text: 'text-blue-500',   dot: 'bg-blue-500' },
+  Cancelled: { bg: 'bg-black/5 dark:bg-white/5', text: 'text-black/40 dark:text-white/40', dot: 'bg-black/20 dark:bg-white/20' },
 };
 
 const TYPE_ICON: Record<string, React.ElementType> = {
@@ -62,13 +60,16 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 const SUMMARY = [
-  { label: 'Active Certificates', value: '1,284', color: GREEN },
+  { label: 'Active Certificates', value: '1,284', color: '#00c685' },
   { label: 'Expiring (30 days)', value: '38', color: '#f59e0b' },
   { label: 'Pending Activation', value: '12', color: '#3b82f6' },
   { label: 'Avg. Monthly Contribution', value: '£41.30', color: '#8b5cf6' },
 ];
 
 export default function CertificatesPage() {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
+
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch] = useState('');
 
@@ -81,15 +82,26 @@ export default function CertificatesPage() {
     return matchesTab && matchesSearch;
   });
 
+  // Dynamic styles
+  const GREEN = '#00c685';
+  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
+  const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
+  const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
+  const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
+  const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)';
+  const BG_INPUT = isLight ? 'bg-black/[0.03]' : 'bg-white/[0.04]';
+  const BORDER_INPUT = isLight ? 'border-black/8' : 'border-white/8';
+  const ROW_HOVER = isLight ? 'hover:bg-black/[0.015]' : 'hover:bg-white/[0.02]';
+
   return (
-    <div className="p-4 sm:p-6 space-y-5">
+    <div className="p-4 sm:p-6 space-y-5 transition-colors duration-200">
       {/* Header */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-white text-lg font-bold">Certificates</h1>
-          <p className="text-white/40 text-xs mt-0.5">Manage Takaful protection certificates — Demo data</p>
+          <h1 className={`text-lg font-bold ${TEXT_MAIN}`}>Certificates</h1>
+          <p className={`text-xs mt-0.5 ${TEXT_SUB}`}>Manage Takaful protection certificates — Demo data</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-[#0a1a14] transition-all hover:opacity-90 shrink-0" style={{ background: GREEN }}>
+        <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:opacity-90 shrink-0" style={{ background: GREEN }}>
           <Plus size={14} /> New Certificate
         </button>
       </motion.div>
@@ -98,28 +110,28 @@ export default function CertificatesPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {SUMMARY.map((s, i) => (
           <motion.div key={s.label} variants={fadeUp} initial="hidden" animate="visible" custom={i + 1}
-            className="rounded-xl p-4" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+            className="rounded-xl p-4 transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
             <div className="w-2 h-2 rounded-full mb-3" style={{ background: s.color }} />
-            <p className="text-white font-bold text-xl">{s.value}</p>
-            <p className="text-white/40 text-[10px] mt-1">{s.label}</p>
+            <p className={`font-bold text-xl ${TEXT_MAIN}`}>{s.value}</p>
+            <p className={`text-[10px] mt-1 ${TEXT_SUB}`}>{s.label}</p>
           </motion.div>
         ))}
       </div>
 
       {/* Table */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={5}
-        className="rounded-2xl overflow-hidden" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+        className="rounded-2xl overflow-hidden transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
         
         {/* Search + actions */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4" style={{ borderBottom: `1px solid ${BORDER}` }}>
           <div className="relative flex-1 max-w-xs">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+            <Search size={13} className={`absolute left-3 top-1/2 -translate-y-1/2 ${TEXT_MUTED}`} />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search certificates or participants…"
-              className="w-full pl-9 pr-3 py-2 rounded-lg bg-white/[0.04] border border-white/8 text-white text-xs placeholder:text-white/25 focus:outline-none focus:border-[#00c685]/40 transition-colors" />
+              className={`w-full pl-9 pr-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-[#00c685]/40 transition-colors ${BG_INPUT} ${BORDER_INPUT} ${TEXT_MAIN}`} />
           </div>
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-white/8 text-white/50 text-xs hover:bg-white/5 transition-colors"><Filter size={12} /> Filter</button>
-            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-white/8 text-white/50 text-xs hover:bg-white/5 transition-colors"><Download size={12} /> Export</button>
+            <button className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${BORDER_INPUT} ${TEXT_SUB}`}><Filter size={12} /> Filter</button>
+            <button className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${BORDER_INPUT} ${TEXT_SUB}`}><Download size={12} /> Export</button>
           </div>
         </div>
 
@@ -128,10 +140,10 @@ export default function CertificatesPage() {
           {TABS.map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
-                activeTab === tab.key ? 'bg-[#00c685]/15 text-[#00c685]' : 'text-white/40 hover:text-white/70 hover:bg-white/5'
+                activeTab === tab.key ? 'bg-[#00c685]/15 text-[#00c685]' : `${TEXT_SUB} hover:text-[#00c685] hover:bg-black/5 dark:hover:bg-white/5`
               }`}>
               {tab.label}
-              <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${activeTab === tab.key ? 'bg-[#00c685]/20 text-[#00c685]' : 'bg-white/5 text-white/30'}`}>{tab.count}</span>
+              <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${activeTab === tab.key ? 'bg-[#00c685]/20 text-[#00c685]' : `${BG_INPUT} ${TEXT_MUTED}`}`}>{tab.count}</span>
             </button>
           ))}
         </div>
@@ -142,7 +154,7 @@ export default function CertificatesPage() {
             <thead>
               <tr style={{ borderBottom: `1px solid ${BORDER}` }}>
                 {['Certificate', 'Participant', 'Property', 'Type', 'Monthly', 'Limit', 'Renewal', 'Status', ''].map(h => (
-                  <th key={h} className="text-left px-5 py-3 text-white/30 font-semibold tracking-wide">{h}</th>
+                  <th key={h} className={`text-left px-5 py-3 font-semibold tracking-wide ${TEXT_MUTED}`}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -150,8 +162,8 @@ export default function CertificatesPage() {
               {filtered.length === 0 ? (
                 <tr><td colSpan={9}>
                   <div className="flex flex-col items-center gap-3 py-16 text-center">
-                    <Shield size={32} className="text-white/15" />
-                    <p className="text-white/40 text-sm">No certificates found</p>
+                    <Shield size={32} className={TEXT_MUTED} />
+                    <p className={`text-sm ${TEXT_SUB}`}>No certificates found</p>
                   </div>
                 </td></tr>
               ) : filtered.map((c, i) => {
@@ -159,26 +171,26 @@ export default function CertificatesPage() {
                 return (
                   <motion.tr key={c.id}
                     initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                    className="group hover:bg-white/[0.02] transition-colors cursor-pointer"
+                    className={`group transition-colors cursor-pointer ${ROW_HOVER}`}
                     style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${BORDER}` : 'none' }}>
                     <td className="px-5 py-3.5">
-                      <Link href={`/dashboard/certificates/${c.id}`} className="font-mono text-[#00c685] hover:underline text-[11px]">{c.id}</Link>
+                      <Link href={`/dashboard/certificates/${c.id}`} className="font-mono text-[#00c685] hover:underline text-[11px] font-semibold">{c.id}</Link>
                     </td>
-                    <td className="px-5 py-3.5 text-white/80 font-medium whitespace-nowrap">{c.participant}</td>
-                    <td className="px-5 py-3.5 text-white/45 max-w-[200px] truncate">{c.property}</td>
+                    <td className={`px-5 py-3.5 font-medium whitespace-nowrap ${TEXT_MAIN}`}>{c.participant}</td>
+                    <td className={`px-5 py-3.5 max-w-[200px] truncate ${TEXT_SUB}`}>{c.property}</td>
                     <td className="px-5 py-3.5">
-                      <span className="flex items-center gap-1.5 text-white/50">
+                      <span className={`flex items-center gap-1.5 ${TEXT_SUB}`}>
                         <TypeIcon size={11} />{c.type}
                       </span>
                     </td>
-                    <td className="px-5 py-3.5 text-white font-semibold whitespace-nowrap">{c.contribution}</td>
-                    <td className="px-5 py-3.5 text-white/55 whitespace-nowrap">{c.limit}</td>
-                    <td className="px-5 py-3.5 text-white/40 whitespace-nowrap">
-                      {c.status === 'Expiring' ? <span className="text-amber-400 font-semibold">{c.renewal}</span> : c.renewal}
+                    <td className={`px-5 py-3.5 font-semibold whitespace-nowrap ${TEXT_MAIN}`}>{c.contribution}</td>
+                    <td className={`px-5 py-3.5 whitespace-nowrap ${TEXT_SUB}`}>{c.limit}</td>
+                    <td className={`px-5 py-3.5 whitespace-nowrap ${TEXT_SUB}`}>
+                      {c.status === 'Expiring' ? <span className="text-amber-500 font-semibold">{c.renewal}</span> : c.renewal}
                     </td>
                     <td className="px-5 py-3.5"><StatusBadge status={c.status} /></td>
                     <td className="px-5 py-3.5">
-                      <ChevronRight size={14} className="text-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ChevronRight size={14} className={`${TEXT_MUTED} opacity-0 group-hover:opacity-100 transition-opacity`} />
                     </td>
                   </motion.tr>
                 );
@@ -187,10 +199,10 @@ export default function CertificatesPage() {
           </table>
         </div>
         <div className="flex items-center justify-between px-5 py-4" style={{ borderTop: `1px solid ${BORDER}` }}>
-          <p className="text-white/30 text-xs">Showing {filtered.length} of {CERTIFICATES.length} certificates</p>
+          <p className={`text-xs ${TEXT_MUTED}`}>Showing {filtered.length} of {CERTIFICATES.length} certificates</p>
           <div className="flex items-center gap-1">
-            {[1, 2, 3].map(n => (
-              <button key={n} className={`w-7 h-7 rounded-lg text-xs font-semibold transition-colors ${n === 1 ? 'bg-[#00c685]/15 text-[#00c685]' : 'text-white/30 hover:bg-white/5 hover:text-white/70'}`}>{n}</button>
+            {[1, 2].map(n => (
+              <button key={n} className={`w-7 h-7 rounded-lg text-xs font-semibold transition-colors ${n === 1 ? 'bg-[#00c685]/15 text-[#00c685]' : `${TEXT_MUTED} hover:bg-black/5 dark:hover:bg-white/5`}`}>{n}</button>
             ))}
           </div>
         </div>

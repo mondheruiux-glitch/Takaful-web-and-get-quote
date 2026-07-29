@@ -13,11 +13,8 @@ import {
   ResponsiveContainer, ReferenceLine, Legend,
 } from 'recharts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useTheme } from '../layout';
 
-const GREEN = '#00c685';
-const SURFACE = '#0d2117';
-const SURFACE2 = '#112218';
-const BORDER = 'rgba(255,255,255,0.07)';
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const fadeUp = {
@@ -32,7 +29,7 @@ const CLAIMS_PAID = 92800;
 const CLAIMS_RESERVED = 43450;
 
 const poolDonut = [
-  { name: 'Participant Fund', value: 78, color: GREEN, amount: '£482,150' },
+  { name: 'Participant Fund', value: 78, color: '#00c685', amount: '£482,150' },
   { name: 'Claims Reserves', value: 14, color: '#3b82f6', amount: '£43,450' },
   { name: 'Wakala Fee', value: 8, color: '#f59e0b', amount: '£49,472' },
 ];
@@ -57,92 +54,106 @@ const movementData = [
   { month: 'Jul', inflow: 61400, claims: -18900, fees: -4912 },
 ];
 
-function ChartTooltip({ active, payload, label }: any) {
+function ChartTooltip({ active, payload, label, theme }: any) {
   if (!active || !payload?.length) return null;
+  const isLight = theme === 'light';
   return (
-    <div className="rounded-xl p-3 text-xs shadow-2xl" style={{ background: '#0d2117', border: '1px solid rgba(255,255,255,0.1)' }}>
-      <p className="text-white/50 mb-2">{label}</p>
+    <div className="rounded-xl p-3 text-xs shadow-2xl transition-colors duration-200"
+      style={{
+        background: isLight ? '#ffffff' : '#0d2117',
+        border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)',
+        color: isLight ? '#000000' : '#ffffff'
+      }}>
+      <p className={`${isLight ? 'text-black/50' : 'text-white/50'} mb-2`}>{label}</p>
       {payload.map((p: any) => (
         <div key={p.name} className="flex items-center gap-2 mb-1">
           <span className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-          <span className="text-white/70">{p.name}:</span>
-          <span className="text-white font-semibold">£{Math.abs(p.value).toLocaleString()}</span>
+          <span className={isLight ? 'text-black/70' : 'text-white/70'}>{p.name}:</span>
+          <span className="font-semibold">£{Math.abs(p.value).toLocaleString()}</span>
         </div>
       ))}
     </div>
   );
 }
 
-/* ─── Metric tile ─────────────────────────────────────────────── */
-function Metric({ label, value, sub, color, tooltip, index }: {
-  label: string; value: string; sub: string; color: string; tooltip: string; index: number;
-}) {
-  return (
-    <motion.div
-      variants={fadeUp} initial="hidden" animate="visible" custom={index}
-      className="rounded-2xl p-5 flex flex-col gap-3" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
-    >
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-1.5">
-          <p className="text-white/50 text-xs font-medium">{label}</p>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info size={11} className="text-white/25 cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-[200px] text-xs bg-black/90 border-white/10">{tooltip}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <div className="w-2 h-2 rounded-full" style={{ background: color }} />
-      </div>
-      <p className="text-white text-2xl font-bold tracking-tight">{value}</p>
-      <p className="text-white/30 text-[10px]">{sub}</p>
-    </motion.div>
-  );
-}
-
 export default function PoolPage() {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [flowOpen, setFlowOpen] = useState(false);
   const surplusRate = ((POOL_BALANCE - CLAIMS_PAID - CLAIMS_RESERVED) / TOTAL_CONTRIBUTIONS * 100).toFixed(1);
 
+  // Dynamic Theme Colors
+  const GREEN = '#00c685';
+  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
+  const BG_PANEL2 = isLight ? '#f4f6f5' : '#112218';
+  const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
+  const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
+  const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
+  const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)';
+  const CHART_GRID = isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.04)';
+
   return (
-    <div className="p-4 sm:p-6 space-y-5 max-w-5xl">
+    <div className="p-4 sm:p-6 space-y-5 max-w-5xl transition-colors duration-200">
       {/* Header */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0}>
-        <h1 className="text-white text-lg font-bold">Takaful Pool Transparency</h1>
-        <p className="text-white/40 text-xs mt-0.5">How participant contributions are collected, allocated, and managed — Demo data</p>
+        <h1 className={`text-lg font-bold ${TEXT_MAIN}`}>Takaful Pool Transparency</h1>
+        <p className={`text-xs mt-0.5 ${TEXT_SUB}`}>How participant contributions are collected, allocated, and managed — Demo data</p>
       </motion.div>
 
       {/* Transparency banner */}
       <motion.div
         variants={fadeUp} initial="hidden" animate="visible" custom={1}
-        className="rounded-2xl p-4 flex items-start gap-3"
+        className="rounded-2xl p-4 flex items-start gap-3 transition-colors duration-200"
         style={{ background: `${GREEN}08`, border: `1px solid ${GREEN}20` }}
       >
         <ShieldCheck size={16} className="text-[#00c685] mt-0.5 shrink-0" />
         <div>
           <p className="text-[#00c685] text-xs font-semibold">Takaful Mutual Principle</p>
-          <p className="text-white/50 text-xs mt-0.5 leading-relaxed">
+          <p className={`text-xs mt-0.5 leading-relaxed ${TEXT_SUB}`}>
             All participant contributions enter the shared Takaful fund. The operator charges a Wakala (management) fee for administration and claims services. 
             Any surplus remaining after claims and reserves may be returned to participants. No interest (Riba) is charged or paid. 
-            <span className="text-white/30"> This pool data is for transparency purposes only and does not constitute a financial guarantee.</span>
+            <span className={TEXT_MUTED}> This pool data is for transparency purposes only and does not constitute a financial guarantee.</span>
           </p>
         </div>
       </motion.div>
 
       {/* Key metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Metric index={2} label="Pool Balance" value="£482,150" sub="Current participant fund" color={GREEN} tooltip="Net balance of the participant Takaful fund after claims paid and reserves held" />
-        <Metric index={3} label="Total Contributions" value="£618,400" sub="Cumulative to date" color="#3b82f6" tooltip="Total contributions received from all participants to date" />
-        <Metric index={4} label="Claims Paid" value="£92,800" sub="Settled from pool" color="#f59e0b" tooltip="Total claim payments made from the participant fund" />
-        <Metric index={5} label="Pool Health" value={`${surplusRate}%`} sub="Net surplus rate" color="#10b981" tooltip="Net surplus as a percentage of total contributions. Positive indicates pool stability." />
+        {[
+          { label: 'Pool Balance', value: '£482,150', sub: 'Current participant fund', color: GREEN, tooltip: 'Net balance of the participant Takaful fund after claims paid and reserves held' },
+          { label: 'Total Contributions', value: '£618,400', sub: 'Cumulative to date', color: '#3b82f6', tooltip: 'Total contributions received from all participants to date' },
+          { label: 'Claims Paid', value: '£92,800', sub: 'Settled from pool', color: '#f59e0b', tooltip: 'Total claim payments made from the participant fund' },
+          { label: 'Pool Health', value: `${surplusRate}%`, sub: 'Net surplus rate', color: '#10b981', tooltip: 'Net surplus as a percentage of total contributions. Positive indicates pool stability.' }
+        ].map((item, i) => (
+          <motion.div
+            key={item.label}
+            variants={fadeUp} initial="hidden" animate="visible" custom={i + 2}
+            className="rounded-2xl p-5 flex flex-col gap-3 transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-1.5">
+                <p className={`text-xs font-medium ${TEXT_SUB}`}>{item.label}</p>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info size={11} className={`${TEXT_MUTED} cursor-help`} />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[200px] text-xs bg-black/90 border-white/10 text-white">{item.tooltip}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="w-2 h-2 rounded-full" style={{ background: item.color }} />
+            </div>
+            <p className={`text-2xl font-bold tracking-tight ${TEXT_MAIN}`}>{item.value}</p>
+            <p className={`text-[10px] ${TEXT_MUTED}`}>{item.sub}</p>
+          </motion.div>
+        ))}
       </div>
 
       {/* How it works — flow diagram */}
       <motion.div
         variants={fadeUp} initial="hidden" animate="visible" custom={6}
-        className="rounded-2xl overflow-hidden" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+        className="rounded-2xl overflow-hidden transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
       >
         <button
           className="w-full flex items-center justify-between px-5 py-4 text-left"
@@ -150,43 +161,43 @@ export default function PoolPage() {
           onClick={() => setFlowOpen(v => !v)}
         >
           <div>
-            <h3 className="text-white font-semibold text-sm">Where Your Contribution Goes</h3>
-            <p className="text-white/40 text-xs mt-0.5">Full allocation breakdown for each £100 contributed</p>
+            <h3 className={`font-semibold text-sm ${TEXT_MAIN}`}>Where Your Contribution Goes</h3>
+            <p className={`text-xs mt-0.5 ${TEXT_SUB}`}>Full allocation breakdown for each £100 contributed</p>
           </div>
-          {flowOpen ? <ChevronUp size={15} className="text-white/30" /> : <ChevronDown size={15} className="text-white/30" />}
+          {flowOpen ? <ChevronUp size={15} className={TEXT_MUTED} /> : <ChevronDown size={15} className={TEXT_MUTED} />}
         </button>
         {flowOpen && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="px-5 py-5">
             <div className="flex flex-col sm:flex-row gap-0 sm:gap-0 items-stretch">
               {/* Step 1 */}
-              <div className="flex-1 p-4 rounded-xl sm:rounded-l-xl sm:rounded-r-none" style={{ background: SURFACE2, border: `1px solid ${BORDER}` }}>
-                <p className="text-white/30 text-[10px] font-semibold mb-1">CONTRIBUTION</p>
-                <p className="text-white text-xl font-bold">£100.00</p>
-                <p className="text-white/40 text-[10px] mt-1">Monthly participant contribution</p>
+              <div className="flex-1 p-4 rounded-xl sm:rounded-l-xl sm:rounded-r-none transition-colors duration-200" style={{ background: BG_PANEL2, border: `1px solid ${BORDER}` }}>
+                <p className={`text-[10px] font-semibold mb-1 ${TEXT_MUTED}`}>CONTRIBUTION</p>
+                <p className={`text-xl font-bold ${TEXT_MAIN}`}>£100.00</p>
+                <p className={`text-[10px] mt-1 ${TEXT_SUB}`}>Monthly participant contribution</p>
               </div>
-              <div className="self-center text-white/20 text-lg font-light px-2 hidden sm:block">→</div>
+              <div className="self-center text-black/20 dark:text-white/20 text-lg font-light px-2 hidden sm:block">→</div>
               {/* Step 2 */}
-              <div className="flex-1 p-4" style={{ background: '#0f1d17', border: `1px solid ${BORDER}` }}>
-                <p className="text-amber-400 text-[10px] font-semibold mb-1">WAKALA FEE (8%)</p>
-                <p className="text-white text-xl font-bold">£8.00</p>
-                <p className="text-white/40 text-[10px] mt-1">Operator administration fee</p>
+              <div className="flex-1 p-4 transition-colors duration-200" style={{ background: isLight ? '#fafafa' : '#0f1d17', border: `1px solid ${BORDER}` }}>
+                <p className="text-amber-500 text-[10px] font-semibold mb-1">WAKALA FEE (8%)</p>
+                <p className={`text-xl font-bold ${TEXT_MAIN}`}>£8.00</p>
+                <p className={`text-[10px] mt-1 ${TEXT_SUB}`}>Operator administration fee</p>
               </div>
-              <div className="self-center text-white/20 text-lg font-light px-2 hidden sm:block">→</div>
+              <div className="self-center text-black/20 dark:text-white/20 text-lg font-light px-2 hidden sm:block">→</div>
               {/* Step 3 */}
-              <div className="flex-1 p-4" style={{ background: '#0f1d17', border: `1px solid ${BORDER}` }}>
-                <p className="text-blue-400 text-[10px] font-semibold mb-1">CLAIMS RESERVE (14%)</p>
-                <p className="text-white text-xl font-bold">£14.00</p>
-                <p className="text-white/40 text-[10px] mt-1">Reserved for future claims</p>
+              <div className="flex-1 p-4 transition-colors duration-200" style={{ background: isLight ? '#fafafa' : '#0f1d17', border: `1px solid ${BORDER}` }}>
+                <p className="text-blue-500 text-[10px] font-semibold mb-1">CLAIMS RESERVE (14%)</p>
+                <p className={`text-xl font-bold ${TEXT_MAIN}`}>£14.00</p>
+                <p className={`text-[10px] mt-1 ${TEXT_SUB}`}>Reserved for future claims</p>
               </div>
-              <div className="self-center text-white/20 text-lg font-light px-2 hidden sm:block">→</div>
+              <div className="self-center text-black/20 dark:text-white/20 text-lg font-light px-2 hidden sm:block">→</div>
               {/* Step 4 */}
-              <div className="flex-1 p-4 rounded-xl sm:rounded-r-xl sm:rounded-l-none" style={{ background: `${GREEN}10`, border: `1px solid ${GREEN}25` }}>
+              <div className="flex-1 p-4 rounded-xl sm:rounded-r-xl sm:rounded-l-none transition-colors duration-200" style={{ background: `${GREEN}10`, border: `1px solid ${GREEN}25` }}>
                 <p className="text-[#00c685] text-[10px] font-semibold mb-1">PARTICIPANT FUND (78%)</p>
-                <p className="text-white text-xl font-bold">£78.00</p>
-                <p className="text-white/40 text-[10px] mt-1">Active pool for claim payments</p>
+                <p className={`text-xl font-bold ${TEXT_MAIN}`}>£78.00</p>
+                <p className={`text-[10px] mt-1 ${TEXT_SUB}`}>Active pool for claim payments</p>
               </div>
             </div>
-            <p className="text-white/25 text-[10px] mt-3 leading-relaxed">
+            <p className={`text-[10px] mt-3 leading-relaxed ${TEXT_MUTED}`}>
               * Fee percentages are illustrative demo data. In a real Wakala-based Takaful, the operator's Wakala fee is agreed upfront. 
               Any pool surplus at year-end, subject to business review, may be distributed proportionally to participants or retained in the pool.
             </p>
@@ -198,21 +209,21 @@ export default function PoolPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Pool balance over time */}
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={7}
-          className="lg:col-span-2 rounded-2xl p-5" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
-          <h3 className="text-white font-semibold text-sm mb-1">Pool Balance Over Time</h3>
-          <p className="text-white/40 text-xs mb-5">Monthly closing balance of participant fund</p>
+          className="lg:col-span-2 rounded-2xl p-5 transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <h3 className={`font-semibold text-sm mb-1 ${TEXT_MAIN}`}>Pool Balance Over Time</h3>
+          <p className={`text-xs mb-5 ${TEXT_SUB}`}>Monthly closing balance of participant fund</p>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={poolHistory}>
               <defs>
                 <linearGradient id="gPool" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={GREEN} stopOpacity={0.3} />
+                  <stop offset="0%" stopColor={GREEN} stopOpacity={0.25} />
                   <stop offset="100%" stopColor={GREEN} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey="month" tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(0)}k`} />
-              <RechartsTooltip content={<ChartTooltip />} />
+              <CartesianGrid vertical={false} stroke={CHART_GRID} />
+              <XAxis dataKey="month" tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(0)}k`} />
+              <RechartsTooltip content={<ChartTooltip theme={theme} />} />
               <Area type="monotone" dataKey="balance" name="Pool Balance" stroke={GREEN} strokeWidth={2} fill="url(#gPool)" dot={false} />
             </AreaChart>
           </ResponsiveContainer>
@@ -220,9 +231,9 @@ export default function PoolPage() {
 
         {/* Donut */}
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={8}
-          className="rounded-2xl p-5" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
-          <h3 className="text-white font-semibold text-sm mb-1">Allocation Breakdown</h3>
-          <p className="text-white/40 text-xs mb-4">Current pool composition</p>
+          className="rounded-2xl p-5 transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <h3 className={`font-semibold text-sm mb-1 ${TEXT_MAIN}`}>Allocation Breakdown</h3>
+          <p className={`text-xs mb-4 ${TEXT_SUB}`}>Current pool composition</p>
           <div className="flex justify-center">
             <ResponsiveContainer width="100%" height={120}>
               <RechartsPie>
@@ -237,11 +248,11 @@ export default function PoolPage() {
               <div key={p.name} className="flex items-center justify-between text-xs">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
-                  <span className="text-white/55">{p.name}</span>
+                  <span className={TEXT_SUB}>{p.name}</span>
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-white font-semibold">{p.value}%</span>
-                  <span className="text-white/30 text-[10px]">{p.amount}</span>
+                  <span className={`font-semibold ${TEXT_MAIN}`}>{p.value}%</span>
+                  <span className={`text-[10px] ${TEXT_MUTED}`}>{p.amount}</span>
                 </div>
               </div>
             ))}
@@ -251,22 +262,22 @@ export default function PoolPage() {
 
       {/* Pool movements */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={9}
-        className="rounded-2xl p-5" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
-        <h3 className="text-white font-semibold text-sm mb-1">Pool Movements</h3>
-        <p className="text-white/40 text-xs mb-5">Monthly inflows (contributions) and outflows (claims, fees)</p>
+        className="rounded-2xl p-5 transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+        <h3 className={`font-semibold text-sm mb-1 ${TEXT_MAIN}`}>Pool Movements</h3>
+        <p className={`text-xs mb-5 ${TEXT_SUB}`}>Monthly inflows (contributions) and outflows (claims, fees)</p>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={movementData} barSize={10} barGap={2}>
-            <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.04)" />
-            <XAxis dataKey="month" tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(Math.abs(v) / 1000).toFixed(0)}k`} />
-            <RechartsTooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-            <ReferenceLine y={0} stroke="rgba(255,255,255,0.1)" />
+            <CartesianGrid vertical={false} stroke={CHART_GRID} />
+            <XAxis dataKey="month" tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(Math.abs(v) / 1000).toFixed(0)}k`} />
+            <RechartsTooltip content={<ChartTooltip theme={theme} />} cursor={{ fill: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.03)' }} />
+            <ReferenceLine y={0} stroke={isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)'} />
             <Bar dataKey="inflow" name="Contributions" fill={GREEN} radius={[3, 3, 0, 0]} opacity={0.9} />
             <Bar dataKey="claims" name="Claims Paid" fill="#ef4444" radius={[0, 0, 3, 3]} opacity={0.7} />
             <Bar dataKey="fees" name="Wakala Fee" fill="#f59e0b" radius={[0, 0, 3, 3]} opacity={0.7} />
           </BarChart>
         </ResponsiveContainer>
-        <p className="text-white/25 text-[10px] mt-3">Outflow bars are shown below the baseline for visual clarity. All figures are GBP. Demo data only.</p>
+        <p className={`text-[10px] mt-3 ${TEXT_MUTED}`}>Outflow bars are shown below the baseline for visual clarity. All figures are GBP. Demo data only.</p>
       </motion.div>
     </div>
   );

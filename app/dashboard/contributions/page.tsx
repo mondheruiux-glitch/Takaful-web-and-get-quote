@@ -12,10 +12,8 @@ import {
   Tooltip as RechartsTooltip, ResponsiveContainer,
 } from 'recharts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useTheme } from '../layout';
 
-const GREEN = '#00c685';
-const SURFACE = '#0d2117';
-const BORDER = 'rgba(255,255,255,0.07)';
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const fadeUp = {
@@ -49,9 +47,9 @@ const TRANSACTIONS = [
 
 const STATUS_CFG: Record<string, { bg: string; text: string; dot: string }> = {
   Collected: { bg: 'bg-[#00c685]/10', text: 'text-[#00c685]', dot: 'bg-[#00c685]' },
-  Pending:   { bg: 'bg-blue-500/10',  text: 'text-blue-400',  dot: 'bg-blue-400' },
-  Failed:    { bg: 'bg-red-500/10',   text: 'text-red-400',   dot: 'bg-red-400' },
-  Retried:   { bg: 'bg-amber-500/10', text: 'text-amber-400', dot: 'bg-amber-400' },
+  Pending:   { bg: 'bg-blue-500/10',  text: 'text-blue-500',  dot: 'bg-blue-500' },
+  Failed:    { bg: 'bg-red-500/10',   text: 'text-red-500',   dot: 'bg-red-500' },
+  Retried:   { bg: 'bg-amber-500/10', text: 'text-amber-500', dot: 'bg-amber-500' },
 };
 
 const TABS = [
@@ -63,7 +61,7 @@ const TABS = [
 ];
 
 function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_CFG[status] ?? { bg: 'bg-white/5', text: 'text-white/40', dot: 'bg-white/20' };
+  const s = STATUS_CFG[status] ?? { bg: 'bg-black/5 dark:bg-white/5', text: 'text-black/40 dark:text-white/40', dot: 'bg-black/20 dark:bg-white/20' };
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold ${s.bg} ${s.text}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
@@ -72,16 +70,22 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function ChartTooltip({ active, payload, label }: any) {
+function ChartTooltip({ active, payload, label, theme }: any) {
   if (!active || !payload?.length) return null;
+  const isLight = theme === 'light';
   return (
-    <div className="rounded-xl p-3 text-xs shadow-2xl" style={{ background: '#0d2117', border: '1px solid rgba(255,255,255,0.1)' }}>
-      <p className="text-white/50 mb-2">{label}</p>
+    <div className="rounded-xl p-3 text-xs shadow-2xl transition-colors duration-200"
+      style={{
+        background: isLight ? '#ffffff' : '#0d2117',
+        border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)',
+        color: isLight ? '#000000' : '#ffffff'
+      }}>
+      <p className={`${isLight ? 'text-black/50' : 'text-white/50'} mb-2`}>{label}</p>
       {payload.map((p: any) => (
         <div key={p.name} className="flex items-center gap-2 mb-1">
           <span className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-          <span className="text-white/70">{p.name}:</span>
-          <span className="text-white font-semibold">
+          <span className={isLight ? 'text-black/70' : 'text-white/70'}>{p.name}:</span>
+          <span className="font-semibold">
             {p.name === 'Total' ? `£${p.value.toLocaleString()}` : p.value}
           </span>
         </div>
@@ -91,6 +95,8 @@ function ChartTooltip({ active, payload, label }: any) {
 }
 
 export default function ContributionsPage() {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch] = useState('');
   const [month, setMonth] = useState('Jul 2026');
@@ -103,19 +109,31 @@ export default function ContributionsPage() {
     return matchTab && matchSearch;
   });
 
+  // Dynamic Theme Colors
+  const GREEN = '#00c685';
+  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
+  const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
+  const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
+  const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
+  const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)';
+  const BG_INPUT = isLight ? 'bg-black/[0.03]' : 'bg-white/[0.04]';
+  const BORDER_INPUT = isLight ? 'border-black/8' : 'border-white/8';
+  const ROW_HOVER = isLight ? 'hover:bg-black/[0.015]' : 'hover:bg-white/[0.02]';
+  const CHART_GRID = isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.04)';
+
   return (
-    <div className="p-4 sm:p-6 space-y-5">
+    <div className="p-4 sm:p-6 space-y-5 transition-colors duration-200">
       {/* Header */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-white text-lg font-bold">Contributions</h1>
-          <p className="text-white/40 text-xs mt-0.5">Track participant contribution collections — Demo data</p>
+          <h1 className={`text-lg font-bold ${TEXT_MAIN}`}>Contributions</h1>
+          <p className={`text-xs mt-0.5 ${TEXT_SUB}`}>Track participant contribution collections — Demo data</p>
         </div>
         <div className="flex gap-2 shrink-0">
-          <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/8 text-white/50 text-xs hover:bg-white/5 transition-colors">
+          <button className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${BORDER_INPUT} ${TEXT_SUB}`}>
             <Download size={12} /> Export
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white/60 border border-white/8 hover:bg-white/5 transition-all">
+          <button className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/5 transition-all ${BORDER_INPUT} ${TEXT_SUB}`}>
             <Calendar size={13} /> {month} <ChevronDown size={12} />
           </button>
         </div>
@@ -130,39 +148,39 @@ export default function ContributionsPage() {
           { label: 'Avg. Contribution', value: '£41.30', sub: 'per certificate', color: '#8b5cf6', tooltip: 'Average monthly contribution amount across all active certificates' },
         ].map((s, i) => (
           <motion.div key={s.label} variants={fadeUp} initial="hidden" animate="visible" custom={i + 1}
-            className="rounded-2xl p-5 flex flex-col gap-3" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+            className="rounded-2xl p-5 flex flex-col gap-3 transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
             <div className="flex items-center gap-1.5">
-              <p className="text-white/50 text-xs font-medium">{s.label}</p>
+              <p className={`text-xs font-medium ${TEXT_SUB}`}>{s.label}</p>
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger asChild><Info size={10} className="text-white/20 cursor-help" /></TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[200px] text-xs bg-black/90 border-white/10">{s.tooltip}</TooltipContent>
+                  <TooltipTrigger asChild><Info size={10} className={`${TEXT_MUTED} cursor-help`} /></TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[200px] text-xs bg-black/90 border-white/10 text-white">{s.tooltip}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
-            <p className="text-white text-2xl font-bold tracking-tight">{s.value}</p>
-            <p className="text-white/30 text-[10px]">{s.sub}</p>
+            <p className={`text-2xl font-bold tracking-tight ${TEXT_MAIN}`}>{s.value}</p>
+            <p className={`text-[10px] ${TEXT_MUTED}`}>{s.sub}</p>
           </motion.div>
         ))}
       </div>
 
       {/* Trend chart */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={5}
-        className="rounded-2xl p-5" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
-        <h3 className="text-white font-semibold text-sm mb-1">Monthly Contribution Volume</h3>
-        <p className="text-white/40 text-xs mb-5">Total GBP collected from all participants per month</p>
+        className="rounded-2xl p-5 transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+        <h3 className={`font-semibold text-sm mb-1 ${TEXT_MAIN}`}>Monthly Contribution Volume</h3>
+        <p className={`text-xs mb-5 ${TEXT_SUB}`}>Total GBP collected from all participants per month</p>
         <ResponsiveContainer width="100%" height={180}>
           <AreaChart data={contributionTrend}>
             <defs>
               <linearGradient id="gContrib2" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={GREEN} stopOpacity={0.3} />
+                <stop offset="0%" stopColor={GREEN} stopOpacity={0.25} />
                 <stop offset="100%" stopColor={GREEN} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.04)" />
-            <XAxis dataKey="month" tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(0)}k`} />
-            <RechartsTooltip content={<ChartTooltip />} />
+            <CartesianGrid vertical={false} stroke={CHART_GRID} />
+            <XAxis dataKey="month" tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(0)}k`} />
+            <RechartsTooltip content={<ChartTooltip theme={theme} />} />
             <Area type="monotone" dataKey="total" name="Total" stroke={GREEN} strokeWidth={2} fill="url(#gContrib2)" dot={false} />
           </AreaChart>
         </ResponsiveContainer>
@@ -170,15 +188,15 @@ export default function ContributionsPage() {
 
       {/* Transaction table */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={6}
-        className="rounded-2xl overflow-hidden" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+        className="rounded-2xl overflow-hidden transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4" style={{ borderBottom: `1px solid ${BORDER}` }}>
           <div className="relative flex-1 max-w-xs">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+            <Search size={13} className={`absolute left-3 top-1/2 -translate-y-1/2 ${TEXT_MUTED}`} />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search transactions…"
-              className="w-full pl-9 pr-3 py-2 rounded-lg bg-white/[0.04] border border-white/8 text-white text-xs placeholder:text-white/25 focus:outline-none focus:border-[#00c685]/40 transition-colors" />
+              className={`w-full pl-9 pr-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-[#00c685]/40 transition-colors ${BG_INPUT} ${BORDER_INPUT} ${TEXT_MAIN}`} />
           </div>
-          <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-white/8 text-white/50 text-xs hover:bg-white/5 transition-colors"><Filter size={12} /> Filter</button>
+          <button className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${BORDER_INPUT} ${TEXT_SUB}`}><Filter size={12} /> Filter</button>
         </div>
 
         {/* Tabs */}
@@ -186,7 +204,7 @@ export default function ContributionsPage() {
           {TABS.map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className={`shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
-                activeTab === tab.key ? 'bg-[#00c685]/15 text-[#00c685]' : 'text-white/40 hover:text-white/70 hover:bg-white/5'
+                activeTab === tab.key ? 'bg-[#00c685]/15 text-[#00c685]' : `${TEXT_SUB} hover:text-[#00c685] hover:bg-black/5 dark:hover:bg-white/5`
               }`}>
               {tab.label}
             </button>
@@ -199,7 +217,7 @@ export default function ContributionsPage() {
             <thead>
               <tr style={{ borderBottom: `1px solid ${BORDER}` }}>
                 {['Transaction ID', 'Participant', 'Certificate', 'Amount', 'Date', 'Method', 'Status'].map(h => (
-                  <th key={h} className="text-left px-5 py-3 text-white/30 font-semibold tracking-wide">{h}</th>
+                  <th key={h} className={`text-left px-5 py-3 font-semibold tracking-wide ${TEXT_MUTED}`}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -207,21 +225,21 @@ export default function ContributionsPage() {
               {filtered.length === 0 ? (
                 <tr><td colSpan={7}>
                   <div className="flex flex-col items-center gap-3 py-16 text-center">
-                    <CreditCard size={32} className="text-white/15" />
-                    <p className="text-white/40 text-sm">No transactions found</p>
+                    <CreditCard size={32} className={TEXT_MUTED} />
+                    <p className={`text-sm ${TEXT_SUB}`}>No transactions found</p>
                   </div>
                 </td></tr>
               ) : filtered.map((t, i) => (
                 <motion.tr key={t.id}
                   initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                  className="hover:bg-white/[0.02] transition-colors"
+                  className={`transition-colors ${ROW_HOVER}`}
                   style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${BORDER}` : 'none' }}>
-                  <td className="px-5 py-3.5 font-mono text-white/50 text-[11px]">{t.id}</td>
-                  <td className="px-5 py-3.5 text-white/80 font-medium">{t.participant}</td>
-                  <td className="px-5 py-3.5 font-mono text-[#00c685] text-[11px]">{t.certId}</td>
-                  <td className="px-5 py-3.5 text-white font-semibold">{t.amount}</td>
-                  <td className="px-5 py-3.5 text-white/40">{t.date}</td>
-                  <td className="px-5 py-3.5 text-white/40">{t.method}</td>
+                  <td className={`px-5 py-3.5 font-mono text-[11px] ${TEXT_MUTED}`}>{t.id}</td>
+                  <td className={`px-5 py-3.5 font-medium ${TEXT_MAIN}`}>{t.participant}</td>
+                  <td className="px-5 py-3.5 font-mono text-[#00c685] text-[11px] font-semibold">{t.certId}</td>
+                  <td className={`px-5 py-3.5 font-semibold ${TEXT_MAIN}`}>{t.amount}</td>
+                  <td className={`px-5 py-3.5 ${TEXT_SUB}`}>{t.date}</td>
+                  <td className={`px-5 py-3.5 ${TEXT_SUB}`}>{t.method}</td>
                   <td className="px-5 py-3.5"><StatusBadge status={t.status} /></td>
                 </motion.tr>
               ))}
@@ -229,10 +247,10 @@ export default function ContributionsPage() {
           </table>
         </div>
         <div className="flex items-center justify-between px-5 py-4" style={{ borderTop: `1px solid ${BORDER}` }}>
-          <p className="text-white/30 text-xs">Showing {filtered.length} of {TRANSACTIONS.length} transactions</p>
+          <p className={`text-xs ${TEXT_MUTED}`}>Showing {filtered.length} of {TRANSACTIONS.length} transactions</p>
           <div className="flex items-center gap-1">
-            {[1, 2, 3].map(n => (
-              <button key={n} className={`w-7 h-7 rounded-lg text-xs font-semibold transition-colors ${n === 1 ? 'bg-[#00c685]/15 text-[#00c685]' : 'text-white/30 hover:bg-white/5'}`}>{n}</button>
+            {[1, 2].map(n => (
+              <button key={n} className={`w-7 h-7 rounded-lg text-xs font-semibold transition-colors ${n === 1 ? 'bg-[#00c685]/15 text-[#00c685]' : `${TEXT_MUTED} hover:bg-black/5 dark:hover:bg-white/5`}`}>{n}</button>
             ))}
           </div>
         </div>
