@@ -7,7 +7,7 @@ import {
   Shield, CreditCard, ImageIcon, File, ChevronDown,
   MoreHorizontal, Eye, Trash2, Share2,
 } from 'lucide-react';
-import { useTheme } from '../layout';
+import { useTheme } from '../ThemeRoleContext';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -29,7 +29,7 @@ const FILE_ICON: Record<string, { icon: React.ElementType; color: string }> = {
   zip:  { icon: Folder, color: '#f59e0b' },
   jpg:  { icon: ImageIcon, color: '#3b82f6' },
   png:  { icon: ImageIcon, color: '#3b82f6' },
-  xlsx: { icon: '#00c685', color: '#00c685' }, // Resolved visually
+  xlsx: { icon: File, color: '#00c685' },
   doc:  { icon: File, color: '#6366f1' },
 };
 
@@ -73,10 +73,10 @@ export default function DocumentsPage() {
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)';
+  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
   const BG_INPUT = isLight ? 'bg-black/[0.03]' : 'bg-white/[0.04]';
-  const BORDER_INPUT = isLight ? 'border-black/8' : 'border-white/8';
-  const ROW_HOVER = isLight ? 'hover:bg-black/[0.015]' : 'hover:bg-white/[0.025]';
+  const BORDER_INPUT = isLight ? 'border-black/[0.06]' : 'border-white/[0.05]';
+  const ROW_HOVER = isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]';
 
   return (
     <div className="p-4 sm:p-6 space-y-5 transition-colors duration-200">
@@ -86,8 +86,8 @@ export default function DocumentsPage() {
           <h1 className={`text-lg font-bold ${TEXT_MAIN}`}>Document Centre</h1>
           <p className={`text-xs mt-0.5 ${TEXT_SUB}`}>Manage all certificates, claim documents, and correspondence — Demo data</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white hover:opacity-90 shrink-0 transition-all" style={{ background: GREEN }}>
-          <Upload size={14} /> Upload
+        <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white hover:opacity-90 shrink-0 transition-all active:scale-[0.98]" style={{ background: GREEN }}>
+          <Upload size={14} /> Upload Document
         </button>
       </motion.div>
 
@@ -110,12 +110,16 @@ export default function DocumentsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-5">
         {/* Category sidebar */}
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2}
-          className="rounded-2xl p-4 space-y-0.5 h-fit transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
-          <p className={`text-[10px] font-semibold uppercase tracking-wide px-2 pb-2 ${TEXT_MUTED}`}>Categories</p>
+          className="rounded-2xl p-4 space-y-1 h-fit transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <p className={`text-[10px] font-bold uppercase tracking-wide px-2 pb-2 ${TEXT_MUTED}`}>Categories</p>
           {CATEGORIES.map(cat => (
             <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-left ${
-                activeCategory === cat.key ? 'bg-[#00c685]/15 text-[#00c685]' : `${TEXT_SUB} hover:bg-black/5 dark:hover:bg-white/5`
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left border ${
+                activeCategory === cat.key
+                  ? 'bg-[#00c685]/15 border-[#00c685]/35 text-[#00c685]'
+                  : isLight
+                    ? 'border-transparent text-black/60 hover:bg-black/[0.04] hover:text-black'
+                    : 'border-transparent text-white/55 hover:bg-white/[0.04] hover:text-white'
               }`}>
               {cat.label}
               <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${activeCategory === cat.key ? 'bg-[#00c685]/20 text-[#00c685]' : `${BG_INPUT} ${TEXT_MUTED}`}`}>
@@ -130,12 +134,12 @@ export default function DocumentsPage() {
           className="lg:col-span-3 rounded-2xl overflow-hidden transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
           {/* Toolbar */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4" style={{ borderBottom: `1px solid ${BORDER}` }}>
-            <div className="relative flex-1">
-              <Search size={13} className={`absolute left-3 top-1/2 -translate-y-1/2 ${TEXT_MUTED}`} />
+            <div className={`relative flex items-center gap-2 px-3.5 py-2.5 rounded-xl border flex-1 transition-colors ${isLight ? 'bg-black/[0.03] border-black/[0.06] text-black' : 'bg-white/[0.04] border-white/[0.05] text-white'}`}>
+              <Search size={13} className={`${TEXT_MUTED}`} />
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search documents…"
-                className={`w-full pl-9 pr-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-[#00c685]/40 transition-colors ${BG_INPUT} ${BORDER_INPUT} ${TEXT_MAIN}`} />
+                className={`flex-1 bg-transparent text-sm outline-none placeholder:text-xs placeholder:font-medium ${TEXT_MAIN}`} />
             </div>
-            <button className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-colors shrink-0 ${BORDER_INPUT} ${TEXT_SUB}`}>
+            <button className={`flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-all shrink-0 ${isLight ? 'border-black/[0.06] text-black/70 hover:bg-black/[0.04]' : 'border-white/[0.05] text-white/70 hover:bg-white/[0.04]'}`}>
               <Download size={12} /> Export
             </button>
           </div>
@@ -149,7 +153,7 @@ export default function DocumentsPage() {
               </div>
             ) : filtered.map((doc, i) => {
               const fileConfig = FILE_ICON[doc.type] || { icon: File, color: '#6b7280' };
-              const FileIcon = fileConfig.icon === '#00c685' ? File : fileConfig.icon;
+              const FileIcon = fileConfig.icon;
               const color = fileConfig.color;
               const statusStyle = STATUS_CFG[doc.status] ?? { bg: 'bg-black/5 dark:bg-white/5', text: 'text-black/40 dark:text-white/40' };
               return (
@@ -157,7 +161,7 @@ export default function DocumentsPage() {
                   initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
                   onMouseEnter={() => setHoveredDoc(doc.id)}
                   onMouseLeave={() => setHoveredDoc(null)}
-                  className={`flex items-center gap-4 px-5 py-3.5 transition-colors group cursor-pointer ${ROW_HOVER}`}>
+                  className={`flex items-center gap-4 px-5 py-4 transition-colors group cursor-pointer ${ROW_HOVER}`}>
                   {/* Icon */}
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${color}15` }}>
                     <FileIcon size={15} style={{ color }} />
@@ -165,7 +169,7 @@ export default function DocumentsPage() {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className={`text-xs font-medium truncate ${TEXT_MAIN}`}>{doc.name}</p>
+                    <p className={`text-xs font-semibold truncate ${TEXT_MAIN}`}>{doc.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className={`text-[10px] ${TEXT_MUTED}`}>{doc.size}</span>
                       <span className={TEXT_MUTED}>·</span>
@@ -176,12 +180,12 @@ export default function DocumentsPage() {
                   </div>
 
                   {/* Status */}
-                  <span className={`hidden sm:inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold ${statusStyle.bg} ${statusStyle.text}`}>
+                  <span className={`hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${statusStyle.bg} ${statusStyle.text}`}>
                     {doc.status}
                   </span>
 
                   {/* Actions */}
-                  <div className={`flex items-center gap-1 transition-opacity ${hoveredDoc === doc.id ? 'opacity-100' : 'opacity-0'}`}>
+                  <div className={`flex items-center gap-1 transition-opacity duration-150 ${hoveredDoc === doc.id ? 'opacity-100' : 'opacity-0'}`}>
                     <button className={`p-1.5 rounded-lg transition-colors ${TEXT_MUTED} hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5`}><Eye size={13} /></button>
                     <button className={`p-1.5 rounded-lg transition-colors ${TEXT_MUTED} hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5`}><Download size={13} /></button>
                     <button className="p-1.5 rounded-lg text-red-500/60 hover:text-red-500 hover:bg-red-500/5 transition-colors"><Trash2 size={13} /></button>

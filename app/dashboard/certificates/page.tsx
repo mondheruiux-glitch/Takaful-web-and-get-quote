@@ -8,7 +8,7 @@ import {
   Building2, Layers, RefreshCcw, Download,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useTheme } from '../layout';
+import { useTheme } from '../ThemeRoleContext';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -88,9 +88,9 @@ export default function CertificatesPage() {
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)';
+  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
   const BG_INPUT = isLight ? 'bg-black/[0.03]' : 'bg-white/[0.04]';
-  const BORDER_INPUT = isLight ? 'border-black/8' : 'border-white/8';
+  const BORDER_INPUT = isLight ? 'border-black/[0.06]' : 'border-white/[0.05]';
   const ROW_HOVER = isLight ? 'hover:bg-black/[0.015]' : 'hover:bg-white/[0.02]';
 
   return (

@@ -6,7 +6,7 @@ import {
   Bell, CheckCircle2, AlertTriangle, FileText, Shield,
   CreditCard, Users, Info, X, ChevronRight, Filter,
 } from 'lucide-react';
-import { useTheme } from '../layout';
+import { useTheme } from '../ThemeRoleContext';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -56,10 +56,10 @@ export default function NotificationsPage() {
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)';
+  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
 
   return (
-    <div className="p-4 sm:p-6 space-y-5 max-w-3xl transition-colors duration-200">
+    <div className="p-4 sm:p-6 space-y-5 w-full transition-colors duration-200">
       {/* Header */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="flex items-start justify-between gap-4">
         <div>

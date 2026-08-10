@@ -6,7 +6,7 @@ import {
   User, Shield, Bell, Users, Lock, Building2,
   ChevronRight, Check, Eye, EyeOff, Camera,
 } from 'lucide-react';
-import { useTheme } from '../layout';
+import { useTheme } from '../ThemeRoleContext';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -23,10 +23,14 @@ const SETTINGS_NAV = [
   { key: 'organisation', label: 'Organisation', icon: Building2 },
 ];
 
-function Toggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
+function Toggle({ enabled, onChange, theme = 'dark' }: { enabled: boolean; onChange: (v: boolean) => void; theme?: string }) {
+  const isLight = theme === 'light';
   return (
-    <button onClick={() => onChange(!enabled)}
-      className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${enabled ? 'bg-[#00c685]' : 'bg-black/10 dark:bg-white/10'}`}>
+    <button
+      onClick={() => onChange(!enabled)}
+      className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${enabled ? 'bg-[#00c685]' : ''}`}
+      style={!enabled ? { background: isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.12)', border: isLight ? '1px solid rgba(0,0,0,0.12)' : '1px solid rgba(255,255,255,0.08)' } : undefined}
+    >
       <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${enabled ? 'translate-x-4' : 'translate-x-0.5'}`} />
     </button>
   );
@@ -36,7 +40,7 @@ function InputField({ label, defaultValue, type = 'text', placeholder, theme }: 
   const isLight = theme === 'light';
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
-  const BORDER_INPUT = isLight ? 'border-black/8' : 'border-white/8';
+  const BORDER_INPUT = isLight ? 'border-black/[0.06]' : 'border-white/[0.05]';
   const BG_INPUT = isLight ? 'bg-black/[0.03]' : 'bg-white/[0.04]';
   const TEXT_INPUT = isLight ? 'text-black placeholder:text-black/25' : 'text-white placeholder:text-white/20';
 
@@ -98,9 +102,9 @@ function SecurityTab({ theme }: { theme: string }) {
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)';
+  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
   const BG_PANEL2 = isLight ? '#f4f6f5' : '#112218';
-  const BORDER_INPUT = isLight ? 'border-black/8' : 'border-white/8';
+  const BORDER_INPUT = isLight ? 'border-black/[0.06]' : 'border-white/[0.05]';
   const BG_INPUT = isLight ? 'bg-black/[0.03]' : 'bg-white/[0.04]';
   const TEXT_INPUT = isLight ? 'text-black placeholder:text-black/25' : 'text-white placeholder:text-white/20';
 
@@ -157,7 +161,7 @@ function SecurityTab({ theme }: { theme: string }) {
                 <p className={`text-sm font-medium ${TEXT_MAIN}`}>{item.label}</p>
                 <p className={`text-xs mt-0.5 ${TEXT_SUB}`}>{item.sub}</p>
               </div>
-              <Toggle enabled={item.enabled} onChange={item.set} />
+              <Toggle enabled={item.enabled} onChange={item.set} theme={theme} />
             </div>
           ))}
         </div>
@@ -171,7 +175,7 @@ function NotificationsTab({ theme }: { theme: string }) {
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)';
+  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
   const BG_PANEL2 = isLight ? '#f4f6f5' : '#112218';
   const GREEN = '#00c685';
 
@@ -212,7 +216,7 @@ function NotificationsTab({ theme }: { theme: string }) {
                       const updated = [...prefs];
                       updated[gi].items[ii] = { ...item, email: v };
                       setPrefs(updated);
-                    }} />
+                    }} theme={theme} />
                   </div>
                   <div className="flex flex-col items-center gap-0.5">
                     <span className={`text-[9px] ${TEXT_MUTED}`}>Push</span>
@@ -220,7 +224,7 @@ function NotificationsTab({ theme }: { theme: string }) {
                       const updated = [...prefs];
                       updated[gi].items[ii] = { ...item, push: v };
                       setPrefs(updated);
-                    }} />
+                    }} theme={theme} />
                   </div>
                 </div>
               </div>
@@ -242,7 +246,7 @@ function TeamTab({ theme }: { theme: string }) {
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)';
+  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
   const BG_PANEL2 = isLight ? '#f4f6f5' : '#112218';
   const GREEN = '#00c685';
 
@@ -311,7 +315,7 @@ export default function SettingsPage() {
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)';
+  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
 
   const TABS_CONTENT: Record<string, React.ReactNode> = {
     profile: <ProfileTab theme={theme} />,
@@ -347,7 +351,7 @@ export default function SettingsPage() {
             return (
               <button key={item.key} onClick={() => setActiveSection(item.key)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
-                  activeSection === item.key ? 'bg-[#00c685]/15 text-[#00c685]' : `${TEXT_SUB} hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5`
+                  activeSection === item.key ? 'bg-[#00c685]/15 text-[#00c685]' : isLight ? `${TEXT_SUB} hover:text-black hover:bg-black/[0.05]` : `${TEXT_SUB} hover:text-white hover:bg-white/[0.05]`
                 }`}>
                 <Icon size={15} className={activeSection === item.key ? 'text-[#00c685]' : TEXT_MUTED} />
                 {item.label}
