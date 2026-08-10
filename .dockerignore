@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+.next-bundle/
+out/
+
+# Git
+.git/
+.gitignore
+
+# Dev/agent tooling
+.agents/
+.gemini/
+.reference/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+.env*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# CI/testing
+coverage/
+.nyc_output/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
