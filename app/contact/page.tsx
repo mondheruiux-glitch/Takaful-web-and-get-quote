@@ -34,6 +34,7 @@ function Navbar() {
     ['How it Works', '/how-it-works'],
     ['Compare Plans', '/compare-plans'],
     ['About Us', '/about'],
+    ['Dashboard', '/dashboard'],
     ['Contact', '/contact'],
   ];
 
@@ -57,6 +58,7 @@ function Navbar() {
           ))}
         </div>
         <div className="flex items-center gap-3">
+          <Link href="/dashboard" className="hidden md:block text-sm font-semibold px-4 py-2.5 rounded-full transition-all duration-300 text-gray-700 hover:bg-black/5">Dashboard</Link>
           <Link href="/signup" className="hidden md:block text-sm font-semibold px-6 py-2.5 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg bg-[#00c685] text-white">Sign Up</Link>
           <button onClick={() => setMobileMenuOpen(true)} className="md:hidden p-2 rounded-full text-gray-700 hover:bg-gray-100" aria-label="Open menu">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 6h16M3 11h16M3 16h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>

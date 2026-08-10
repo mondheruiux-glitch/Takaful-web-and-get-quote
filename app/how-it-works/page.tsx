@@ -108,7 +108,7 @@ function Nav() {
   }, []);
 
   const onDark = !scrolled;
-  const links = [['Home', '/'], ['How it Works', '/how-it-works'], ['Compare Plans', '/compare-plans'], ['About Us', '/about'], ['Contact', '/contact']];
+  const links = [['Home', '/'], ['How it Works', '/how-it-works'], ['Compare Plans', '/compare-plans'], ['About Us', '/about'], ['Dashboard', '/dashboard'], ['Contact', '/contact']];
 
   return (
     <>
@@ -119,7 +119,8 @@ function Nav() {
             <Link key={label} href={href} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${i === 1 ? onDark ? 'bg-white/20 text-white' : 'bg-white text-gray-900 shadow-sm' : onDark ? 'text-white/80 hover:bg-white/30 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900'}`}>{label}</Link>
           ))}
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Link href="/dashboard" className={`hidden md:block text-sm font-semibold px-4 py-2.5 rounded-full transition-all duration-300 ${onDark ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-black/5'}`}>Dashboard</Link>
           <Link href="/signup" className={`hidden md:block text-sm font-semibold px-6 py-2.5 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg ${onDark ? 'bg-white text-gray-900' : 'bg-[#00c685] text-white'}`}>Sign Up</Link>
           <button onClick={() => setMobileMenuOpen(true)} className={`md:hidden p-2 ${onDark ? 'text-white' : 'text-gray-900'}`}><Menu size={24} /></button>
         </div>
