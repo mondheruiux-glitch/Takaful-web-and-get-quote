@@ -2,19 +2,16 @@
 
 
 import React, { useState, Suspense, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, useSpring, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Particles } from '@/components/ui/particles';
 import { Meteors } from '@/components/ui/meteors';
 import { MultiStepForm } from '@/components/ui/multi-step-form';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  Select, SelectContent, SelectItem,
-  SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+
 import {
   Tooltip, TooltipContent,
   TooltipProvider, TooltipTrigger,
@@ -54,7 +51,7 @@ function PayField({
 }) {
   return (
     <div className="space-y-1.5 text-left">
-      <label htmlFor={id} className="text-xs font-medium text-gray-400">{label}</label>
+      <label htmlFor={id} className="text-[10px] font-semibold uppercase tracking-wide block mb-1.5 text-white/40">{label}</label>
       <div className="relative">
         {Icon && <Icon size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />}
         <input
@@ -65,7 +62,7 @@ function PayField({
           placeholder={placeholder}
           maxLength={maxLength}
           autoComplete="off"
-          className={`w-full ${Icon ? 'pl-9' : 'pl-3.5'} pr-3.5 py-2.5 rounded-xl border border-white/10 bg-neutral-900/60 text-white placeholder:text-gray-600 focus:outline-none focus:border-[#00c685]/60 focus:ring-2 focus:ring-[#00c685]/10 transition-all text-sm h-10`}
+          className={`w-full ${Icon ? 'pl-9' : 'pl-3.5'} pr-3.5 py-2.5 rounded-xl border border-white/8 bg-white/[0.04] text-white placeholder:text-white/20 focus:outline-none focus:border-[#00c685]/40 transition-colors text-sm h-10`}
         />
       </div>
     </div>
@@ -135,7 +132,7 @@ function PaySuccessScreen({ quoteRef, plan, pc }: { quoteRef: string; plan: stri
       <div className="space-y-2 pt-1">
         <button
           type="button"
-          onClick={() => router.push('/')}
+          onClick={() => router.push('/dashboard')}
           className="w-full py-3 rounded-xl bg-[#00c685] hover:bg-[#00b576] text-[#0a1a14] font-bold text-sm transition-colors cursor-pointer"
         >
           Go to Dashboard
@@ -691,9 +688,158 @@ function QuoteReadyCard({
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const ACCENT      = '#00c685';
-const INPUT_CLS   = 'w-full pl-9 pr-4 py-2.5 rounded-lg border border-white/10 bg-neutral-900/60 text-white placeholder:text-gray-600 focus-visible:ring-2 focus-visible:ring-[#00c685]/15 focus:outline-none focus:border-[#00c685]/60 transition-all h-9 text-sm';
-const SELECT_CLS  = 'bg-neutral-900/60 border-white/10 text-white h-9 data-[placeholder]:text-gray-500';
-const CONTENT_CLS = 'bg-neutral-900 border-white/10 text-white z-[99999]';
+const INPUT_CLS   = 'w-full pl-9 pr-4 py-2.5 rounded-xl border border-white/8 bg-white/[0.04] text-white placeholder:text-white/20 focus:outline-none focus:border-[#00c685]/40 transition-colors h-10 text-sm';
+const SELECT_CLS  = 'bg-white/[0.04] border-white/8 text-white h-10 data-[placeholder]:text-white/20';
+const CONTENT_CLS = 'bg-neutral-900 border-white/8 text-white z-[99999]';
+
+// ─── TailAdmin Custom Drop-in Form Components ─────────────────────────────────
+
+interface SelectContextValue {
+  value: string;
+  onValueChange: (v: string) => void;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  triggerText: string;
+  setTriggerText: React.Dispatch<React.SetStateAction<string>>;
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  contentRef: React.RefObject<HTMLDivElement | null>;
+}
+
+const SelectContext = React.createContext<SelectContextValue | null>(null);
+
+function Select({ value, onValueChange, children }: { value: string; onValueChange: (v: string) => void; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const [triggerText, setTriggerText] = useState('');
+  const selectRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node;
+      const insideTrigger  = selectRef.current?.contains(target);
+      const insideContent  = contentRef.current?.contains(target);
+      if (!insideTrigger && !insideContent) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <SelectContext.Provider value={{ value, onValueChange, open, setOpen, triggerText, setTriggerText, triggerRef, contentRef }}>
+      <div className="relative w-full" ref={selectRef}>
+        {children}
+      </div>
+    </SelectContext.Provider>
+  );
+}
+
+function SelectTrigger({ id, className, children }: { id?: string; className?: string; children: React.ReactNode }) {
+  const context = React.useContext(SelectContext);
+  if (!context) return null;
+  const { open, setOpen, triggerText, triggerRef } = context;
+
+  return (
+    <button
+      ref={triggerRef}
+      id={id}
+      type="button"
+      onClick={() => setOpen(!open)}
+      className={`flex h-10 w-full items-center justify-between gap-2 rounded-xl border border-white/8 bg-white/[0.04] px-3.5 py-2.5 text-start text-sm text-white focus:outline-none focus:border-[#00c685]/40 transition-colors ${className}`}
+    >
+      <span className="truncate">{triggerText || 'Select...'}</span>
+      <ChevronDown size={14} className="shrink-0 text-white/40" />
+    </button>
+  );
+}
+
+function SelectValue({ placeholder }: { placeholder?: string }) {
+  return null;
+}
+
+function SelectContent({ className, children }: { className?: string; children: React.ReactNode }) {
+  const context = React.useContext(SelectContext);
+  if (!context) return null;
+  const { open, triggerRef, contentRef } = context;
+  const [rect, setRect] = useState<DOMRect | null>(null);
+
+  useEffect(() => {
+    if (open && triggerRef.current) {
+      setRect(triggerRef.current.getBoundingClientRect());
+    }
+  }, [open, triggerRef]);
+
+  if (!open || !rect) return null;
+
+  return ReactDOM.createPortal(
+    <AnimatePresence>
+      <motion.div
+        ref={contentRef}
+        initial={{ opacity: 0, y: -4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.1 }}
+        style={{
+          position: 'fixed',
+          top: rect.bottom + 4,
+          left: rect.left,
+          width: rect.width,
+          zIndex: 99999,
+        }}
+        className={`max-h-60 overflow-y-auto rounded-lg border border-white/10 bg-neutral-950 p-1 shadow-2xl ${className}`}
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>,
+    document.body
+  );
+}
+
+function SelectItem({ value, icon, children }: { value: string; icon?: React.ReactNode; children: React.ReactNode }) {
+  const context = React.useContext(SelectContext);
+  if (!context) return null;
+  const { value: selectedValue, onValueChange, setOpen, setTriggerText } = context;
+  const isSelected = selectedValue === value;
+
+  useEffect(() => {
+    if (isSelected) {
+      setTriggerText(String(children));
+    }
+  }, [isSelected, children, setTriggerText]);
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        onValueChange(value);
+        setTriggerText(String(children));
+        setOpen(false);
+      }}
+      className={`flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-xs transition-colors hover:bg-white/5 ${
+        isSelected ? 'text-[#00c685] font-semibold bg-[#00c685]/10' : 'text-gray-300'
+      }`}
+    >
+      {icon && <span className="shrink-0">{icon}</span>}
+      <span className="flex-1 truncate">{children}</span>
+      {isSelected && <Check size={12} className="text-[#00c685] shrink-0" />}
+    </button>
+  );
+}
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+
+function Input({ className, type, ...props }: InputProps) {
+  return (
+    <input
+      type={type}
+      className={`flex h-10 w-full rounded-xl border border-white/8 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#00c685]/40 transition-colors ${className}`}
+      {...props}
+    />
+  );
+}
+
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -701,7 +847,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 function FieldLabel({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
-  return <Label htmlFor={htmlFor} className="text-gray-400 text-xs font-medium">{children}</Label>;
+  return <Label htmlFor={htmlFor} className="text-[10px] font-semibold uppercase tracking-wide block mb-1.5 text-white/40">{children}</Label>;
 }
 
 function TooltipIcon({ text }: { text: string }) {
@@ -1043,8 +1189,10 @@ function GetQuoteForm() {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5">
-              <FieldLabel htmlFor="wall">Wall construction</FieldLabel>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <label htmlFor="wall" className="text-[10px] font-semibold uppercase tracking-wide text-white/40 leading-none">
+                Wall construction
+              </label>
               <TooltipIcon text="The main material used for external walls." />
             </div>
             <Select value={wallConstruction} onValueChange={setWallConstruction}>
@@ -1059,8 +1207,10 @@ function GetQuoteForm() {
             </Select>
           </div>
           <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5">
-              <FieldLabel htmlFor="roof">Roof type</FieldLabel>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <label htmlFor="roof" className="text-[10px] font-semibold uppercase tracking-wide text-white/40 leading-none">
+                Roof type
+              </label>
               <TooltipIcon text="Flat roofs carry a higher moisture risk." />
             </div>
             <Select value={roofType} onValueChange={setRoofType}>
@@ -1189,10 +1339,12 @@ function GetQuoteForm() {
       <div className="space-y-3">
         <SectionLabel>Locks & Access</SectionLabel>
         <div className="space-y-1.5">
-          <div className="flex items-center gap-1.5">
-            <FieldLabel htmlFor="doorLocks">Type of locks on external doors</FieldLabel>
-            <TooltipIcon text="Multi-point and deadlocks significantly reduce break-in risk." />
-          </div>
+          <div className="flex items-center gap-1.5 mb-1.5">
+              <label htmlFor="doorLocks" className="text-[10px] font-semibold uppercase tracking-wide text-white/40 leading-none">
+                Type of locks on external doors
+              </label>
+              <TooltipIcon text="Multi-point and deadlocks significantly reduce break-in risk." />
+            </div>
           <Select value={doorLocks} onValueChange={setDoorLocks}>
             <SelectTrigger id="doorLocks" className={SELECT_CLS}><SelectValue placeholder="Select lock type…" /></SelectTrigger>
             <SelectContent className={CONTENT_CLS}>
@@ -1306,8 +1458,10 @@ function GetQuoteForm() {
         <SectionLabel>Excess & Start Date</SectionLabel>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5">
-              <FieldLabel htmlFor="excess">Voluntary excess</FieldLabel>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <label htmlFor="excess" className="text-[10px] font-semibold uppercase tracking-wide text-white/40 leading-none">
+                Voluntary excess
+              </label>
               <TooltipIcon text="A higher excess lowers your monthly contribution but means you pay more in a claim." />
             </div>
             <Select value={excess} onValueChange={setExcess}>
@@ -1384,9 +1538,9 @@ function GetQuoteForm() {
             { id: 'electronics',   label: 'Electronics & gadgets',          icon: Tv,    val: electronics,   set: setElectronics,   placeholder: 'e.g. 3000',  tip: 'Laptops, phones, TVs, cameras, etc.' },
           ].map(({ id, label, icon: Icon, val, set, placeholder, tip }) => (
             <div key={id} className="space-y-1.5">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#00c685]"><Icon size={14} /></span>
-                <FieldLabel htmlFor={id}>{label}</FieldLabel>
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <span className="text-[#00c685] flex items-center"><Icon size={14} /></span>
+                <label htmlFor={id} className="text-[10px] font-semibold uppercase tracking-wide text-white/40 leading-none">{label}</label>
                 <TooltipIcon text={tip} />
               </div>
               <div className="relative">

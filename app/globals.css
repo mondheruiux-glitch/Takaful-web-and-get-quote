@@ -251,3 +251,46 @@
   transform: translateY(100%);
   transition: transform 1.5s linear infinite;
 }
+
+/* ── Date input calendar icon visibility fix ────────────────────────────────── */
+/* By default, dark-themed inputs render a white calendar icon invisible on      */
+/* light mode backgrounds. Force icon color based on context.                    */
+
+/* Dark-mode inputs (dashboard panels with dark bg) */
+input[type="date"].date-dark,
+input[type="datetime-local"].date-dark {
+  color-scheme: dark;
+}
+
+/* Light-mode inputs */
+input[type="date"].date-light,
+input[type="datetime-local"].date-light {
+  color-scheme: light;
+}
+
+/* Global: tint the icon to the current text color so it's always visible */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* When the input is inside a light-bg container (dashboard light mode) */
+input[type="date"].date-light::-webkit-calendar-picker-indicator,
+input[type="datetime-local"].date-light::-webkit-calendar-picker-indicator {
+  filter: invert(0.4);
+}
+
+/* When the input is inside a dark-bg container (dashboard dark mode / get-quote) */
+input[type="date"].date-dark::-webkit-calendar-picker-indicator,
+input[type="datetime-local"].date-dark::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(0.75);
+}
