@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <circle cx="40" cy="40" r="40" fill="#E8EDF5"/>
+  <!-- Body -->
+  <ellipse cx="40" cy="72" rx="22" ry="14" fill="#C3CDE0"/>
+  <!-- Neck -->
+  <rect x="33" y="50" width="14" height="10" rx="4" fill="#F4C1A0"/>
+  <!-- Head -->
+  <circle cx="40" cy="42" r="17" fill="#F4C1A0"/>
+  <!-- Hair - female style with longer hair and bun hint -->
+  <path d="M23 38 Q24 20 40 19 Q56 20 57 38 Q57 32 56 28 Q48 14 40 14 Q32 14 24 28 Q23 32 23 38Z" fill="#5C3317"/>
+  <!-- Hair sides flowing down -->
+  <path d="M23 38 Q20 48 23 54 Q26 46 26 38Z" fill="#5C3317"/>
+  <path d="M57 38 Q60 48 57 54 Q54 46 54 38Z" fill="#5C3317"/>
+  <!-- Eyes -->
+  <ellipse cx="34" cy="42" rx="2.5" ry="2.5" fill="#3B2A1A"/>
+  <ellipse cx="46" cy="42" rx="2.5" ry="2.5" fill="#3B2A1A"/>
+  <!-- Eyelashes hint -->
+  <path d="M31.5 39.5 Q34 38.5 36.5 39.5" stroke="#3B2A1A" stroke-width="1" fill="none"/>
+  <path d="M43.5 39.5 Q46 38.5 48.5 39.5" stroke="#3B2A1A" stroke-width="1" fill="none"/>
+  <!-- Nose -->
+  <path d="M39 46 Q40 47 41 46" stroke="#D4956A" stroke-width="1" fill="none"/>
+  <!-- Smile -->
+  <path d="M35 51 Q40 55 45 51" stroke="#D4956A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Blush -->
+  <ellipse cx="31" cy="48" rx="4" ry="2.5" fill="#F9A8D4" opacity="0.4"/>
+  <ellipse cx="49" cy="48" rx="4" ry="2.5" fill="#F9A8D4" opacity="0.4"/>
+</svg>

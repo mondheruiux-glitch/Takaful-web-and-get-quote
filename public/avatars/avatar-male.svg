@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <circle cx="40" cy="40" r="40" fill="#E8EDF5"/>
+  <!-- Body / shirt -->
+  <ellipse cx="40" cy="73" rx="22" ry="13" fill="#3B82F6"/>
+  <!-- Collar -->
+  <path d="M33 56 L40 62 L47 56 L44 52 L40 54 L36 52Z" fill="#2563EB"/>
+  <!-- Neck -->
+  <rect x="34" y="50" width="12" height="10" rx="3" fill="#D4956A"/>
+  <!-- Head -->
+  <circle cx="40" cy="42" r="17" fill="#D4956A"/>
+  <!-- Hair - short male style -->
+  <path d="M23 38 Q24 22 40 21 Q56 22 57 38 Q56 28 50 24 Q44 20 40 20 Q36 20 30 24 Q24 28 23 38Z" fill="#3B2A1A"/>
+  <!-- Short hair sides -->
+  <path d="M23 38 Q21 42 23 46 Q25 42 25 38Z" fill="#3B2A1A"/>
+  <path d="M57 38 Q59 42 57 46 Q55 42 55 38Z" fill="#3B2A1A"/>
+  <!-- Eyes -->
+  <ellipse cx="34" cy="42" rx="2.5" ry="2.5" fill="#3B2A1A"/>
+  <ellipse cx="46" cy="42" rx="2.5" ry="2.5" fill="#3B2A1A"/>
+  <!-- Eyebrows -->
+  <path d="M31 39 Q34 37.5 37 39" stroke="#3B2A1A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M43 39 Q46 37.5 49 39" stroke="#3B2A1A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Nose -->
+  <path d="M39 46 Q40 47.5 41 46" stroke="#B5733A" stroke-width="1" fill="none"/>
+  <!-- Neutral/slight smile -->
+  <path d="M36 51.5 Q40 54.5 44 51.5" stroke="#B5733A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Beard/stubble hint -->
+  <ellipse cx="40" cy="55" rx="7" ry="3" fill="#B5733A" opacity="0.15"/>
+</svg>

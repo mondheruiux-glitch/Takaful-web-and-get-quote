@@ -150,7 +150,7 @@ export function Testimonials() {
             <PillBadge text="Testimonials" className="mb-4" />
           </motion.div>
 
-          <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
+          <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-heading text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
             What our users say
           </motion.h2>
           <motion.p variants={itemVariants} className="text-center mt-2 text-gray-500 max-w-sm">

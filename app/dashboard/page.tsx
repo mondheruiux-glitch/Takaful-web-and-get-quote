@@ -60,8 +60,8 @@ function KPICard({ label, value, sub, icon: Icon, trend, color = GREEN, custom, 
   return (
     <motion.div
       variants={fadeUp} initial="hidden" animate="visible" custom={delay}
-      className="rounded-2xl p-5 flex flex-col gap-3"
-      style={{ background: isLight ? '#fff' : '#0d2117', border: isLight ? '1px solid rgba(0,0,0,0.04)' : '1px solid rgba(255,255,255,0.06)' }}
+      className={`rounded-2xl p-5 flex flex-col gap-3 ${isLight ? 'shadow-sm' : ''}`}
+      style={{ background: isLight ? '#fff' : '#0d2117', border: isLight ? '1px solid #E4E7EC' : '1px solid rgba(255,255,255,0.06)' }}
     >
       <div className="flex items-start justify-between">
         <div>
@@ -70,8 +70,8 @@ function KPICard({ label, value, sub, icon: Icon, trend, color = GREEN, custom, 
           {sub && <p className={`text-xs mt-0.5 ${isLight ? 'text-black/45' : 'text-white/40'}`}>{sub}</p>}
         </div>
         {Icon && (
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${color}18` }}>
-            <Icon size={18} style={{ color }} />
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isLight ? 'bg-gray-100 text-gray-700' : ''}`} style={!isLight ? { background: `${color}18`, color } : {}}>
+            <Icon size={18} className={isLight ? 'text-gray-700' : ''} style={!isLight ? { color } : {}} />
           </div>
         )}
       </div>
@@ -93,10 +93,10 @@ function SectionCard({ title, children, action, theme }: { title: string; childr
   return (
     <motion.div
       variants={fadeUp} initial="hidden" animate="visible"
-      className="rounded-2xl overflow-hidden"
-      style={{ background: isLight ? '#fff' : '#0d2117', border: isLight ? '1px solid rgba(0,0,0,0.04)' : '1px solid rgba(255,255,255,0.06)' }}
+      className={`rounded-2xl overflow-hidden ${isLight ? 'shadow-sm' : ''}`}
+      style={{ background: isLight ? '#fff' : '#0d2117', border: isLight ? '1px solid #E4E7EC' : '1px solid rgba(255,255,255,0.06)' }}
     >
-      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: isLight ? '1px solid rgba(0,0,0,0.05)' : '1px solid rgba(255,255,255,0.05)' }}>
+      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: isLight ? '1px solid #E4E7EC' : '1px solid rgba(255,255,255,0.05)' }}>
         <h3 className={`text-sm font-semibold ${isLight ? 'text-black/80' : 'text-white/80'}`}>{title}</h3>
         {action}
       </div>
@@ -166,8 +166,8 @@ function ParticipantOverview({ theme }: { theme: string }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <SectionCard title="My Current Cover" theme={theme} action={<Link href="/dashboard/my-cover" className="text-xs font-medium text-[#00c685] flex items-center gap-1">View full details <ChevronRight size={12} /></Link>}>
           <div className="p-5 space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: isLight ? 'rgba(0,198,133,0.06)' : 'rgba(0,198,133,0.08)' }}>
-              <ShieldCheck size={28} style={{ color: GREEN }} />
+            <div className={`flex items-center gap-3 p-3.5 rounded-xl border ${isLight ? 'bg-gray-50 border-gray-200' : 'bg-white/5 border-white/10'}`}>
+              <ShieldCheck size={26} className={isLight ? 'text-gray-700' : 'text-white/80'} />
               <div>
                 <p className={`font-bold text-sm ${isLight ? 'text-black/90' : 'text-white'}`}>Certificate {myCert.id}</p>
                 <p className={`text-xs ${isLight ? 'text-black/50' : 'text-white/45'}`}>{myCert.propertyAddress}</p>
@@ -189,7 +189,7 @@ function ParticipantOverview({ theme }: { theme: string }) {
         </SectionCard>
 
         <SectionCard title="My Claims" theme={theme} action={<Link href="/dashboard/claims" className="text-xs font-medium text-[#00c685] flex items-center gap-1">View all <ChevronRight size={12} /></Link>}>
-          <div className="divide-y" style={{ borderColor: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)' }}>
+          <div className="divide-y" style={{ borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.04)' }}>
             {myClaims.length === 0 ? (
               <p className={`p-5 text-sm ${isLight ? 'text-black/40' : 'text-white/35'}`}>No claims on record.</p>
             ) : myClaims.map(claim => (
@@ -215,7 +215,7 @@ function ParticipantOverview({ theme }: { theme: string }) {
       {/* Recent contributions + Pool transparency */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <SectionCard title="Recent Contributions" theme={theme} action={<Link href="/dashboard/contributions" className="text-xs font-medium text-[#00c685] flex items-center gap-1">Manage <ChevronRight size={12} /></Link>}>
-          <div className="divide-y" style={{ borderColor: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)' }}>
+          <div className="divide-y" style={{ borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.04)' }}>
             {myContribs.map(c => (
               <div key={c.id} className="flex items-center gap-3 px-5 py-3">
                 <div className={`w-2 h-2 rounded-full ${c.status === 'Collected' ? 'bg-emerald-400' : 'bg-red-400'}`} />
@@ -313,7 +313,7 @@ function ClaimHandlerOverview({ theme }: { theme: string }) {
                   {CLAIMS.filter(c => !['Paid', 'Rejected'].includes(c.status)).sort((a, b) => b.daysOpen - a.daysOpen).map(c => (
                     <tr key={c.id} className={`transition-colors ${isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]'}`}>
                       <td className="px-4 py-3">
-                        <span className="font-mono font-semibold" style={{ color: GREEN }}>{c.id}</span>
+                        <span className={`font-mono font-semibold ${isLight ? 'text-gray-900' : 'text-white/90'}`}>{c.id}</span>
                       </td>
                       <td className={`px-4 py-3 font-medium ${isLight ? 'text-black/75' : 'text-white/75'}`}>{c.participantName}</td>
                       <td className={`px-4 py-3 ${isLight ? 'text-black/55' : 'text-white/55'}`}>{c.type}</td>
@@ -459,7 +459,7 @@ function FinanceOverview({ theme }: { theme: string }) {
           </SectionCard>
 
           <SectionCard title="Failed Direct Debits" theme={theme}>
-            <div className="divide-y" style={{ borderColor: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)' }}>
+            <div className="divide-y" style={{ borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.04)' }}>
               {failedContribs.map(c => (
                 <div key={c.id} className="flex items-center gap-3 px-4 py-3">
                   <XCircle size={14} className="text-red-400 shrink-0" />
@@ -610,7 +610,7 @@ function ManagementOverview({ theme }: { theme: string }) {
         </div>
 
         <SectionCard title="Operational Alerts" theme={theme}>
-          <div className="divide-y" style={{ borderColor: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)' }}>
+          <div className="divide-y" style={{ borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.04)' }}>
             {overdueClaims.map(c => (
               <Link key={c.id} href={`/dashboard/claims/${c.id}`} className={`flex items-start gap-3 p-4 transition-colors ${isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]'}`}>
                 <AlertCircle size={14} className="text-red-400 mt-0.5 shrink-0" />

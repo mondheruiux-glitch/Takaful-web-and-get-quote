@@ -10,7 +10,7 @@ const features = [
     title: "Get an Instant Quote",
     subtitle: "Start with a free, no-obligation estimate",
     description: "Begin by requesting a Home Takaful quote. There's no need to create an account first. Simply click Get Quote to begin the process and receive a personalized estimate based on your home's characteristics.",
-    imageUrl: "/step1.jpg",
+    imageUrl: "/home-how-it-works/step1.png?v=2",
     bgColor: "bg-[#EFF6FF] border border-[#2563EB]/10",
     textColor: "text-gray-600",
     titleColor: "text-gray-900",
@@ -23,7 +23,7 @@ const features = [
     title: "Tell Us About Your Home",
     subtitle: "Provide your property's essential details",
     description: "Answer a few simple questions about your home, including its location, property type, construction details, size, occupancy, and other relevant information. This allows us to accurately assess your property and calculate the most appropriate level of protection.",
-    imageUrl: "/step2.png",
+    imageUrl: "/home-how-it-works/step2.png?v=2",
     bgColor: "bg-[#F5F3FF] border border-[#7C3AED]/10",
     textColor: "text-gray-600",
     titleColor: "text-gray-900",
@@ -36,7 +36,7 @@ const features = [
     title: "Review Your Personalized Quote",
     subtitle: "See your coverage and contribution instantly",
     description: "Based on the information you provide, we'll generate a personalized Home Takaful quote showing your recommended coverage, what's included in your protection plan, and your expected contribution amount. Everything is presented clearly, with no hidden fees.",
-    imageUrl: "/step3.jpg",
+    imageUrl: "/home-how-it-works/step3.png?v=2",
     bgColor: "bg-[#FEFCE8] border border-[#CA8A04]/10",
     textColor: "text-gray-600",
     titleColor: "text-gray-900",
@@ -49,7 +49,7 @@ const features = [
     title: "Create Your Account",
     subtitle: "Save your quote and continue your application",
     description: "Once you're satisfied with your quote, create your secure account to continue. Your account allows you to save your information, complete your application, access your policy documents, and manage your Home Takaful coverage whenever you need it.",
-    imageUrl: "/step4.jpg",
+    imageUrl: "/home-how-it-works/step4.png?v=2",
     bgColor: "bg-[#ECFDF5] border border-[#065F46]/10",
     textColor: "text-gray-600",
     titleColor: "text-gray-900",
@@ -62,7 +62,7 @@ const features = [
     title: "Complete Your Contribution",
     subtitle: "Secure your home with a safe online payment",
     description: "Confirm your selected Home Takaful plan and complete your contribution using our secure payment system. Every contribution is managed according to Sharia-compliant principles, ensuring transparency, fairness, and mutual cooperation.",
-    imageUrl: "/step5.jpg",
+    imageUrl: "/home-how-it-works/step5.png?v=2",
     bgColor: "bg-[#FFF7ED] border border-[#EA580C]/10",
     textColor: "text-gray-600",
     titleColor: "text-gray-900",
@@ -75,7 +75,7 @@ const features = [
     title: "Receive Policy & Manage Claims",
     subtitle: "Instant protection with ongoing support",
     description: "As soon as your contribution is confirmed, your Home Takaful policy becomes active and your digital policy certificate is available immediately in your dashboard. You can submit a claim online and track its progress from one secure platform.",
-    imageUrl: "/step6.jpg",
+    imageUrl: "/home-how-it-works/step6.png?v=2",
     bgColor: "bg-[#F0FDFA] border border-[#0F766E]/10",
     textColor: "text-gray-600",
     titleColor: "text-gray-900",
@@ -120,7 +120,7 @@ const AnimatedHeader = () => {
       <PillBadge text="How It Works" className="mb-5" />
       <h2
         ref={headerRef}
-        className={`text-[clamp(2rem,1.2rem+3vw,3rem)] font-normal font-playfair italic transition-all duration-700 ease-out text-gray-900 tracking-[-0.03em] leading-[1.1] ${headerInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        className={`text-[clamp(2rem,1.2rem+3vw,3rem)] font-normal font-heading transition-all duration-700 ease-out text-gray-900 tracking-[-0.03em] leading-[1.1] ${headerInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
         style={{ transformStyle: 'preserve-3d' }}
       >
         Get protected in six simple steps
@@ -146,42 +146,47 @@ export function StickyFeatureSection() {
             <AnimatedHeader />
 
             <div className="w-full relative">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  className={`${feature.bgColor} grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-16 p-8 md:p-12 rounded-[2rem] mb-16 sticky shadow-2xl transition-all duration-500`}
-                  style={{ top: '120px' }}
-                >
-                  <div className="flex flex-col justify-center">
-                    <div className="mb-4">
-                      <span className={`inline-block px-3 py-1 text-xs font-bold tracking-widest rounded-full ${feature.accentBg} ${feature.accentColor} uppercase`}>
-                        Step {feature.step}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3 mb-2">
-                       <feature.icon className={`w-6 h-6 ${feature.accentColor}`} />
-                       <h3 className={`text-[1.75rem] font-bold ${feature.titleColor} tracking-tight leading-tight`}>{feature.title}</h3>
+              {features.map((feature, index) => {
+                const isReversed = index % 2 === 1;
+                return (
+                  <div
+                    key={index}
+                    className={`${feature.bgColor} grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-16 p-8 md:p-12 rounded-[2rem] mb-16 sticky shadow-2xl transition-all duration-500`}
+                    style={{ top: '120px' }}
+                  >
+                    {/* Text block — goes RIGHT on even steps via md:order-last */}
+                    <div className={`flex flex-col justify-center ${isReversed ? 'md:order-last' : ''}`}>
+                      <div className="mb-4">
+                        <span className={`inline-block px-3 py-1 text-xs font-bold tracking-widest rounded-full ${feature.accentBg} ${feature.accentColor} uppercase`}>
+                          Step {feature.step}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 mb-2">
+                         <feature.icon className={`w-6 h-6 ${feature.accentColor}`} />
+                         <h3 className={`text-[1.75rem] font-bold ${feature.titleColor} tracking-tight leading-tight`}>{feature.title}</h3>
+                      </div>
+                      
+                      <p className={`text-sm font-semibold mb-4 opacity-90 ${feature.titleColor}`}>{feature.subtitle}</p>
+                      <p className={`${feature.textColor} leading-relaxed text-sm`}>{feature.description}</p>
                     </div>
                     
-                    <p className={`text-sm font-semibold mb-4 opacity-90 ${feature.titleColor}`}>{feature.subtitle}</p>
-                    <p className={`${feature.textColor} leading-relaxed text-sm`}>{feature.description}</p>
+                    {/* Image block — goes LEFT on even steps via md:order-first */}
+                    <div className={`image-wrapper relative mt-6 md:mt-0 aspect-video md:aspect-[4/3] w-full h-full overflow-hidden rounded-2xl shadow-xl ${isReversed ? 'md:order-first' : ''}`}>
+                      <img 
+                        src={feature.imageUrl} 
+                        alt={feature.title}
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          target.onerror = null;
+                          target.src = "https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found";
+                        }}
+                      />
+                    </div>
                   </div>
-                  
-                  <div className="image-wrapper relative mt-6 md:mt-0 aspect-video md:aspect-[4/3] w-full h-full overflow-hidden rounded-2xl shadow-xl">
-                    <img 
-                      src={feature.imageUrl} 
-                      alt={feature.title}
-                      loading="lazy"
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-                      onError={(e) => {
-                        const target = e.currentTarget as HTMLImageElement;
-                        target.onerror = null;
-                        target.src = "https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found";
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         </div>

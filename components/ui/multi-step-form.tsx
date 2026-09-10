@@ -5,12 +5,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { X, ChevronRight, ArrowLeft, HeartHandshake } from "lucide-react";
+import { X, ChevronRight, ArrowLeft } from "lucide-react";
 
 const multiStepFormVariants = cva(
-  "flex flex-col w-full rounded-2xl border border-white/8 bg-[#0a1a14]/70 backdrop-blur-md shadow-2xl overflow-hidden text-white",
+  "flex flex-col w-full rounded-2xl shadow-2xl overflow-hidden",
   {
     variants: {
       size: {
@@ -28,16 +27,18 @@ const multiStepFormVariants = cva(
 interface MultiStepFormProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof multiStepFormVariants> {
-  currentStep:    number;
-  totalSteps:     number;
-  title:          string;
-  description:    string;
-  onBack:         () => void;
-  onNext:         () => void;
-  onClose?:       () => void;
+  currentStep:     number;
+  totalSteps:      number;
+  title:           string;
+  description:     string;
+  onBack:          () => void;
+  onNext:          () => void;
+  onClose?:        () => void;
   backButtonText?: string;
   nextButtonText?: string;
-  footerContent?: React.ReactNode;
+  footerContent?:  React.ReactNode;
+  /** 'light' | 'dark' — defaults to 'dark' for backward compatibility */
+  theme?:          'light' | 'dark';
 }
 
 const MultiStepForm = React.forwardRef<HTMLDivElement, MultiStepFormProps>(
@@ -55,11 +56,13 @@ const MultiStepForm = React.forwardRef<HTMLDivElement, MultiStepFormProps>(
       backButtonText  = "Back",
       nextButtonText  = "Continue",
       footerContent,
+      theme = "dark",
       children,
       ...props
     },
     ref
   ) => {
+    const isLight = theme === "light";
     const progress = Math.round((currentStep / totalSteps) * 100);
 
     const variants = {
@@ -68,14 +71,34 @@ const MultiStepForm = React.forwardRef<HTMLDivElement, MultiStepFormProps>(
       exit:   { opacity: 0, x: -32 },
     };
 
-    return (
-      <div ref={ref} className={cn(multiStepFormVariants({ size }), className)} {...props}>
+    /* ── theme tokens ─────────────────────────────────────────────── */
+    const BG_CARD    = isLight ? "#ffffff"           : "rgba(10,26,20,0.70)";
+    const BORDER     = isLight ? "rgba(0,0,0,0.07)"  : "rgba(255,255,255,0.08)";
+    const BG_FOOTER  = isLight ? "rgba(0,0,0,0.02)"  : "rgba(10,26,20,0.50)";
+    const TEXT_MAIN  = isLight ? "rgba(0,0,0,0.85)"  : "#ffffff";
+    const TEXT_SUB   = isLight ? "rgba(0,0,0,0.45)"  : "#9ca3af";
+    const TEXT_MUTED = isLight ? "rgba(0,0,0,0.35)"  : "#6b7280";
+    const BTN_BACK   = isLight
+      ? "border border-black/10 text-black/50 hover:border-black/20 hover:text-black/80 hover:bg-black/04"
+      : "border border-white/10 text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5";
+    const PROGRESS_BG = isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.10)";
 
-        {/* ── Header ─────────────────────────────────────────── */}
-        <div className="px-6 md:px-8 pt-7 pb-5 border-b border-white/5 space-y-3">
-          {/* Step badge + close */}
+    return (
+      <div
+        ref={ref}
+        className={cn(multiStepFormVariants({ size }), className)}
+        style={{
+          background: BG_CARD,
+          border: `1px solid ${BORDER}`,
+          backdropFilter: isLight ? undefined : "blur(12px)",
+          color: TEXT_MAIN,
+        }}
+        {...props}
+      >
+        {/* ── Header ───────────────────────────────────────────────── */}
+        <div className="px-6 md:px-8 pt-7 pb-5 space-y-3" style={{ borderBottom: `1px solid ${BORDER}` }}>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold tracking-[0.12em] uppercase text-[#00c685]">
+            <span className="text-[10px] font-bold tracking-[0.12em] uppercase" style={{ color: "#00c685" }}>
               Step {currentStep} of {totalSteps}
             </span>
             {onClose && (
@@ -83,29 +106,30 @@ const MultiStepForm = React.forwardRef<HTMLDivElement, MultiStepFormProps>(
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="w-7 h-7 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-colors"
+                className="w-7 h-7 rounded-full flex items-center justify-center transition-colors"
+                style={{ color: TEXT_MUTED }}
+                onMouseEnter={e => (e.currentTarget.style.background = isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.08)")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 <X size={14} />
               </button>
             )}
           </div>
 
-          {/* Title + description */}
           <div>
-            <h2 className="text-xl font-bold text-white tracking-tight leading-snug">{title}</h2>
-            <p className="text-sm text-gray-400 mt-0.5">{description}</p>
+            <h2 className="text-xl font-bold tracking-tight leading-snug" style={{ color: TEXT_MAIN }}>{title}</h2>
+            <p className="text-sm mt-0.5" style={{ color: TEXT_SUB }}>{description}</p>
           </div>
 
-          {/* Progress bar */}
           <div className="flex items-center gap-3">
-            <Progress value={progress} className="flex-1 h-1.5 bg-white/10" />
-            <span className="text-[11px] text-[#00c685] font-semibold whitespace-nowrap tabular-nums">
+            <Progress value={progress} className="flex-1 h-1.5" style={{ background: PROGRESS_BG }} />
+            <span className="text-[11px] font-semibold whitespace-nowrap tabular-nums" style={{ color: "#00c685" }}>
               {progress}%
             </span>
           </div>
         </div>
 
-        {/* ── Scrollable step content ─────────────────────────── */}
+        {/* ── Scrollable content ───────────────────────────────────── */}
         <div className="overflow-y-auto max-h-[calc(100vh-280px)] overscroll-contain">
           <div className="px-6 md:px-8 py-6 overflow-hidden">
             <AnimatePresence mode="wait">
@@ -123,17 +147,18 @@ const MultiStepForm = React.forwardRef<HTMLDivElement, MultiStepFormProps>(
           </div>
         </div>
 
-        {/* ── Footer ─────────────────────────────────────────── */}
-        <div className="flex items-center justify-between px-6 md:px-8 py-4 border-t border-white/5 bg-[#0a1a14]/50">
-          <div className="text-xs text-gray-500">
-            {footerContent}
-          </div>
+        {/* ── Footer ───────────────────────────────────────────────── */}
+        <div
+          className="flex items-center justify-between px-6 md:px-8 py-4"
+          style={{ borderTop: `1px solid ${BORDER}`, background: BG_FOOTER }}
+        >
+          <div className="text-xs" style={{ color: TEXT_MUTED }}>{footerContent}</div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onBack}
               aria-label="Go back"
-              className="w-9 h-9 rounded-full border border-white/10 text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all flex items-center justify-center shrink-0"
+              className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all ${BTN_BACK}`}
             >
               <ArrowLeft size={15} />
             </button>

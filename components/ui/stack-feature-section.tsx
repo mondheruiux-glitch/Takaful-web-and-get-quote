@@ -56,7 +56,7 @@ export default function StackFeatureSection() {
             <span>What&apos;s Covered</span>
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-4 leading-[1.1] tracking-[-0.02em]">
+          <h2 className="text-4xl md:text-5xl font-normal font-heading text-gray-900 mb-4 leading-[1.1] tracking-[-0.02em]">
             Complete home<br />protection
           </h2>
           <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-md">
@@ -98,7 +98,7 @@ export default function StackFeatureSection() {
 
             {/* Centre: Takaful logo — floating, no wrapper */}
             <img
-              src="/logo-dark.png"
+              src="/brand/logo-dark.png"
               alt="Takaful"
               className="absolute z-20 h-7 w-auto"
             />

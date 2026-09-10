@@ -56,14 +56,14 @@ export default function Testimonial1() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-50px" }}
         >
           {/* Community Badge */}
           <div className="flex justify-center mb-8">
             <PillBadge text="Our Community" className="mb-0" />
           </div>
 
-          <h1 className="text-2xl md:text-3xl lg:text-5xl font-normal font-playfair italic leading-tight">
+          <h1 className="text-2xl md:text-3xl lg:text-5xl font-normal font-heading leading-tight">
             We make it easy for <br className="sm:hidden" />
             <TooltipProvider>
               <Tooltip>
@@ -93,7 +93,7 @@ export default function Testimonial1() {
             families and
           </h1>
 
-          <h1 className="text-2xl md:text-3xl lg:text-5xl font-normal font-playfair italic leading-tight">
+          <h1 className="text-2xl md:text-3xl lg:text-5xl font-normal font-heading leading-tight">
             their
             <TooltipProvider>
               <Tooltip>
@@ -121,7 +121,7 @@ export default function Testimonial1() {
             </TooltipProvider>
             communities to protect and
           </h1>
-          <h1 className="text-2xl md:text-3xl lg:text-5xl font-normal font-playfair italic text-[#333333] leading-tight">
+          <h1 className="text-2xl md:text-3xl lg:text-5xl font-normal font-heading text-[#333333] leading-tight">
             secure their homes
           </h1>
         </motion.div>

@@ -5,12 +5,15 @@ import { motion } from 'framer-motion';
 import {
   FileText, Plus, Search, Filter, ChevronRight, Clock,
   CheckCircle2, AlertCircle, XCircle, AlertTriangle,
-  Banknote, BarChart3, TrendingUp,
+  Banknote, BarChart3, TrendingUp, ShieldCheck, FileCheck, ArrowUpRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRole, useTheme } from '../ThemeRoleContext';
 import { CLAIMS, CLAIMS_TREND } from '@/lib/dashboard/mock-data';
 import { Claim } from '@/lib/dashboard/types';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip as RechartsTooltip, ResponsiveContainer,
@@ -46,47 +49,97 @@ function StatusBadge({ status }: { status: string }) {
 /* ─── Participant view ───────────────────────────────────────────────────── */
 function ParticipantClaimsView({ theme }: { theme: string }) {
   const isLight = theme === 'light';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.06)';
+  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
+
   const myClaims = CLAIMS.filter(c => c.participantId === 'P-0042');
+  const totalClaimed = myClaims.reduce((acc, c) => acc + c.amountClaimed, 0);
+  const totalApproved = myClaims.filter(c => ['Approved', 'Paid'].includes(c.status)).reduce((acc, c) => acc + (c.amountApproved ?? c.amountClaimed), 0);
+  const inReviewCount = myClaims.filter(c => !['Paid', 'Approved', 'Rejected'].includes(c.status)).length;
+
   return (
-    <div className="p-4 sm:p-6 space-y-6">
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex items-center justify-between">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
+      {/* Breadcrumb */}
+      <div className={`text-xs flex items-center gap-1.5 font-medium ${isLight ? 'text-gray-400' : 'text-white/40'}`}>
+        <span>Dashboard</span>
+        <ChevronRight size={12} className="opacity-50" />
+        <span className={isLight ? 'text-gray-700 font-semibold' : 'text-white/70 font-semibold'}>Claims</span>
+      </div>
+
+      {/* Header */}
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className={`text-xl font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>My Claims</h1>
-          <p className={`text-sm mt-0.5 ${isLight ? 'text-black/50' : 'text-white/45'}`}>{myClaims.length} claim{myClaims.length !== 1 ? 's' : ''} on record</p>
+          <h1 className={`text-2xl font-bold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>My Claims</h1>
+          <p className={`text-sm mt-1 ${isLight ? 'text-gray-500' : 'text-white/45'}`}>Track, submit, and review status of your Takaful protection claims.</p>
         </div>
-        <Link href="/dashboard/claims/new" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white" style={{ background: GREEN }}>
-          <Plus size={15} />
-          New Claim
+        <Link href="/dashboard/claims/new">
+          <Button className="gap-2.5 px-5 py-2.5 rounded-xl text-xs font-semibold text-white transition-all hover:opacity-95 shadow-sm" style={{ background: GREEN }}>
+            <Plus size={15} /> New Claim
+          </Button>
         </Link>
       </motion.div>
 
+      {/* Stat Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="rounded-2xl p-6 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <p className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${isLight ? 'text-gray-400' : 'text-white/40'}`}>TOTAL CLAIMED</p>
+          <p className={`text-3xl font-extrabold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>£{totalClaimed.toLocaleString('en-GB', { minimumFractionDigits: 2 })}</p>
+          <p className={`text-xs mt-2 ${isLight ? 'text-gray-500' : 'text-white/45'}`}>{myClaims.length} claim{myClaims.length !== 1 ? 's' : ''} submitted to date</p>
+        </div>
+
+        <div className="rounded-2xl p-6 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <p className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${isLight ? 'text-gray-400' : 'text-white/40'}`}>APPROVED / PAID</p>
+          <p className={`text-3xl font-extrabold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>£{totalApproved.toLocaleString('en-GB', { minimumFractionDigits: 2 })}</p>
+          <p className="text-xs mt-2 font-semibold text-[#00c685] flex items-center gap-1">
+            <CheckCircle2 size={13} /> {myClaims.filter(c => c.status === 'Paid').length} claim settled
+          </p>
+        </div>
+
+        <div className="rounded-2xl p-6 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <p className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${isLight ? 'text-gray-400' : 'text-white/40'}`}>ACTIVE IN REVIEW</p>
+          <p className={`text-3xl font-extrabold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>{inReviewCount}</p>
+          <p className={`text-xs mt-2 font-semibold ${inReviewCount > 0 ? 'text-amber-500' : isLight ? 'text-gray-500' : 'text-white/45'}`}>
+            {inReviewCount > 0 ? 'Assessor assigned & under review' : 'No pending claims'}
+          </p>
+        </div>
+      </div>
+
+      {/* Claims List */}
       {myClaims.length === 0 ? (
-        <div className={`rounded-2xl p-10 text-center ${isLight ? 'bg-white border border-black/[0.04]' : 'bg-[#0d2117] border border-white/[0.04]'}`}>
-          <FileText size={32} className={`mx-auto mb-3 ${isLight ? 'text-black/20' : 'text-white/20'}`} />
-          <p className={isLight ? 'text-black/40' : 'text-white/35'}>No claims yet. Make your first claim when you need us.</p>
+        <div className={`rounded-2xl p-12 text-center shadow-sm`} style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <FileText size={36} className={`mx-auto mb-3 ${isLight ? 'text-gray-300' : 'text-white/20'}`} />
+          <p className={`text-sm font-medium ${isLight ? 'text-gray-500' : 'text-white/40'}`}>No claims on record. Click &quot;New Claim&quot; to make your first claim.</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
+          <h3 className={`font-bold text-base ${isLight ? 'text-gray-900' : 'text-white'}`}>Claim Records</h3>
           {myClaims.map((c, i) => (
             <motion.div key={c.id} variants={fadeUp} initial="hidden" animate="visible" custom={i}>
-              <Link href={`/dashboard/claims/${c.id}`} className={`flex items-start gap-4 p-5 rounded-2xl transition-all ${isLight ? 'bg-white border border-black/[0.04] hover:border-[#00c685]/30' : 'bg-[#0d2117] border border-white/[0.04] hover:border-[#00c685]/30'}`}>
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${GREEN}18` }}>
-                  <FileText size={17} style={{ color: GREEN }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-mono text-sm font-bold" style={{ color: GREEN }}>{c.id}</span>
-                    <StatusBadge status={c.status} />
-                    <StatusBadge status={c.priority} />
+              <Link href={`/dashboard/claims/${c.id}`} className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl transition-all shadow-sm ${isLight ? 'bg-white border border-[#E4E7EC] hover:border-gray-300 hover:shadow-md' : 'bg-[#0d2117] border border-white/5 hover:border-white/20'}`}>
+                <div className="flex items-start gap-4">
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${isLight ? 'bg-gray-100 text-gray-700' : 'bg-white/10 text-white/80'}`}>
+                    <FileText size={20} />
                   </div>
-                  <p className={`text-sm font-medium ${isLight ? 'text-black/75' : 'text-white/75'}`}>{c.type} · {c.propertyAddress}</p>
-                  <p className={`text-xs mt-1 ${isLight ? 'text-black/45' : 'text-white/40'}`}>Submitted {c.submittedDate} · Incident {c.incidentDate}</p>
-                  <p className={`text-xs mt-1.5 leading-relaxed ${isLight ? 'text-black/50' : 'text-white/45'}`}>{c.lastActivityNote}</p>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                      <span className={`font-mono text-sm font-semibold ${isLight ? 'text-gray-900' : 'text-white/90'}`}>{c.id}</span>
+                      <StatusBadge status={c.status} />
+                      <StatusBadge status={c.priority} />
+                    </div>
+                    <p className={`text-sm font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{c.type} · {c.propertyAddress}</p>
+                    <p className={`text-xs mt-1 ${isLight ? 'text-gray-500' : 'text-white/45'}`}>Submitted {c.submittedDate} · Incident date {c.incidentDate}</p>
+                    {c.lastActivityNote && (
+                      <p className={`text-xs mt-2 leading-relaxed ${isLight ? 'text-gray-600' : 'text-white/55'}`}>{c.lastActivityNote}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="text-right shrink-0">
-                  <p className={`text-sm font-bold ${isLight ? 'text-black/80' : 'text-white/80'}`}>£{c.amountClaimed.toLocaleString()}</p>
-                  <p className={`text-xs mt-0.5 ${isLight ? 'text-black/40' : 'text-white/35'}`}>Claimed</p>
-                  <ChevronRight size={14} className={`mt-2 ml-auto ${isLight ? 'text-black/30' : 'text-white/25'}`} />
+
+                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0" style={{ borderColor: BORDER }}>
+                  <div>
+                    <p className={`text-base font-extrabold ${isLight ? 'text-gray-900' : 'text-white'}`}>£{c.amountClaimed.toLocaleString('en-GB', { minimumFractionDigits: 2 })}</p>
+                    <p className={`text-[11px] text-right ${isLight ? 'text-gray-400' : 'text-white/35'}`}>Amount Claimed</p>
+                  </div>
+                  <ChevronRight size={16} className={`hidden sm:block mt-3 ${isLight ? 'text-gray-400' : 'text-white/30'}`} />
                 </div>
               </Link>
             </motion.div>
@@ -100,6 +153,9 @@ function ParticipantClaimsView({ theme }: { theme: string }) {
 /* ─── Handler / Management view ──────────────────────────────────────────── */
 function HandlerClaimsView({ theme, isFinance }: { theme: string; isFinance?: boolean }) {
   const isLight = theme === 'light';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.06)';
+  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
+
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
@@ -108,49 +164,65 @@ function HandlerClaimsView({ theme, isFinance }: { theme: string; isFinance?: bo
     .filter(c => statusFilter === 'All' || c.status === statusFilter)
     .filter(c => !search || c.id.toLowerCase().includes(search.toLowerCase()) || c.participantName.toLowerCase().includes(search.toLowerCase()) || c.type.toLowerCase().includes(search.toLowerCase()));
 
-  const stats = [
-    { label: 'Total', count: CLAIMS.length, color: GREEN },
-    { label: 'Open', count: CLAIMS.filter(c => !['Paid','Rejected'].includes(c.status)).length, color: '#f59e0b' },
-    { label: 'Approved', count: CLAIMS.filter(c => c.status === 'Approved').length, color: '#10b981' },
-    { label: 'Overdue', count: CLAIMS.filter(c => c.daysOpen > 10 && !['Paid','Rejected'].includes(c.status)).length, color: '#ef4444' },
-  ];
-
-  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
-  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
-  const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
-  const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
-  const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BG_INPUT = isLight ? 'bg-black/[0.03]' : 'bg-white/[0.04]';
-  const BORDER_INPUT = isLight ? 'border-black/[0.06]' : 'border-white/[0.05]';
+  const totalValue = CLAIMS.reduce((sum, c) => sum + c.amountClaimed, 0);
+  const approvedValue = CLAIMS.filter(c => ['Approved', 'Paid'].includes(c.status)).reduce((sum, c) => sum + (c.amountApproved ?? c.amountClaimed), 0);
+  const openCount = CLAIMS.filter(c => !['Paid','Rejected'].includes(c.status)).length;
+  const overdueCount = CLAIMS.filter(c => c.daysOpen > 10 && !['Paid','Rejected'].includes(c.status)).length;
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex items-center justify-between">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
+      {/* Breadcrumb */}
+      <div className={`text-xs flex items-center gap-1.5 font-medium ${isLight ? 'text-gray-400' : 'text-white/40'}`}>
+        <span>Dashboard</span>
+        <ChevronRight size={12} className="opacity-50" />
+        <span className={isLight ? 'text-gray-700 font-semibold' : 'text-white/70 font-semibold'}>Claims Operations</span>
+      </div>
+
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className={`text-xl font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>{isFinance ? 'Claims — Payment View' : 'All Claims'}</h1>
-          <p className={`text-sm mt-0.5 ${isLight ? 'text-black/50' : 'text-white/45'}`}>{CLAIMS.length} claims total</p>
+          <h1 className={`text-2xl font-bold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>{isFinance ? 'Claims — Treasury Disbursement' : 'Claims Control'}</h1>
+          <p className={`text-sm mt-1 ${isLight ? 'text-gray-500' : 'text-white/45'}`}>Overview of active claims, assessments, and payouts.</p>
         </div>
       </motion.div>
 
-      {/* Stat chips */}
-      <div className="flex flex-wrap gap-3">
-        {stats.map(s => (
-          <div key={s.label} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold`} style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
-            <span style={{ color: s.color }}>{s.count}</span>
-            <span className={isLight ? 'text-black/55' : 'text-white/50'}>{s.label}</span>
-          </div>
-        ))}
+      {/* KPI Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="rounded-2xl p-6 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <p className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${isLight ? 'text-gray-400' : 'text-white/40'}`}>TOTAL CLAIMS VOLUME</p>
+          <p className={`text-3xl font-extrabold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>{CLAIMS.length}</p>
+          <p className={`text-xs mt-2 font-semibold text-[#00c685]`}>£{(totalValue / 1000).toFixed(1)}k total claimed</p>
+        </div>
+
+        <div className="rounded-2xl p-6 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <p className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${isLight ? 'text-gray-400' : 'text-white/40'}`}>OPEN / IN REVIEW</p>
+          <p className={`text-3xl font-extrabold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>{openCount}</p>
+          <p className="text-xs mt-2 font-semibold text-amber-500">Requires handler action</p>
+        </div>
+
+        <div className="rounded-2xl p-6 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <p className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${isLight ? 'text-gray-400' : 'text-white/40'}`}>APPROVED / PAID</p>
+          <p className={`text-3xl font-extrabold tracking-tight ${isLight ? 'text-gray-900' : 'text-white'}`}>£{(approvedValue / 1000).toFixed(1)}k</p>
+          <p className={`text-xs mt-2 font-semibold text-[#00c685]`}>{CLAIMS.filter(c => c.status === 'Approved').length} ready for release</p>
+        </div>
+
+        <div className="rounded-2xl p-6 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <p className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${isLight ? 'text-gray-400' : 'text-white/40'}`}>OVERDUE CLAIMS (&gt;10d)</p>
+          <p className={`text-3xl font-extrabold tracking-tight ${overdueCount > 0 ? 'text-red-500' : isLight ? 'text-gray-900' : 'text-white'}`}>{overdueCount}</p>
+          <p className={`text-xs mt-2 font-semibold ${overdueCount > 0 ? 'text-red-500' : isLight ? 'text-gray-400' : 'text-white/35'}`}>
+            {overdueCount > 0 ? 'Priority escalation needed' : 'All SLAs on track'}
+          </p>
+        </div>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-3">
-        <div className={`relative flex items-center gap-2 px-3.5 py-2.5 rounded-xl border flex-1 transition-colors ${isLight ? 'bg-black/[0.03] border-black/[0.06] text-black' : 'bg-white/[0.04] border-white/[0.05] text-white'}`}>
-          <Search size={14} className={isLight ? 'text-black/35' : 'text-white/30'} />
-          <input
+      <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+        <div className="relative flex-1 max-w-xs">
+          <Search size={14} className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${isLight ? 'text-gray-400' : 'text-white/30'}`} />
+          <Input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by claim ID, name, or type..."
-            className={`flex-1 bg-transparent text-sm outline-none placeholder:text-xs placeholder:font-medium ${isLight ? 'text-black placeholder:text-black/30' : 'text-white placeholder:text-white/30'}`}
+            className={`pl-9 text-xs h-9 ${isLight ? 'border-[#E4E7EC]' : 'border-white/10 bg-white/5 text-white'}`}
           />
         </div>
         <div className="flex gap-1.5 flex-wrap">
@@ -162,8 +234,8 @@ function HandlerClaimsView({ theme, isFinance }: { theme: string; isFinance?: bo
                 statusFilter === s
                   ? 'bg-[#00c685]/15 border-[#00c685]/35 text-[#00c685]'
                   : isLight
-                    ? 'border-black/[0.06] bg-black/[0.02] text-black/60 hover:text-black hover:border-black/20'
-                    : 'border-white/[0.05] bg-white/[0.02] text-white/55 hover:text-white hover:border-white/15'
+                    ? 'border-[#E4E7EC] bg-gray-50 text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                    : 'border-white/5 bg-white/5 text-white/55 hover:text-white hover:border-white/15'
               }`}
             >
               {s}
@@ -173,37 +245,37 @@ function HandlerClaimsView({ theme, isFinance }: { theme: string; isFinance?: bo
       </div>
 
       {/* Table */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" className={`rounded-2xl overflow-hidden`} style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="rounded-2xl overflow-hidden shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className={isLight ? 'text-black/40 border-b border-black/[0.04]' : 'text-white/35 border-b border-white/[0.04]'}>
-                {['Claim ID', 'Participant', 'Type', 'Claimed £', isFinance ? 'Approved £' : 'Days Open', 'Priority', 'Status', 'Handler', ''].map(h => (
+              <tr className={isLight ? 'text-gray-400 border-b border-[#E4E7EC]' : 'text-white/35 border-b border-white/[0.04]'}>
+                {['Claim ID', 'Participant', 'Type', 'Claimed £', isFinance ? 'Approved £' : 'Days Open', 'Priority', 'Status', 'Handler', 'Action'].map(h => (
                   <th key={h} className="px-5 py-3.5 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className={`divide-y ${isLight ? 'divide-black/04' : 'divide-white/04'}`}>
+            <tbody className={`divide-y ${isLight ? 'divide-gray-50' : 'divide-white/[0.03]'}`}>
               {filtered.map(c => (
-                <tr key={c.id} className={`transition-colors ${isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]'}`}>
-                  <td className="px-5 py-4 font-mono font-bold" style={{ color: GREEN }}>{c.id}</td>
-                  <td className={`px-5 py-4 font-medium ${isLight ? 'text-black/75' : 'text-white/75'}`}>{c.participantName}</td>
-                  <td className={`px-5 py-4 ${isLight ? 'text-black/55' : 'text-white/55'}`}>{c.type}</td>
-                  <td className={`px-5 py-4 font-semibold ${isLight ? 'text-black/70' : 'text-white/70'}`}>£{c.amountClaimed.toLocaleString()}</td>
+                <tr key={c.id} className={`transition-colors ${isLight ? 'hover:bg-gray-50/60' : 'hover:bg-white/[0.02]'}`}>
+                  <td className={`px-5 py-4 font-mono font-semibold ${isLight ? 'text-gray-900' : 'text-white/90'}`}>{c.id}</td>
+                  <td className={`px-5 py-4 font-medium ${isLight ? 'text-gray-900' : 'text-white/80'}`}>{c.participantName}</td>
+                  <td className={`px-5 py-4 ${isLight ? 'text-gray-600' : 'text-white/60'}`}>{c.type}</td>
+                  <td className={`px-5 py-4 font-bold ${isLight ? 'text-gray-900' : 'text-white/80'}`}>£{c.amountClaimed.toLocaleString()}</td>
                   {isFinance ? (
                     <td className="px-5 py-4 font-bold text-[#00c685]">
                       {c.amountApproved !== undefined ? `£${c.amountApproved.toLocaleString()}` : '—'}
                     </td>
                   ) : (
                     <td className="px-5 py-4">
-                      <span className={`font-bold ${c.daysOpen > 10 ? 'text-red-400' : c.daysOpen > 5 ? 'text-amber-400' : isLight ? 'text-black/60' : 'text-white/60'}`}>{c.daysOpen}d</span>
+                      <span className={`font-bold ${c.daysOpen > 10 ? 'text-red-500' : c.daysOpen > 5 ? 'text-amber-500' : isLight ? 'text-gray-600' : 'text-white/60'}`}>{c.daysOpen}d</span>
                     </td>
                   )}
                   <td className="px-5 py-4"><StatusBadge status={c.priority} /></td>
                   <td className="px-5 py-4"><StatusBadge status={c.status} /></td>
-                  <td className={`px-5 py-4 ${isLight ? 'text-black/50' : 'text-white/45'}`}>{c.assignedHandlerName ?? '—'}</td>
+                  <td className={`px-5 py-4 ${isLight ? 'text-gray-500' : 'text-white/45'}`}>{c.assignedHandlerName ?? '—'}</td>
                   <td className="px-5 py-4">
-                    <Link href={`/dashboard/claims/${c.id}`} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold text-white transition-opacity hover:opacity-85" style={{ background: GREEN }}>
+                    <Link href={`/dashboard/claims/${c.id}`} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold text-white transition-opacity hover:opacity-90" style={{ background: GREEN }}>
                       View <ChevronRight size={10} />
                     </Link>
                   </td>
@@ -211,7 +283,7 @@ function HandlerClaimsView({ theme, isFinance }: { theme: string; isFinance?: bo
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={9} className={`px-5 py-8 text-center text-sm ${isLight ? 'text-black/35' : 'text-white/30'}`}>No claims match your filters.</td>
+                  <td colSpan={9} className={`px-5 py-8 text-center text-sm ${isLight ? 'text-gray-400' : 'text-white/30'}`}>No claims match your filters.</td>
                 </tr>
               )}
             </tbody>
@@ -221,18 +293,17 @@ function HandlerClaimsView({ theme, isFinance }: { theme: string; isFinance?: bo
 
       {/* Claims trend chart for management */}
       {!isFinance && (
-        <motion.div variants={fadeUp} initial="hidden" animate="visible" className={`rounded-2xl overflow-hidden`} style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
-          <div className={`flex items-center justify-between px-5 py-4 border-b`} style={{ borderColor: BORDER }}>
-            <h3 className={`text-sm font-semibold ${isLight ? 'text-black/85' : 'text-white/85'}`}>Claims Volume Trend</h3>
-          </div>
-          <div className="p-5 h-52">
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" className="rounded-2xl p-6 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          <h3 className={`text-sm font-bold mb-1 ${isLight ? 'text-gray-900' : 'text-white'}`}>Claims Volume Trend</h3>
+          <p className={`text-xs mb-5 ${isLight ? 'text-gray-500' : 'text-white/40'}`}>Monthly claim frequency and inflow</p>
+          <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={CLAIMS_TREND} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
+                <XAxis dataKey="month" tick={{ fontSize: 10, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
                 <RechartsTooltip contentStyle={{ background: isLight ? '#fff' : '#0d2117', border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }} />
-                <Bar dataKey="count" name="Claims" fill={GREEN} radius={[4,4,0,0]} />
+                <Bar dataKey="count" name="Claims" fill={GREEN} radius={[6,6,0,0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

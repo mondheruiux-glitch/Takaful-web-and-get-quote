@@ -57,7 +57,7 @@ const nextConfig: NextConfig = {
   },
   // ─── Reduce bundle size by tree-shaking large packages ─────────────────────
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion', 'motion', 'three'],
+    optimizePackageImports: ['lucide-react', 'framer-motion', 'three'],
   },
   // ─── Image optimisation ────────────────────────────────────────────────────
   images: {

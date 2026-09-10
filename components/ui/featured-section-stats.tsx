@@ -32,7 +32,7 @@ export default function FeaturedSectionStats() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-50px" }}
           className="mb-8"
         >
           <PillBadge text="Community Growth" dark />
@@ -43,8 +43,8 @@ export default function FeaturedSectionStats() {
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          viewport={{ once: true }}
-          className="text-2xl sm:text-3xl lg:text-4xl font-normal font-playfair italic text-white leading-tight mb-4 max-w-3xl animate-fade-in"
+          viewport={{ once: true, margin: "-50px" }}
+          className="text-2xl sm:text-3xl lg:text-4xl font-normal font-heading text-white leading-tight mb-4 max-w-3xl animate-fade-in"
         >
           Powering communities with real-time transparency.{" "}
           <span className="text-gray-400 text-xl sm:text-2xl lg:text-3xl font-medium">
@@ -61,7 +61,7 @@ export default function FeaturedSectionStats() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-50px" }}
             >
               <DotCard
                 target={stat.target}

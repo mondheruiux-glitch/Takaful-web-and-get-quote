@@ -72,7 +72,7 @@ export function HoverFooter() {
           {/* Brand section */}
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-2">
-              <img src="/logo-takaful.svg" alt="Takaful Logo" className="h-8 brightness-0 invert" />
+              <img src="/brand/logo-takaful.svg" alt="Takaful Logo" className="h-8 brightness-0 invert" />
             </div>
             <p className="text-sm leading-relaxed text-gray-400">
               Islamic Protection That Shares Your Faith. Honest, transparent, and community-driven.

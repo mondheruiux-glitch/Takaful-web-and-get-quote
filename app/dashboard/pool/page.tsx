@@ -49,9 +49,9 @@ function ChartTooltip({ active, payload, label, theme }: any) {
 
 function MetricCard({ label, value, sub, color, tooltip, theme }: { label: string; value: string; sub: string; color: string; tooltip: string; theme: string }) {
   const isLight = theme === 'light';
-  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
   return (
-    <div className="rounded-2xl p-5 flex flex-col gap-3 transition-colors duration-200" style={{ background: isLight ? '#ffffff' : '#0d2117', border: `1px solid ${BORDER}` }}>
+    <div className={`rounded-2xl p-5 flex flex-col gap-3 transition-colors duration-200 ${isLight ? 'shadow-sm' : ''}`} style={{ background: isLight ? '#ffffff' : '#0d2117', border: `1px solid ${BORDER}` }}>
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-1.5">
           <p className={`text-xs font-semibold uppercase tracking-wider ${isLight ? 'text-black/45' : 'text-white/40'}`}>{label}</p>
@@ -75,7 +75,7 @@ function MetricCard({ label, value, sub, color, tooltip, theme }: { label: strin
 /* ─── Participant view: Simplified transparency ──────────────────────────── */
 function ParticipantPoolView({ theme }: { theme: string }) {
   const isLight = theme === 'light';
-  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
   const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
   const [flowOpen, setFlowOpen] = useState(true);
 
@@ -89,12 +89,14 @@ function ParticipantPoolView({ theme }: { theme: string }) {
       {/* Principle block */}
       <motion.div
         variants={fadeUp} initial="hidden" animate="visible" custom={1}
-        className="rounded-2xl p-5 flex items-start gap-4 transition-colors"
-        style={{ background: 'rgba(0,198,133,0.06)', border: `1px solid rgba(0,198,133,0.15)` }}
+        className="rounded-2xl p-5 flex items-start gap-4 transition-colors shadow-sm"
+        style={{ background: isLight ? '#F8FAFC' : 'rgba(0,198,133,0.06)', border: `1px solid ${isLight ? '#E2E8F0' : 'rgba(0,198,133,0.15)'}` }}
       >
-        <ShieldCheck size={20} className="text-[#00c685] mt-0.5 shrink-0" />
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isLight ? 'bg-gray-200 text-gray-700' : 'bg-white/10 text-white'}`}>
+          <ShieldCheck size={18} />
+        </div>
         <div>
-          <p className="text-[#00c685] text-sm font-semibold">The Takaful Mutual Principle</p>
+          <p className={`text-sm font-semibold ${isLight ? 'text-gray-900' : 'text-[#00c685]'}`}>The Takaful Mutual Principle</p>
           <p className={`text-xs mt-1 leading-relaxed ${isLight ? 'text-black/60' : 'text-white/50'}`}>
             As a participant, your contribution isn't a premium sold for commercial profit. Instead, it is a donation (Tabarru') into a shared community pool.
             If you or any other participant suffers a loss, funds are released to cover it. Any administrative costs are managed via an upfront Wakāla fee.
@@ -115,7 +117,7 @@ function ParticipantPoolView({ theme }: { theme: string }) {
         <div className="lg:col-span-2">
           <motion.div
             variants={fadeUp} initial="hidden" animate="visible" custom={3}
-            className="rounded-2xl overflow-hidden transition-colors" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
+            className="rounded-2xl overflow-hidden transition-colors shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
           >
             <div className="px-5 py-4 border-b" style={{ borderColor: BORDER }}>
               <h3 className={`font-semibold text-sm ${isLight ? 'text-black/80' : 'text-white/80'}`}>Contribution Allocation</h3>
@@ -142,7 +144,7 @@ function ParticipantPoolView({ theme }: { theme: string }) {
         {/* Shariah Compliance info */}
         <motion.div
           variants={fadeUp} initial="hidden" animate="visible" custom={4}
-          className="rounded-2xl p-5 space-y-4" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
+          className="rounded-2xl p-5 space-y-4 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
         >
           <div className="flex items-center gap-2">
             <BookOpen size={16} className="text-[#00c685]" />
@@ -174,7 +176,7 @@ function ParticipantPoolView({ theme }: { theme: string }) {
 /* ─── Finance / Management: Full balance sheets & trends ─────────────────── */
 function StrategicPoolView({ theme, isFinance }: { theme: string; isFinance?: boolean }) {
   const isLight = theme === 'light';
-  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
   const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
   const CHART_GRID = isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.04)';
 

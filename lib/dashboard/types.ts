@@ -11,6 +11,7 @@ export interface DemoUser {
   jobTitle: string;
   participantId?: string; // only for participant role
   certificateId?: string; // only for participant role
+  gender?: 'male' | 'female';
 }
 
 export interface Participant {
@@ -59,10 +60,12 @@ export interface Contribution {
 export type ClaimType =
   | 'Storm'
   | 'Fire'
+  | 'Fire Damage'
   | 'Flood'
   | 'Theft'
   | 'Accidental Damage'
   | 'Escape of Water'
+  | 'Water Leak'
   | 'Subsidence'
   | 'Other';
 

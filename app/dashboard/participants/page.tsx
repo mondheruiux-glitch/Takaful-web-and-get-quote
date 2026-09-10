@@ -10,6 +10,7 @@ import {
 import { useTheme } from '../ThemeRoleContext';
 import { usePermission } from '@/lib/dashboard/permissions';
 import { PARTICIPANTS } from '@/lib/dashboard/mock-data';
+import { getDicebearAvatar } from '@/lib/dashboard/avatars';
 import Link from 'next/link';
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -43,16 +44,15 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function Avatar({ name }: { name: string }) {
-  const initials = name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
-  const colors = ['#00c685', '#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899', '#10b981'];
-  const color = colors[name.charCodeAt(0) % colors.length];
   return (
-    <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
-      style={{ background: `${color}20`, color, border: `1px solid ${color}30` }}>
-      {initials}
-    </div>
+    <img
+      src={getDicebearAvatar(name)}
+      alt={name}
+      className="w-8 h-8 rounded-full object-cover border border-gray-200 bg-gray-100 shrink-0"
+    />
   );
 }
+
 
 export default function ParticipantsPage() {
   const { theme } = useTheme();
@@ -69,7 +69,7 @@ export default function ParticipantsPage() {
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
   const BG_INPUT = isLight ? 'bg-black/[0.03]' : 'bg-white/[0.04]';
   const BORDER_INPUT = isLight ? 'border-black/[0.06]' : 'border-white/[0.05]';
   const ROW_HOVER = isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]';
@@ -120,7 +120,7 @@ export default function ParticipantsPage() {
           { label: 'High Risk Rating', value: '18', color: '#ef4444' },
         ].map((s, i) => (
           <motion.div key={s.label} variants={fadeUp} initial="hidden" animate="visible" custom={i + 1}
-            className="rounded-2xl p-4 transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+            className="rounded-2xl p-4 transition-colors duration-200 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
             <div className="w-2 h-2 rounded-full mb-3" style={{ background: s.color }} />
             <p className={`font-bold text-xl ${TEXT_MAIN}`}>{s.value}</p>
             <p className={`text-[10px] mt-1 ${TEXT_SUB}`}>{s.label}</p>
@@ -130,7 +130,7 @@ export default function ParticipantsPage() {
 
       {/* Table Card */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={5}
-        className="rounded-2xl overflow-hidden transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+        className="rounded-2xl overflow-hidden transition-colors duration-200 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
 
         {/* Filters */}
         <div className="flex flex-col md:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b" style={{ borderColor: BORDER }}>

@@ -96,7 +96,7 @@ function Nav() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between p-4 sm:p-5 transition-all duration-500">
-        <Link href="/"><img src={onDark ? '/logo-light.png' : '/logo-dark.png'} alt="Takaful" className="h-6 transition-all duration-500" /></Link>
+        <Link href="/"><img src={onDark ? '/brand/logo-light.png' : '/brand/logo-dark.png'} alt="Takaful" className="h-6 transition-all duration-500" /></Link>
         <div className={`hidden md:flex absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-2 items-center gap-1 transition-all duration-500 ${onDark ? 'bg-white/20 backdrop-blur-md border border-white/30' : 'bg-gray-100/80 border border-gray-200'}`}>
           {links.map(([label, href], i) => (
             <Link
@@ -123,7 +123,7 @@ function Nav() {
           <div className="w-full max-w-xs bg-white h-full p-6 flex flex-col justify-between shadow-2xl relative">
             <button onClick={() => setMobileMenuOpen(false)} className="absolute top-5 right-5 p-2 text-gray-500 hover:text-gray-800 rounded-full hover:bg-gray-100"><X size={24} /></button>
             <div className="flex flex-col gap-6 mt-12">
-              <img src="/logo-dark.png" alt="Takaful Logo" className="h-6 w-auto self-start" />
+              <img src="/brand/logo-dark.png" alt="Takaful Logo" className="h-6 w-auto self-start" />
               <div className="flex flex-col gap-2">
                 {links.map(([label, href]) => (
                   <Link key={label} href={href} onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-base font-semibold text-gray-900 hover:bg-gray-100 transition-colors">{label}</Link>
@@ -302,7 +302,7 @@ function Hero() {
 
         {/* Headline */}
         <h1
-          className="leading-[0.95] bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 font-playfair italic font-normal tracking-tight mb-6 hero-anim hero-reveal"
+          className="leading-[0.95] bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 font-heading font-normal tracking-tight mb-6 hero-anim hero-reveal"
           style={{ letterSpacing: '-0.04em', animationDelay: '0.25s' }}
         >
           <span className="block text-5xl sm:text-7xl md:text-[5.5rem]">Building Trust,</span>
@@ -370,7 +370,7 @@ function OriginStory() {
               <motion.div variants={itemVariants}>
                 <PillBadge text="How We Started" className="mb-6" />
               </motion.div>
-              <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-6 leading-[1.15] tracking-[-0.02em]">
+              <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-heading text-gray-900 mb-6 leading-[1.15] tracking-[-0.02em]">
                 Born from a gap in the market and a gap in conscience.
               </motion.h2>
               {[
@@ -398,7 +398,7 @@ function OriginStory() {
           <div ref={ref} className="relative flex items-center justify-center overflow-hidden" style={{ height: '560px' }}>
             <div className="relative w-[42rem] h-[42rem] flex items-center justify-center translate-x-[20%]">
               {/* Center Logo */}
-              <img alt="Takaful" className="absolute z-20 h-7 w-auto bg-white p-1 rounded-lg shadow-sm" src="/logo-dark.png" />
+              <img alt="Takaful" className="absolute z-20 h-7 w-auto bg-white p-1 rounded-lg shadow-sm" src="/brand/logo-dark.png" />
 
               {/* Orbit 1 */}
               <div className="absolute rounded-full border-2 border-dashed border-gray-300 pointer-events-none" style={{ width: '17rem', height: '17rem', animation: 'orbit-spin 18s linear infinite' }}>
@@ -538,7 +538,7 @@ function MissionVision() {
           <motion.div variants={itemVariants}>
             <PillBadge text="Purpose" className="mb-6" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
+          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-heading text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
             What we believe and where we are going
           </motion.h2>
           <motion.p variants={itemVariants} className="text-gray-500 text-lg leading-relaxed">
@@ -609,7 +609,7 @@ function ImpactNumbers() {
         <motion.h3
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }} viewport={{ once: true }}
-          className="text-2xl sm:text-3xl lg:text-4xl font-normal font-playfair italic text-white leading-tight mb-4 max-w-3xl"
+          className="text-2xl sm:text-3xl lg:text-4xl font-normal font-heading text-white leading-tight mb-4 max-w-3xl"
         >
           Numbers that tell the real story.{' '}
           <span className="text-gray-400 text-xl sm:text-2xl lg:text-3xl font-medium">
@@ -691,7 +691,7 @@ function CoreValues() {
           <motion.div variants={itemVariants}>
             <PillBadge text="What We Stand For" className="mb-6" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
+          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-heading text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
             Six values. One unbreakable promise.
           </motion.h2>
           <motion.p variants={itemVariants} className="text-gray-500 text-lg leading-relaxed">
@@ -765,7 +765,7 @@ function Team() {
           <motion.div variants={itemVariants}>
             <PillBadge text="The People" className="mb-6" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
+          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-heading text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
             Behind every policy, a real human.
           </motion.h2>
           <motion.p variants={itemVariants} className="text-gray-500 text-lg leading-relaxed">
@@ -835,7 +835,7 @@ function FinalCTA() {
           <motion.div variants={itemVariants}>
             <PillBadge text="Get Started Today" dark className="mb-8" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-4xl md:text-6xl font-playfair italic font-normal text-white mb-6 leading-[1.1] tracking-[-0.02em]">
+          <motion.h2 variants={itemVariants} className="text-4xl md:text-6xl font-heading font-normal text-white mb-6 leading-[1.1] tracking-[-0.02em]">
             Ready to protect your home?
           </motion.h2>
           <motion.p variants={itemVariants} className="text-neutral-400 text-lg leading-relaxed mb-10 max-w-xl mx-auto">

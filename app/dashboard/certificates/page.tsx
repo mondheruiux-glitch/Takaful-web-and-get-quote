@@ -88,7 +88,7 @@ export default function CertificatesPage() {
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
   const BG_INPUT = isLight ? 'bg-black/[0.03]' : 'bg-white/[0.04]';
   const BORDER_INPUT = isLight ? 'border-black/[0.06]' : 'border-white/[0.05]';
   const ROW_HOVER = isLight ? 'hover:bg-black/[0.015]' : 'hover:bg-white/[0.02]';
@@ -110,7 +110,7 @@ export default function CertificatesPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {SUMMARY.map((s, i) => (
           <motion.div key={s.label} variants={fadeUp} initial="hidden" animate="visible" custom={i + 1}
-            className="rounded-xl p-4 transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+            className="rounded-xl p-4 transition-colors duration-200 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
             <div className="w-2 h-2 rounded-full mb-3" style={{ background: s.color }} />
             <p className={`font-bold text-xl ${TEXT_MAIN}`}>{s.value}</p>
             <p className={`text-[10px] mt-1 ${TEXT_SUB}`}>{s.label}</p>
@@ -120,7 +120,7 @@ export default function CertificatesPage() {
 
       {/* Table */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={5}
-        className="rounded-2xl overflow-hidden transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+        className="rounded-2xl overflow-hidden transition-colors duration-200 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
         
         {/* Search + actions */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4" style={{ borderBottom: `1px solid ${BORDER}` }}>

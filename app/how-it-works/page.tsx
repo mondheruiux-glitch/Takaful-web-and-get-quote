@@ -113,7 +113,7 @@ function Nav() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between p-4 sm:p-5 transition-all duration-500">
-        <Link href="/"><img src={onDark ? '/logo-light.png' : '/logo-dark.png'} alt="Takaful" className="h-6 transition-all duration-500" /></Link>
+        <Link href="/"><img src={onDark ? '/brand/logo-light.png' : '/brand/logo-dark.png'} alt="Takaful" className="h-6 transition-all duration-500" /></Link>
         <div className={`hidden md:flex absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-2 items-center gap-1 transition-all duration-500 ${onDark ? 'bg-white/20 backdrop-blur-md border border-white/30' : 'bg-gray-100/80 border border-gray-200'}`}>
           {links.map(([label, href], i) => (
             <Link key={label} href={href} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${i === 1 ? onDark ? 'bg-white/20 text-white' : 'bg-white text-gray-900 shadow-sm' : onDark ? 'text-white/80 hover:bg-white/30 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900'}`}>{label}</Link>
@@ -134,7 +134,7 @@ function Nav() {
               <Menu size={24} />
             </button>
             <div className="flex flex-col gap-6 mt-12">
-              <img src="/logo-dark.png" alt="Takaful Logo" className="h-6 w-auto self-start" />
+              <img src="/brand/logo-dark.png" alt="Takaful Logo" className="h-6 w-auto self-start" />
               <div className="flex flex-col gap-2">
                 {links.map(([label, href]) => (
                   <Link key={label} href={href} onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-base font-semibold text-gray-900 hover:bg-gray-100 transition-colors">{label}</Link>
@@ -358,7 +358,7 @@ function Hero() {
         </div>
 
         {/* Heading */}
-        <h1 className="leading-[0.95] bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 font-playfair italic font-normal tracking-tight mb-6 flex flex-col items-center hero-anim hero-reveal">
+        <h1 className="leading-[0.95] bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 font-heading font-normal tracking-tight mb-6 flex flex-col items-center hero-anim hero-reveal">
           <span 
             className="block text-5xl sm:text-7xl md:text-8xl hero-anim hero-reveal" 
             style={{ letterSpacing: '-0.05em', animationDelay: '0.25s' }}
@@ -399,11 +399,11 @@ function Hero() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
         >
           <img
-            src="/dashboard.png"
+            src="/home-general/dashboard.png?v=2"
             alt="Dashboard Preview Mockup"
             width={1024}
-            height={640}
-            className="w-full h-auto object-contain rounded-2xl shadow-2xl border border-white/10"
+            height={667}
+            className="w-full h-auto object-contain drop-shadow-[0_25px_60px_rgba(0,0,0,0.45)]"
             loading="lazy"
           />
         </motion.div>
@@ -430,7 +430,7 @@ function IntroSection() {
               <motion.div variants={itemVariants}>
                 <PillBadge text="Our Approach" className="mb-6" />
               </motion.div>
-              <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-6 leading-[1.15]">
+              <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-heading text-gray-900 mb-6 leading-[1.15]">
                 Unlike traditional insurance, Takaful is built on mutual assistance.
               </motion.h2>
               {['Members contribute to a shared pool that protects everyone — not a company\'s shareholders.', 'When a claim happens, funds come from the community pool, transparently managed.', 'Any surplus at year-end? It comes back to you, the member — not taken as profit.'].map((line, i) => (
@@ -445,7 +445,7 @@ function IntroSection() {
             </motion.div>
           </div>
           <motion.div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/10" initial={{ opacity: 0, scale: 0.92 }} animate={inView ? { opacity: 1, scale: 1 } : {}} transition={{ duration: 0.8, delay: 0.15, ease }}>
-            <img src="/OurApproach.png" alt="Community Protection" className="w-full h-[480px] object-cover" />
+            <img src="/home-about/OurApproach.png" alt="Community Protection" className="w-full h-[480px] object-cover" />
             <div className="absolute top-6 left-6 right-6 p-5 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xl">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: `${GREEN}20` }}><Users size={16} style={{ color: GREEN }} /></div>
@@ -464,12 +464,12 @@ function IntroSection() {
 }
 
 const timelineSteps = [
-  { step: '01', icon: Calculator, title: 'Get Your Quote', desc: 'Enter your home details — postcode, property type, size, and construction. Our engine instantly calculates your personalized Takaful contribution.', img: '/step1.jpg', color: '#2563EB', bg: '#EFF6FF', checks: ['No account needed', 'Instant estimate', 'Zero obligation'] },
-  { step: '02', icon: FileText, title: 'Review Your Coverage', desc: 'See your contribution and exactly what\'s protected. No hidden fees. No confusing small print. Full transparency from day one.', img: '/step3.jpg', color: '#7C3AED', bg: '#F5F3FF', checks: ['Itemized breakdown', "What's included", 'Sharia certificate'] },
-  { step: '03', icon: UserPlus, title: 'Create Your Account', desc: 'Create your secure account in under 2 minutes. Your quote is saved. Your data is protected.', img: '/step4.jpg', color: GREEN_DEEP, bg: '#ECFDF5', checks: ['2-minute sign-up', 'Bank-level security', 'Quote auto-saved'] },
-  { step: '04', icon: CreditCard, title: 'Complete Your Contribution', desc: 'Contribute securely via our Sharia-compliant payment system. Your money goes directly into the community protection pool.', img: '/step5.jpg', color: '#EA580C', bg: '#FFF7ED', checks: ['All cards accepted', 'Halal-certified', 'Instant confirmation'] },
-  { step: '05', icon: ShieldCheck, title: 'Certificate Issued', desc: 'Your digital Takaful certificate is generated instantly. Download it or access it anytime from your dashboard.', img: '/step6.jpg', color: '#0F766E', bg: '#F0FDFA', checks: ['Instant delivery', 'FCA registered', 'Shareable PDF'] },
-  { step: '06', icon: Home, title: "You're Protected", desc: 'Coverage begins immediately. Your home is backed by the full strength of the community from this moment.', img: '/step2.png', color: GREEN, bg: '#F0FDF4', checks: ['Immediate cover', 'Claims in 48 hrs', 'Community-backed'] },
+  { step: '01', icon: Calculator, title: 'Get Your Quote', desc: 'Enter your home details — postcode, property type, size, and construction. Our engine instantly calculates your personalized Takaful contribution.', img: '/home-how-it-works/step1.png', color: '#2563EB', bg: '#EFF6FF', checks: ['No account needed', 'Instant estimate', 'Zero obligation'] },
+  { step: '02', icon: FileText, title: 'Review Your Coverage', desc: 'See your contribution and exactly what\'s protected. No hidden fees. No confusing small print. Full transparency from day one.', img: '/home-how-it-works/step3.png', color: '#7C3AED', bg: '#F5F3FF', checks: ['Itemized breakdown', "What's included", 'Sharia certificate'] },
+  { step: '03', icon: UserPlus, title: 'Create Your Account', desc: 'Create your secure account in under 2 minutes. Your quote is saved. Your data is protected.', img: '/home-how-it-works/step4.png', color: GREEN_DEEP, bg: '#ECFDF5', checks: ['2-minute sign-up', 'Bank-level security', 'Quote auto-saved'] },
+  { step: '04', icon: CreditCard, title: 'Complete Your Contribution', desc: 'Contribute securely via our Sharia-compliant payment system. Your money goes directly into the community protection pool.', img: '/home-how-it-works/step5.png', color: '#EA580C', bg: '#FFF7ED', checks: ['All cards accepted', 'Halal-certified', 'Instant confirmation'] },
+  { step: '05', icon: ShieldCheck, title: 'Certificate Issued', desc: 'Your digital Takaful certificate is generated instantly. Download it or access it anytime from your dashboard.', img: '/home-how-it-works/step6.png', color: '#0F766E', bg: '#F0FDFA', checks: ['Instant delivery', 'FCA registered', 'Shareable PDF'] },
+  { step: '06', icon: Home, title: "You're Protected", desc: 'Coverage begins immediately. Your home is backed by the full strength of the community from this moment.', img: '/home-how-it-works/step2.png', color: GREEN, bg: '#F0FDF4', checks: ['Immediate cover', 'Claims in 48 hrs', 'Community-backed'] },
 ];
 
 function StepCard({ step, align }: { step: typeof timelineSteps[0]; align: 'left' | 'right' }) {
@@ -480,7 +480,7 @@ function StepCard({ step, align }: { step: typeof timelineSteps[0]; align: 'left
         <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110" style={{ background: step.bg }}><Icon size={18} style={{ color: step.color }} /></div>
         <span className="text-[11px] font-bold tracking-[0.12em] uppercase" style={{ color: step.color }}>Step {step.step}</span>
       </div>
-      <h3 className={`text-xl font-normal font-playfair italic text-gray-900 mb-2 leading-tight ${align === 'right' ? 'text-right' : ''}`}>{step.title}</h3>
+      <h3 className={`text-xl font-normal font-heading text-gray-900 mb-2 leading-tight ${align === 'right' ? 'text-right' : ''}`}>{step.title}</h3>
       <p className={`text-gray-500 text-sm leading-relaxed mb-4 ${align === 'right' ? 'text-right' : ''}`}>{step.desc}</p>
       <div className="space-y-1.5">
         {step.checks.map((item, i) => (
@@ -502,7 +502,7 @@ function Timeline() {
           <motion.div variants={itemVariants}>
             <PillBadge text="Step by Step" className="mb-6" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">Six steps to complete protection</motion.h2>
+          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-heading text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">Six steps to complete protection</motion.h2>
           <motion.p variants={itemVariants} className="text-gray-500 text-lg leading-relaxed">The entire process takes less than 10 minutes. No paperwork. No phone calls.</motion.p>
         </motion.div>
         <div className="relative">
@@ -561,14 +561,14 @@ function CoverageViz() {
           <motion.div variants={itemVariants}>
             <PillBadge text="What's Covered" className="mb-6" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">Complete home protection</motion.h2>
+          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-heading text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">Complete home protection</motion.h2>
           <motion.p variants={itemVariants} className="text-gray-500 text-lg leading-relaxed">Protected by a community of real people supporting each other.</motion.p>
         </motion.div>
         
         <div ref={ref} className="relative flex items-center justify-center overflow-hidden" style={{ height: '620px' }}>
           <div className="relative w-[42rem] h-[42rem] flex items-center justify-center translate-x-[20%]">
             {/* Center Logo */}
-            <img alt="Takaful" className="absolute z-20 h-7 w-auto bg-white p-1 rounded-lg shadow-sm" src="/logo-dark.png" />
+            <img alt="Takaful" className="absolute z-20 h-7 w-auto bg-white p-1 rounded-lg shadow-sm" src="/brand/logo-dark.png" />
 
             {/* Orbit 1 */}
             <div className="absolute rounded-full border-2 border-dashed border-gray-300 pointer-events-none" style={{ width: '17rem', height: '17rem', animation: 'orbit-spin 18s linear infinite' }}>
@@ -744,7 +744,7 @@ function ClaimsProcess() {
             <motion.div variants={itemVariants} className="pointer-events-auto">
               <PillBadge text="Claims" dark className="mb-4" />
             </motion.div>
-            <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl font-normal font-playfair italic text-white mb-2 tracking-[-0.02em] leading-[1.1] pointer-events-auto">
+            <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl font-normal font-heading text-white mb-2 tracking-[-0.02em] leading-[1.1] pointer-events-auto">
               Simple, fair claims process
             </motion.h2>
             <motion.p variants={itemVariants} className="text-neutral-400 text-sm md:text-base leading-relaxed pointer-events-auto">
@@ -902,7 +902,7 @@ function WhyTakaful() {
           <motion.div variants={itemVariants}>
             <PillBadge text="Why Takaful" className="mb-6" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">Protection built on principles</motion.h2>
+          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-heading text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">Protection built on principles</motion.h2>
           <motion.p variants={itemVariants} className="text-gray-500 text-lg leading-relaxed">Traditional Islamic insurance model focused on community, transparency, and ethical values.</motion.p>
         </motion.div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -941,7 +941,7 @@ function ComparisonTable() {
           <motion.div variants={itemVariants}>
             <PillBadge text="Side by Side" className="mb-6" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">Conventional <span style={{ color: GREEN }}>vs</span> Takaful</motion.h2>
+          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-normal font-heading text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">Conventional <span style={{ color: GREEN }}>vs</span> Takaful</motion.h2>
           <motion.p variants={itemVariants} className="text-gray-500 text-lg leading-relaxed">See exactly what makes Home Takaful different.</motion.p>
         </motion.div>
         <motion.div className="rounded-3xl overflow-hidden border border-gray-200 bg-white shadow-2xl shadow-black/5" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease }} viewport={{ once: true }}>
@@ -982,7 +982,7 @@ function FAQSection() {
           <motion.div variants={itemVariants}>
             <PillBadge text="FAQ" className="mb-6" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-6 tracking-tight">{"We're here to answer all your questions"}</motion.h2>
+          <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-heading text-gray-900 mb-6 tracking-tight">{"We're here to answer all your questions"}</motion.h2>
         </motion.div>
         <div className="flex gap-2 p-1 bg-gray-200/50 rounded-full w-fit mx-auto mb-10">
           {['General', 'Coverage', 'Claims'].map((t, i) => (
@@ -1018,7 +1018,7 @@ function FinalCTA() {
           <motion.div variants={itemVariants}>
             <PillBadge text="Get Started Today" dark className="mb-8" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-4xl md:text-6xl font-playfair italic font-normal text-white mb-6 leading-[1.1] tracking-[-0.02em]">Ready to protect your home?</motion.h2>
+          <motion.h2 variants={itemVariants} className="text-4xl md:text-6xl font-heading font-normal text-white mb-6 leading-[1.1] tracking-[-0.02em]">Ready to protect your home?</motion.h2>
           <motion.p variants={itemVariants} className="text-neutral-400 text-lg leading-relaxed mb-10 max-w-xl mx-auto">Join thousands of families who have made the ethical choice. Get your personalized Takaful quote in under 60 seconds.</motion.p>
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup" className="flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-sm text-white transition-all hover:scale-[1.03] active:scale-95" style={{ background: GREEN, boxShadow: `0 8px 32px ${GREEN}50` }}>Get Started <ChevronRight size={16} /></Link>

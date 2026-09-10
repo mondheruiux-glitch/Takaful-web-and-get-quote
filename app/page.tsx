@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useEffect, useRef, useState, Suspense } from 'react';
+import { ClientOnly } from '@/components/ui/client-only';
 import dynamic from 'next/dynamic';
 import { Menu, MapPin, ChevronRight, ArrowRight, Check, Shield, Scale, Lock, Star, X, ChevronDown, Facebook, Twitter, Instagram, Linkedin, Users, PieChart, UserPlus, RefreshCcw, Building2, TrendingDown, PiggyBank, ArrowRightLeft, EyeOff, Percent, HeartHandshake, Gift, Leaf, Eye, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { AnimatedTooltip } from '@/components/ui/animated-tooltip';
 import { PillBadge } from '@/components/ui/pill-badge';
 import { cn } from '@/lib/utils';
-import { RotatingText } from '@/components/ui/hero-section-nexus';
+import FadeThrough from '@/components/ui/fade-through';
 import { UKAddressAutocomplete } from '@/components/ui/uk-address-autocomplete';
+import { RevealLayer } from '@/components/ui/reveal-layer';
 
 const tooltipPeople = [
   {
@@ -40,21 +42,23 @@ const tooltipPeople = [
 // Critical above-the-fold components (eagerly loaded)
 import { BackgroundBeams } from '@/components/ui/background-beams';
 import { Input } from '@/components/ui/input';
-import { Component as LightningSplit } from '@/components/ui/lightning-split';
+// LightningSplit removed — now using RevealLayer for cursor spotlight hero
 
-// Below-the-fold: lazy loaded to speed up initial paint
-const Testimonial1 = dynamic(() => import('@/components/ui/testimonial-1'), { ssr: false });
-const Features8 = dynamic(() => import('@/components/blocks/features-8').then(m => ({ default: m.Features8 })), { ssr: false });
-const FeaturedSectionStats = dynamic(() => import('@/components/ui/featured-section-stats'), { ssr: false });
-const StickyFeatureSection = dynamic(() => import('@/components/ui/sticky-scroll-cards-section').then(m => ({ default: m.StickyFeatureSection })), { ssr: false });
-const HoverFooter = dynamic(() => import('@/components/ui/hover-footer-demo').then(m => ({ default: m.HoverFooter })), { ssr: false });
+// Below-the-fold: SSR-enabled for code splitting. Wrapped in <ClientOnly> in the page
+// so the component only mounts on the client — fixing the whileInView+once:true race
+// while still rendering layout-preserving placeholders during SSR.
+const Testimonial1 = dynamic(() => import('@/components/ui/testimonial-1'));
+const Features8 = dynamic(() => import('@/components/blocks/features-8').then(m => ({ default: m.Features8 })));
+const FeaturedSectionStats = dynamic(() => import('@/components/ui/featured-section-stats'));
+const StickyFeatureSection = dynamic(() => import('@/components/ui/sticky-scroll-cards-section').then(m => ({ default: m.StickyFeatureSection })));
+const HoverFooter = dynamic(() => import('@/components/ui/hover-footer-demo').then(m => ({ default: m.HoverFooter })));
 
 // Inline section fallback
 const SectionFallback = () => <div className="h-48 bg-white animate-pulse" />;
 
-const BG_IMAGE_1 = '/hero-bg.webp';
-const BG_IMAGE_2 = '/bg-image-2.webp';
-const SPOTLIGHT_R = 260;
+const BG_IMAGE_1 = '/home-hero/hero-base.png?v=3';
+const BG_IMAGE_2 = '/home-hero/hero-reveal.png?v=3';
+const SPOTLIGHT_R = 240;
 
 function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'center' }) {
   const [scrolled, setScrolled] = useState(false);
@@ -122,7 +126,7 @@ function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'cen
         <div className="flex items-center gap-2">
           <Link href="/">
             <img
-              src={onDark ? "/logo-light.png" : "/logo-dark.png"}
+              src={onDark ? "/brand/logo-light.png" : "/brand/logo-dark.png"}
               alt="Takaful Logo"
               className="h-6 transition-all duration-500 cursor-pointer"
             />
@@ -191,7 +195,7 @@ function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'cen
             </button>
             <div className="flex flex-col gap-6 mt-12">
               <div className="flex items-center gap-2 mb-4">
-                <img src="/logo-dark.png" alt="Takaful Logo" className="h-6" />
+                <img src="/brand/logo-dark.png" alt="Takaful Logo" className="h-6" />
               </div>
               <div className="flex flex-col gap-2">
                 {navItems.map((item) => (
@@ -232,63 +236,94 @@ function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'cen
 function HeroSection({ onSideChange, hoveredSide }: { onSideChange?: (side: 'left' | 'right' | 'center') => void; hoveredSide?: 'left' | 'right' | 'center' }) {
   const GREEN = '#00c685';
 
+  // ── Cursor tracking with smooth lerp ──
+  const mouse = useRef({ x: -999, y: -999 });
+  const smooth = useRef({ x: -999, y: -999 });
+  const rafRef = useRef<number>(0);
+  const [cursorPos, setCursorPos] = useState({ x: -999, y: -999 });
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      mouse.current = { x: e.clientX, y: e.clientY };
+    };
+
+    const loop = () => {
+      smooth.current.x += (mouse.current.x - smooth.current.x) * 0.1;
+      smooth.current.y += (mouse.current.y - smooth.current.y) * 0.1;
+      setCursorPos({ x: smooth.current.x, y: smooth.current.y });
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    rafRef.current = requestAnimationFrame(loop);
+
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
   return (
     <section 
       data-dark="true"
-      className="relative w-full overflow-hidden min-h-screen bg-black flex flex-col justify-between pt-[8%] pb-12 sm:pb-24 px-5 sm:px-10 md:px-14">
-      {/* Background Layer (Lightning Split Image Slider) */}
-      <div className="absolute inset-0 z-0">
-        <LightningSplit onSideChange={onSideChange} />
-      </div>
+      className="relative w-full overflow-hidden bg-black"
+      style={{ height: '100dvh' }}
+    >
+      {/* Layer 1: Base image (protected house with shield) — z-10 */}
+      <div
+        className="absolute inset-0 z-10 bg-center bg-cover bg-no-repeat hero-zoom"
+        style={{ backgroundImage: `url(${BG_IMAGE_1})` }}
+      />
 
-      {/* Foreground Hero Overlay (Text content & Action panels) */}
-      <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between pt-28 sm:pt-32 md:pt-36 lg:pt-[8%] pb-12 sm:pb-24 px-5 sm:px-10 md:px-14">
+      {/* Layer 2: Subtle gradient overlay for base image text legibility without muddying image clarity (z-20) */}
+      <div className="absolute inset-0 z-20 pointer-events-none bg-gradient-to-b from-black/25 via-transparent to-black/35" />
+
+      {/* Layer 3: Reveal image (burning house) — z-30, masked by cursor spotlight (100% visible and bright inside) */}
+      <RevealLayer
+        image={BG_IMAGE_2}
+        cursorX={cursorPos.x}
+        cursorY={cursorPos.y}
+        spotlightRadius={SPOTLIGHT_R}
+        opacity={1}
+      />
+
+      {/* Layer 4: Foreground Hero Content — z-50 */}
+      <div className="absolute inset-0 z-50 pointer-events-none flex flex-col justify-between pt-20 sm:pt-24 md:pt-24 lg:pt-[7.5%] pb-12 sm:pb-24 px-5 sm:px-10 md:px-14">
         
-        {/* Top Text content */}
+        {/* Top: Heading */}
         <div className="relative w-full flex flex-col items-center text-center pointer-events-none z-50 mb-12 sm:mb-0">
-          <h1 
-            className="leading-[0.95] bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 font-playfair italic font-normal tracking-tight flex flex-col items-center"
-            style={{ filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))' }}
-          >
+          <h1 className="leading-[1.05] font-heading font-normal tracking-tight flex flex-col items-center select-none drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
             <span 
-              className="block text-5xl sm:text-7xl md:text-8xl hero-anim hero-reveal" 
-              style={{ letterSpacing: '-0.05em', animationDelay: '0.25s' }}
+              className="block text-5xl sm:text-7xl md:text-8xl hero-anim hero-reveal bg-clip-text text-transparent bg-gradient-to-b from-white via-white/95 to-white/80" 
+              style={{ letterSpacing: '-0.03em', animationDelay: '0.2s' }}
             >
               Protect Your Home,
             </span>
-            <span 
-              className="inline-block text-5xl sm:text-7xl md:text-8xl hero-anim hero-reveal" 
-              style={{ letterSpacing: '-0.05em', animationDelay: '0.42s', color: GREEN }}
+            <div 
+              className="inline-flex justify-center items-center text-5xl sm:text-7xl md:text-8xl hero-anim hero-reveal mt-1 sm:mt-2" 
+              style={{ letterSpacing: '-0.03em', animationDelay: '0.35s' }}
             >
-              <RotatingText
-                texts={['Confidently.', 'Securely.', 'Ethically.', 'Digitally.']}
-                mainClassName="text-[#00c685] transition-colors duration-500"
-                staggerFrom="last"
-                initial={{ y: "100%", opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: "-120%", opacity: 0 }}
-                staggerDuration={0.015}
-                transition={{ type: "spring", damping: 18, stiffness: 250 }}
-                rotationInterval={2200}
-                splitBy="characters"
-                auto={true}
-                loop={true}
+              <FadeThrough
+                phrases={['Confidently.', 'Securely.', 'Ethically.', 'Digitally.']}
+                className="text-5xl sm:text-7xl md:text-8xl font-heading font-normal tracking-tight text-center justify-center"
+                innerClassName="bg-gradient-to-r from-[#00c685] via-[#2ee6a8] to-[#6ee7b7] text-transparent bg-clip-text px-3 py-0.5 inline-block drop-shadow-[0_2px_24px_rgba(0,198,133,0.35)]"
+                interval={2800}
               />
-            </span>
+            </div>
           </h1>
         </div>
 
-        {/* Bottom Flex Container (Auto-Layout Row on desktop, Column on mobile) */}
+        {/* Bottom: Left card + Right card */}
         <div className="relative w-full flex flex-col md:flex-row md:items-end md:justify-between gap-10 md:gap-6 z-50 mt-auto">
           
-          {/* Left card section */}
+          {/* Left card section — Get Quote + Avatars */}
           <div 
             className="w-full md:w-[22rem] hero-anim hero-fade pointer-events-auto flex flex-col gap-4 order-2 md:order-1" 
             style={{ animationDelay: '0.7s' }}
           >
             <div className="flex items-center gap-3">
               <AnimatedTooltip items={tooltipPeople} className="mb-0" />
-              <span className="text-white/90 text-sm font-medium ml-4">50K+ Happy Users</span>
+              <span className="text-white text-sm font-medium ml-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">50K+ Happy Users</span>
             </div>
 
             <UKAddressAutocomplete />
@@ -297,16 +332,16 @@ function HeroSection({ onSideChange, hoveredSide }: { onSideChange?: (side: 'lef
               <div className="bg-[#00c685] text-white rounded-full p-0.5 shadow-md">
                 <Check size={12} strokeWidth={4} />
               </div>
-              <span className="text-white/90 text-sm font-medium">No credit card required for quote</span>
+              <span className="text-white text-sm font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">No credit card required for quote</span>
             </div>
           </div>
 
-          {/* Right card section */}
+          {/* Right card section — Description + CTA */}
           <div 
             className="w-full md:max-w-[260px] flex flex-col items-start gap-4 sm:gap-5 hero-anim hero-fade pointer-events-auto order-1 md:order-2"
             style={{ animationDelay: '0.85s' }}
           >
-            <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
+            <p className="text-xs sm:text-sm text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)] leading-relaxed font-medium">
               Experience interest-free home protection that aligns with your principles. Fair pricing, community-backed security, and zero hidden fees.
             </p>
             <Link
@@ -386,8 +421,8 @@ const Comparison = () => {
             <PillBadge text="Side by Side" className="mb-5" />
           </motion.div>
           {/* H2 at ≥2.5× body (body=16px → H2≥40px). Tight display tracking per principle #9 */}
-          <motion.h2 variants={itemVariants} className="text-[clamp(2.2rem,1.2rem+3vw,3.2rem)] font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
-            Conventional <span className="text-[#00c685] font-playfair not-italic font-normal">vs</span> Takaful
+          <motion.h2 variants={itemVariants} className="text-[clamp(2.2rem,1.2rem+3vw,3.2rem)] font-normal font-heading text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
+            Conventional <span className="text-[#00c685] font-heading not-italic font-normal">vs</span> Takaful
           </motion.h2>
           {/* Body muted, not shrunk — principle #2 scale-based emphasis */}
           <motion.p variants={itemVariants} className="text-[clamp(1rem,0.9rem+0.3vw,1.125rem)] text-gray-500 leading-[1.65] max-w-[65ch] mx-auto">
@@ -402,7 +437,7 @@ const Comparison = () => {
             initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-50px" }}
           >
             {/* ── Inner viewport ── */}
             <div
@@ -445,7 +480,7 @@ const Comparison = () => {
                       initial={{ width: 0 }}
                       whileInView={{ width: '35%' }}
                       transition={{ duration: 1.2, delay: 0.4, ease: 'easeOut' }}
-                      viewport={{ once: true }}
+                      viewport={{ once: true, margin: "-50px" }}
                     />
                   </div>
                   <div className="flex justify-between text-[10px] text-[#6272a4] font-mono mb-4 w-full">
@@ -474,7 +509,7 @@ const Comparison = () => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.25, delay: 0.05 * i }}
-                        viewport={{ once: true }}
+                        viewport={{ once: true, margin: "-50px" }}
                         className={cn(
                           "group relative p-3 rounded-xl overflow-hidden transition-all duration-300",
                           "border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]",
@@ -545,7 +580,7 @@ const Comparison = () => {
                   </div>
 
                   {/* Logo as title focal point */}
-                  <img src="/logo-light.png" alt="Takaful" className="h-7 mb-1" />
+                  <img src="/brand/logo-light.png" alt="Takaful" className="h-7 mb-1" />
                   <p className="text-[#4d7a5e] text-[0.8rem] mb-4 leading-[1.6]">Community-first. Built on Islamic principles.</p>
 
                   {/* Score bar */}
@@ -555,7 +590,7 @@ const Comparison = () => {
                       initial={{ width: 0 }}
                       whileInView={{ width: '96%' }}
                       transition={{ duration: 1.2, delay: 0.4, ease: 'easeOut' }}
-                      viewport={{ once: true }}
+                      viewport={{ once: true, margin: "-50px" }}
                     />
                   </div>
                   <div className="flex justify-between text-[10px] text-[#4d7a5e] font-mono mb-4 w-full">
@@ -584,7 +619,7 @@ const Comparison = () => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.25, delay: 0.05 * i }}
-                        viewport={{ once: true }}
+                        viewport={{ once: true, margin: "-50px" }}
                         className={cn(
                           "group relative p-3 rounded-xl overflow-hidden transition-all duration-300",
                           "border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]",
@@ -700,7 +735,7 @@ const Waitlist = () => (
         <motion.div variants={itemVariants}>
           <PillBadge text="Coming Soon" className="mb-6" dark />
         </motion.div>
-        <motion.h2 variants={itemVariants} className="text-4xl md:text-6xl bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 font-playfair italic font-normal mb-4 tracking-tight">
+        <motion.h2 variants={itemVariants} className="text-4xl md:text-6xl bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 font-heading font-normal mb-4 tracking-tight">
           Join the Takaful Waitlist
         </motion.h2>
         <motion.p variants={itemVariants} className="text-neutral-400 max-w-lg mx-auto my-4 text-base leading-relaxed">
@@ -745,7 +780,7 @@ const FAQ = () => {
           <motion.div variants={itemVariants}>
             <PillBadge text="FAQ" className="mb-6" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-6 tracking-tight">
+          <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-heading text-gray-900 mb-6 tracking-tight">
             We're here to answer all your questions
           </motion.h2>
         </motion.div>
@@ -783,24 +818,24 @@ export default function Page() {
     <main className="min-h-screen bg-white tracking-[-0.02em]" style={{ fontFamily: "'Inter', sans-serif" }}>
       <ScrollAwareNav hoveredSide={hoveredSide} />
       <HeroSection onSideChange={setHoveredSide} hoveredSide={hoveredSide} />
-      <Suspense fallback={<SectionFallback />}>
+      <ClientOnly fallbackHeight="600px">
         <Testimonial1 />
-      </Suspense>
-      <Suspense fallback={<SectionFallback />}>
+      </ClientOnly>
+      <ClientOnly fallbackHeight="800px">
         <Features8 />
-      </Suspense>
-      <Suspense fallback={<SectionFallback />}>
+      </ClientOnly>
+      <ClientOnly fallbackHeight="600px">
         <FeaturedSectionStats />
-      </Suspense>
-      <Suspense fallback={<SectionFallback />}>
+      </ClientOnly>
+      <ClientOnly fallbackHeight="700px">
         <StickyFeatureSection />
-      </Suspense>
+      </ClientOnly>
       <Comparison />
       <Waitlist />
       <FAQ />
-      <Suspense fallback={<SectionFallback />}>
+      <ClientOnly fallbackHeight="400px">
         <HoverFooter />
-      </Suspense>
+      </ClientOnly>
     </main>
   );
 }

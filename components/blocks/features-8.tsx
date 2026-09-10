@@ -41,7 +41,7 @@ export function Features8() {
                         <motion.div variants={itemVariants}>
                             <PillBadge text="Why Takaful" className="mb-6" />
                         </motion.div>
-                        <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-playfair italic text-gray-900 mb-6 tracking-tight">Protection built on principles</motion.h2>
+                        <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-normal font-heading text-gray-900 mb-6 tracking-tight">Protection built on principles</motion.h2>
                         <motion.p variants={itemVariants} className="text-lg text-gray-500 max-w-xl mx-auto">Traditional Islamic insurance model focused on community, transparency, and ethical values.</motion.p>
                     </motion.div>
                 </div>
@@ -53,14 +53,14 @@ export function Features8() {
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: true, margin: "-50px" }}
                             className="col-span-full lg:col-span-2"
                         >
                             <Card className="relative flex overflow-hidden h-full border-0 bg-gradient-to-br from-[#0a1a14] to-[#0d2a1e] group hover:shadow-2xl hover:shadow-[#00c685]/10 transition-all duration-500">
                                 <CardContent className="relative m-0 p-0 size-full h-full min-h-[300px]">
                                     <div className="absolute inset-0">
                                         <img
-                                            src="/transparent-flower.jpg"
+                                            src="/home-about/transparent-flower.jpg"
                                             alt="100% Transparent"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
                                         />
@@ -74,7 +74,7 @@ export function Features8() {
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.1 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: true, margin: "-50px" }}
                             className="col-span-full sm:col-span-3 lg:col-span-2"
                         >
                             <Card className="relative overflow-hidden h-full border border-gray-100 bg-white group hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500">
@@ -98,7 +98,7 @@ export function Features8() {
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: true, margin: "-50px" }}
                             className="col-span-full sm:col-span-3 lg:col-span-2"
                         >
                             <Card className="relative overflow-hidden h-full border-0 bg-gradient-to-b from-[#f0fdf8] to-white group hover:-translate-y-1 hover:shadow-xl hover:shadow-[#00c685]/10 transition-all duration-500">
@@ -111,7 +111,7 @@ export function Features8() {
                                                     initial={{ scale: 0, opacity: 0 }}
                                                     whileInView={{ scale: 1, opacity: 1 }}
                                                     transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
-                                                    viewport={{ once: true }}
+                                                    viewport={{ once: true, margin: "-50px" }}
                                                     cx="29" cy="29" r="15" fill="#00c685"
                                                 />
                                                 <path d="M29 23V35" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -133,7 +133,7 @@ export function Features8() {
                                                 initial={{ pathLength: 0 }}
                                                 whileInView={{ pathLength: 1 }}
                                                 transition={{ duration: 2, ease: "easeInOut", delay: 0.1 }}
-                                                viewport={{ once: true }}
+                                                viewport={{ once: true, margin: "-50px" }}
                                             />
                                             <defs>
                                                 <linearGradient id="paint_bento_chart" x1="3" y1="60" x2="3" y2="123" gradientUnits="userSpaceOnUse">
@@ -159,7 +159,7 @@ export function Features8() {
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: true, margin: "-50px" }}
                             className="col-span-full lg:col-span-3"
                         >
                             <Card className="relative overflow-hidden h-full border-0 group">
@@ -205,7 +205,7 @@ export function Features8() {
                                                             initial={{ width: 0 }}
                                                             whileInView={{ width: item.pct }}
                                                             transition={{ duration: 1.2, delay: 0.3 + i * 0.2, ease: "easeOut" }}
-                                                            viewport={{ once: true }}
+                                                            viewport={{ once: true, margin: "-50px" }}
                                                         />
                                                     </div>
                                                 </div>
@@ -221,7 +221,7 @@ export function Features8() {
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.4 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: true, margin: "-50px" }}
                             className="col-span-full lg:col-span-3"
                         >
                             <Card className="relative overflow-hidden h-full border border-gray-100 bg-white group hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500">
@@ -254,7 +254,7 @@ export function Features8() {
                                                     initial={{ opacity: 0, x: person.dir === 'right' ? -30 : 30 }}
                                                     whileInView={{ opacity: 1, x: 0 }}
                                                     transition={{ duration: 0.6, delay: person.delay, type: "spring" }}
-                                                    viewport={{ once: true }}
+                                                    viewport={{ once: true, margin: "-50px" }}
                                                     className={`flex items-center gap-3 ${i === 1 ? 'ml-8' : ''}`}
                                                 >
                                                     <div className="ring-white size-9 ring-4 shrink-0 rounded-full overflow-hidden shadow-md">

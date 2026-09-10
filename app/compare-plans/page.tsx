@@ -273,7 +273,7 @@ function Nav() {
         <div className="flex items-center gap-2">
           <Link href="/">
             <img
-              src={onDark ? '/logo-light.png' : '/logo-dark.png'}
+              src={onDark ? '/brand/logo-light.png' : '/brand/logo-dark.png'}
               alt="Takaful Logo"
               className="h-6 transition-all duration-500 cursor-pointer"
             />
@@ -321,7 +321,7 @@ function Nav() {
               <X size={24} />
             </button>
             <div className="flex flex-col gap-6 mt-12">
-              <img src="/logo-dark.png" alt="Takaful Logo" className="h-6 w-auto self-start" />
+              <img src="/brand/logo-dark.png" alt="Takaful Logo" className="h-6 w-auto self-start" />
               <div className="flex flex-col gap-2">
                 {navItems.map((item) => (
                   <Link key={item.label} href={item.href} onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-base font-semibold text-gray-900 hover:bg-gray-100 transition-colors">
@@ -393,8 +393,8 @@ const Comparison = () => {
           <motion.div variants={itemVariants}>
             <PillBadge text="Side by Side" className="mb-5" />
           </motion.div>
-          <motion.h2 variants={itemVariants} className="text-[clamp(2.2rem,1.2rem+3vw,3.2rem)] font-normal font-playfair italic text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
-            Conventional <span className="text-[#00c685] font-playfair not-italic font-normal">vs</span> Takaful
+          <motion.h2 variants={itemVariants} className="text-[clamp(2.2rem,1.2rem+3vw,3.2rem)] font-normal font-heading text-gray-900 mb-4 tracking-[-0.02em] leading-[1.1]">
+            Conventional <span className="text-[#00c685] font-heading not-italic font-normal">vs</span> Takaful
           </motion.h2>
           <motion.p variants={itemVariants} className="text-[clamp(1rem,0.9rem+0.3vw,1.125rem)] text-gray-500 leading-[1.65] max-w-[65ch] mx-auto">
             See the difference a community-first approach makes — drag the slider to compare.
@@ -544,7 +544,7 @@ const Comparison = () => {
                     <span className="text-[#00c685] text-[11px] font-bold tracking-[0.12em] uppercase">Takaful</span>
                   </div>
 
-                  <img src="/logo-light.png" alt="Takaful" className="h-7 mb-1" />
+                  <img src="/brand/logo-light.png" alt="Takaful" className="h-7 mb-1" />
                   <p className="text-[#4d7a5e] text-[0.8rem] mb-4 leading-[1.6]">Community-first. Built on Islamic principles.</p>
 
                   <div className="w-full bg-white/5 rounded-full h-1.5 mb-2 overflow-hidden">
@@ -732,7 +732,7 @@ export default function PlanComparisonPage() {
           </div>
 
           {/* H1 — exact same classes as how-it-works */}
-          <h1 className="leading-[0.95] bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 font-playfair italic font-normal tracking-tight mb-6 flex flex-col items-center hero-anim hero-reveal">
+          <h1 className="leading-[0.95] bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 font-heading font-normal tracking-tight mb-6 flex flex-col items-center hero-anim hero-reveal">
             <span
               className="block text-5xl sm:text-7xl md:text-8xl hero-anim hero-reveal"
               style={{ letterSpacing: '-0.05em', animationDelay: '0.25s' }}
@@ -932,7 +932,7 @@ export default function PlanComparisonPage() {
         {/* ── Section Header ── */}
         <div className="flex flex-col items-center gap-4 text-center mb-10">
           <PillBadge text="Sharia-Compliant Plans" dark dot />
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair italic text-white font-normal tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-heading text-white font-normal tracking-tight">
             Flexible &amp; Transparent Pricing
           </h2>
           <p className="text-base sm:text-lg text-white/50 max-w-2xl">
@@ -1241,7 +1241,7 @@ export default function PlanComparisonPage() {
                     <span className="text-[#00c685] font-bold">✨</span><span>Choosing a Plan</span>
                   </div>
                 </div>
-                <h2 className="text-3xl md:text-5xl font-normal font-playfair italic text-white mb-6 leading-[1.15]" style={{ opacity: 1, transform: 'none' }}>
+                <h2 className="text-3xl md:text-5xl font-normal font-heading text-white mb-6 leading-[1.15]" style={{ opacity: 1, transform: 'none' }}>
                   Select the coverage tier that aligns with your household.
                 </h2>
                 <div className="flex items-start gap-3 mb-4" style={{ opacity: 1, transform: 'none' }}>
@@ -1280,7 +1280,7 @@ export default function PlanComparisonPage() {
               </div>
             </div>
             <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/30 border border-white/5" style={{ opacity: 1, transform: 'none' }}>
-              <img alt="Community Protection" className="w-full h-[480px] object-cover opacity-80" src="/uploaded_protection.jpg" />
+              <img alt="Community Protection" className="w-full h-[480px] object-cover opacity-80" src="/home-about/uploaded_protection.jpg" />
               <div className="absolute bottom-6 left-6 right-6 p-5 rounded-2xl bg-[#09120e]/90 backdrop-blur-md border border-white/10 shadow-xl">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(0, 198, 133, 0.125)' }}>
@@ -1325,7 +1325,7 @@ export default function PlanComparisonPage() {
             </motion.div>
             <motion.h2
               variants={itemVariants}
-              className="text-[clamp(2rem,1.2rem+2.5vw,3.2rem)] font-normal font-playfair italic text-gray-900 mb-5 tracking-[-0.03em] leading-[1.1]"
+              className="text-[clamp(2rem,1.2rem+2.5vw,3.2rem)] font-normal font-heading text-gray-900 mb-5 tracking-[-0.03em] leading-[1.1]"
             >
               Start your ethical<br />home cover today
             </motion.h2>
@@ -1377,7 +1377,7 @@ export default function PlanComparisonPage() {
                   <Award className="w-5 h-5 text-[#00c685]" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white font-playfair italic">Sharia Board Audit Certificate</h3>
+                  <h3 className="text-base font-bold text-white font-heading">Sharia Board Audit Certificate</h3>
                   <p className="text-[11px] text-[#00c685]/60">Reference #TK-2026-UK · AAOIFI Standard No. 26</p>
                 </div>
               </div>

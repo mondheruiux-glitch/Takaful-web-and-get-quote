@@ -106,7 +106,7 @@ export default function DemoOne() {
 
         {/* Top Text content */}
         <div className="relative w-full flex flex-col items-center text-center pointer-events-none z-50 mb-12 sm:mb-0">
-          <h1 className="leading-[0.95] bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 font-playfair italic font-normal tracking-tight">
+          <h1 className="leading-[0.95] bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400 font-heading font-normal tracking-tight">
             <span 
               className="block text-5xl sm:text-7xl md:text-8xl hero-anim hero-reveal" 
               style={{ letterSpacing: '-0.05em', animationDelay: '0.25s' }}

@@ -56,7 +56,7 @@ export default function RiskPage() {
     { region: 'Bristol & South', value: 310000 },
   ];
 
-  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
   const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
   const TEXT_MAIN = isLight ? 'text-black/90' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/60' : 'text-white/45';
@@ -76,7 +76,7 @@ export default function RiskPage() {
       {/* High-level risk warning banner */}
       <motion.div
         variants={fadeUp} initial="hidden" animate="visible" custom={1}
-        className="rounded-2xl p-5 flex items-start gap-4"
+        className="rounded-2xl p-5 flex items-start gap-4 shadow-sm"
         style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)' }}
       >
         <AlertTriangle size={20} className="text-red-400 mt-0.5 shrink-0" />
@@ -95,7 +95,7 @@ export default function RiskPage() {
         {/* Risk Concentration Type */}
         <motion.div
           variants={fadeUp} initial="hidden" animate="visible" custom={2}
-          className="rounded-2xl p-5 flex flex-col justify-between transition-colors"
+          className="rounded-2xl p-5 flex flex-col justify-between transition-colors shadow-sm"
           style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
         >
           <div>
@@ -126,7 +126,7 @@ export default function RiskPage() {
         {/* Regional exposure liability limits */}
         <motion.div
           variants={fadeUp} initial="hidden" animate="visible" custom={3}
-          className="rounded-2xl p-5 transition-colors"
+          className="rounded-2xl p-5 transition-colors shadow-sm"
           style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
         >
           <h3 className={`font-semibold text-sm mb-1 ${TEXT_MAIN}`}>Insured Value by Region</h3>

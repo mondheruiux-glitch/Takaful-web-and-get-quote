@@ -66,7 +66,7 @@ export default function QueuePage() {
     .filter(c => c.assignedHandlerId === 'U-HAND-001' && !['Paid', 'Rejected'].includes(c.status))
     .filter(c => !search || c.id.toLowerCase().includes(search.toLowerCase()) || c.participantName.toLowerCase().includes(search.toLowerCase()) || c.type.toLowerCase().includes(search.toLowerCase()));
 
-  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
   const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
   const TEXT_MAIN = isLight ? 'text-black/90' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/60' : 'text-white/45';
@@ -101,18 +101,18 @@ export default function QueuePage() {
       {/* Queue list */}
       <motion.div
         variants={fadeUp} initial="hidden" animate="visible" custom={1}
-        className={`rounded-2xl overflow-hidden ${isLight ? 'bg-white border border-black/[0.04]' : 'bg-[#0d2117] border border-white/[0.04]'}`}
+        className={`rounded-2xl overflow-hidden shadow-sm ${isLight ? 'bg-white border border-[#E4E7EC]' : 'bg-[#0d2117] border border-white/[0.04]'}`}
       >
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className={isLight ? 'text-black/40 border-b border-black/[0.04]' : 'text-white/30 border-b border-white/[0.04]'}>
+              <tr className={isLight ? 'text-black/40 border-b border-[#E4E7EC]' : 'text-white/30 border-b border-white/[0.04]'}>
                 {['Claim ID', 'Participant', 'Type', 'Cover Type', 'Days Open', 'Priority', 'Status', 'Action'].map(h => (
                   <th key={h} className="px-5 py-3 font-semibold">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className={`divide-y ${isLight ? 'divide-black/04' : 'divide-white/04'}`}>
+            <tbody className={`divide-y ${isLight ? 'divide-[#E4E7EC]' : 'divide-white/04'}`}>
               {myQueue.map(c => (
                 <tr key={c.id} className={isLight ? 'hover:bg-black/[0.01]' : 'hover:bg-white/[0.015]'}>
                   <td className="px-5 py-3.5 font-mono font-bold" style={{ color: GREEN }}>{c.id}</td>

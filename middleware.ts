@@ -24,29 +24,44 @@ const PRIVATE_PATHS = [
 
 export function middleware(request: NextRequest) {
   const { pathname, protocol } = request.nextUrl;
+  const hostname = request.nextUrl.hostname;
   const headers = new Headers(request.headers);
 
-  // ── 1. HTTPS redirect in production ────────────────────────────────────────
+  // ── 1. Hide Dashboard on production server (Wasmer / deployed domains) ────
+  // Keeps accessible on localhost / 127.0.0.1 for local development
+  const isLocalhost =
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname.includes('localhost') ||
+    process.env.ENABLE_DASHBOARD === 'true';
+
+  if (pathname.startsWith('/dashboard') && !isLocalhost) {
+    const homeUrl = request.nextUrl.clone();
+    homeUrl.pathname = '/';
+    return NextResponse.redirect(homeUrl, { status: 307 });
+  }
+
+  // ── 2. HTTPS redirect in production ────────────────────────────────────────
   const appUrl = process.env.APP_URL;
   if (
     process.env.NODE_ENV === 'production' &&
     appUrl &&
     protocol === 'http:' &&
-    !request.nextUrl.hostname.includes('localhost')
+    !hostname.includes('localhost')
   ) {
     const httpsUrl = request.nextUrl.clone();
     httpsUrl.protocol = 'https:';
     return NextResponse.redirect(httpsUrl, { status: 301 });
   }
 
-  // ── 2. Block malicious user-agents ─────────────────────────────────────────
+  // ── 3. Block malicious user-agents ─────────────────────────────────────────
   const ua = request.headers.get('user-agent') || '';
   const isBlocked = BLOCKED_UA_PATTERNS.some(pattern => pattern.test(ua));
   if (isBlocked) {
     return new NextResponse('Forbidden', { status: 403 });
   }
 
-  // ── 3. Attach request tracing ID ────────────────────────────────────────────
+  // ── 4. Attach request tracing ID ────────────────────────────────────────────
   const requestId =
     request.headers.get('x-request-id') ||
     `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;

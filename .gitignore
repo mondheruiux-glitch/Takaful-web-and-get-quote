@@ -9,3 +9,6 @@ coverage/
 .agents/
 
 .claude/
+graphify-out/cache/ast/
+*.tsbuildinfo
+.backups/

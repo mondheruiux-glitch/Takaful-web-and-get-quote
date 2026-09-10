@@ -205,12 +205,14 @@ export default function ClaimDetailPage({ params }: Props) {
                 claim.status === 'Paid' || claim.status === 'Approved' ? 'bg-green-500/10 text-green-500' :
                 claim.status === 'Rejected' ? 'bg-red-500/10 text-red-500' :
                 claim.status === 'Awaiting Information' ? 'bg-orange-500/10 text-orange-500' :
+                claim.status === 'Under Review' ? 'bg-amber-500/10 text-amber-500' :
                 'bg-blue-500/10 text-blue-500'
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${
                   claim.status === 'Paid' || claim.status === 'Approved' ? 'bg-green-500' :
                   claim.status === 'Rejected' ? 'bg-red-500' :
                   claim.status === 'Awaiting Information' ? 'bg-orange-500' :
+                  claim.status === 'Under Review' ? 'bg-amber-500' :
                   'bg-blue-500'
                 }`} />
                 {claim.status}

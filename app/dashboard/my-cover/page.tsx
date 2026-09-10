@@ -23,7 +23,7 @@ export default function MyCoverPage() {
   // Load Participant Fatima Al-Rashid's active certificate
   const cert = CERTIFICATES.find(c => c.participantId === 'P-0042') || CERTIFICATES[0];
 
-  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
   const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
   const TEXT_MAIN = isLight ? 'text-black/90' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/60' : 'text-white/45';
@@ -56,10 +56,12 @@ export default function MyCoverPage() {
         {/* Certificate banner header */}
         <div className="px-6 py-5 flex items-center justify-between border-b flex-wrap gap-3" style={{ borderColor: BORDER }}>
           <div className="flex items-center gap-3">
-            <ShieldCheck size={28} className="text-[#00c685]" />
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isLight ? 'bg-gray-100 text-gray-700' : 'bg-white/10 text-white'}`}>
+              <ShieldCheck size={22} />
+            </div>
             <div>
               <p className={`text-xs font-semibold ${TEXT_MUTED}`}>CERTIFICATE REFERENCE</p>
-              <p className="font-mono text-base font-bold text-[#00c685]">{cert.id}</p>
+              <p className={`font-mono text-base font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>{cert.id}</p>
             </div>
           </div>
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-500">
@@ -119,14 +121,14 @@ export default function MyCoverPage() {
       {/* Covered Risks list */}
       <motion.div
         variants={fadeUp} initial="hidden" animate="visible" custom={2}
-        className="rounded-2xl p-5"
+        className="rounded-2xl p-5 shadow-sm"
         style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
       >
         <h3 className={`text-sm font-semibold mb-4 ${TEXT_MAIN}`}>Mutually Shared Covered Risks</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           {cert.coveredRisks.map(r => (
             <div key={r} className="flex items-center gap-2 p-2.5 rounded-xl bg-black/[0.01] dark:bg-white/[0.015] text-xs">
-              <div className="w-5 h-5 rounded-full flex items-center justify-center bg-green-500/10 text-green-500">
+              <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isLight ? 'bg-gray-100 text-gray-700' : 'bg-green-500/10 text-green-500'}`}>
                 <Check size={11} />
               </div>
               <span className={TEXT_SUB}>{r}</span>

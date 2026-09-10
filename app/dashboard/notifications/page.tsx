@@ -52,11 +52,11 @@ export default function NotificationsPage() {
   // Dynamic Theme Colors
   const GREEN = '#00c685';
   const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
-  const BG_PANEL2 = isLight ? '#f4f6f5' : '#112218';
+  const BG_PANEL2 = isLight ? '#F8FAFC' : '#112218';
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
 
   return (
     <div className="p-4 sm:p-6 space-y-5 w-full transition-colors duration-200">

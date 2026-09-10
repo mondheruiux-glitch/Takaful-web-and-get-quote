@@ -73,10 +73,10 @@ export default function DocumentsPage() {
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';
-  const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
+  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
   const BG_INPUT = isLight ? 'bg-black/[0.03]' : 'bg-white/[0.04]';
-  const BORDER_INPUT = isLight ? 'border-black/[0.06]' : 'border-white/[0.05]';
-  const ROW_HOVER = isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]';
+  const BORDER_INPUT = isLight ? 'border-[#E4E7EC]' : 'border-white/[0.05]';
+  const ROW_HOVER = isLight ? 'hover:bg-gray-50/60' : 'hover:bg-white/[0.04]';
 
   return (
     <div className="p-4 sm:p-6 space-y-5 transition-colors duration-200">
@@ -93,8 +93,10 @@ export default function DocumentsPage() {
 
       {/* Storage bar */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={1}
-        className="rounded-2xl p-4 flex items-center gap-5 transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
-        <Folder size={20} className="text-[#00c685] shrink-0" />
+        className="rounded-2xl p-4 flex items-center gap-5 transition-colors duration-200 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isLight ? 'bg-gray-100 text-gray-700' : 'bg-white/10 text-white'}`}>
+          <Folder size={18} />
+        </div>
         <div className="flex-1 min-w-0">
           <div className="flex justify-between text-xs mb-1.5">
             <span className={`font-medium ${TEXT_SUB}`}>Storage Used</span>
@@ -110,7 +112,7 @@ export default function DocumentsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-5">
         {/* Category sidebar */}
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2}
-          className="rounded-2xl p-4 space-y-1 h-fit transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          className="rounded-2xl p-4 space-y-1 h-fit transition-colors duration-200 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
           <p className={`text-[10px] font-bold uppercase tracking-wide px-2 pb-2 ${TEXT_MUTED}`}>Categories</p>
           {CATEGORIES.map(cat => (
             <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
@@ -131,15 +133,15 @@ export default function DocumentsPage() {
 
         {/* Document list */}
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={3}
-          className="lg:col-span-3 rounded-2xl overflow-hidden transition-colors duration-200" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
+          className="lg:col-span-3 rounded-2xl overflow-hidden transition-colors duration-200 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
           {/* Toolbar */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4" style={{ borderBottom: `1px solid ${BORDER}` }}>
-            <div className={`relative flex items-center gap-2 px-3.5 py-2.5 rounded-xl border flex-1 transition-colors ${isLight ? 'bg-black/[0.03] border-black/[0.06] text-black' : 'bg-white/[0.04] border-white/[0.05] text-white'}`}>
+            <div className={`relative flex items-center gap-2 px-3.5 py-2.5 rounded-xl border flex-1 transition-colors ${isLight ? 'bg-black/[0.03] border-[#E4E7EC] text-black' : 'bg-white/[0.04] border-white/[0.05] text-white'}`}>
               <Search size={13} className={`${TEXT_MUTED}`} />
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search documents…"
                 className={`flex-1 bg-transparent text-sm outline-none placeholder:text-xs placeholder:font-medium ${TEXT_MAIN}`} />
             </div>
-            <button className={`flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-all shrink-0 ${isLight ? 'border-black/[0.06] text-black/70 hover:bg-black/[0.04]' : 'border-white/[0.05] text-white/70 hover:bg-white/[0.04]'}`}>
+            <button className={`flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-all shrink-0 ${isLight ? 'border-[#E4E7EC] text-black/70 hover:bg-black/[0.04]' : 'border-white/[0.05] text-white/70 hover:bg-white/[0.04]'}`}>
               <Download size={12} /> Export
             </button>
           </div>

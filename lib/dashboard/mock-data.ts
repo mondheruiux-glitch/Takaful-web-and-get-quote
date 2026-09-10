@@ -14,6 +14,7 @@ export const DEMO_USERS: Record<string, DemoUser> = {
     jobTitle: 'Takaful Participant',
     participantId: 'P-0042',
     certificateId: 'TK-2024-0042',
+    gender: 'female',
   },
   claim_handler: {
     id: 'U-HAND-001',
@@ -22,6 +23,7 @@ export const DEMO_USERS: Record<string, DemoUser> = {
     email: 'o.hassan@takaful.com',
     role: 'claim_handler',
     jobTitle: 'Senior Claims Handler',
+    gender: 'male',
   },
   finance: {
     id: 'U-FIN-001',
@@ -30,6 +32,7 @@ export const DEMO_USERS: Record<string, DemoUser> = {
     email: 'a.siddiqui@takaful.com',
     role: 'finance',
     jobTitle: 'Finance Officer',
+    gender: 'female',
   },
   management: {
     id: 'U-MGT-001',
@@ -38,6 +41,7 @@ export const DEMO_USERS: Record<string, DemoUser> = {
     email: 'ahmed.khan@takaful.com',
     role: 'management',
     jobTitle: 'Operations Director',
+    gender: 'male',
   },
 };
 
@@ -71,6 +75,8 @@ export const CLAIMS: Claim[] = [
   { id: 'CLM-2024-0888', participantId: 'P-0031', participantName: 'Yusuf Ibrahim', certificateId: 'TK-2024-0031', propertyAddress: '2 Cedar Road, Leeds, LS7 3BX', coverType: 'Buildings', type: 'Theft', incidentDate: '10 Jul 2026', submittedDate: '10 Jul 2026', description: 'Front door lock mechanism damaged after attempted break-in.', amountClaimed: 250, priority: 'Low', status: 'Rejected', assignedHandlerId: 'U-HAND-001', assignedHandlerName: 'Omar Hassan', daysOpen: 11, lastActivityDate: '18 Jul 2026', lastActivityNote: 'Rejected — claim below excess threshold of £300.' },
   { id: 'CLM-2024-0887', participantId: 'P-0098', participantName: 'Maryam Patel', certificateId: 'TK-2024-0098', propertyAddress: '19 Birch Close, Leicester, LE2 9KM', coverType: 'Contents', type: 'Theft', incidentDate: '5 Jul 2026', submittedDate: '5 Jul 2026', description: 'Bicycle stolen from garden shed. Proof of ownership provided.', amountClaimed: 650, amountApproved: 650, priority: 'Medium', status: 'Approved', assignedHandlerId: 'U-HAND-001', assignedHandlerName: 'Omar Hassan', daysOpen: 16, lastActivityDate: '19 Jul 2026', lastActivityNote: 'Approved. Awaiting finance payment release.' },
   { id: 'CLM-2024-0886', participantId: 'P-0055', participantName: 'Ibrahim Al-Sayed', certificateId: 'TK-2024-0055', propertyAddress: '7 Maple Drive, Bristol, BS8 4LR', coverType: 'Both', type: 'Subsidence', incidentDate: '2 Jul 2026', submittedDate: '2 Jul 2026', description: 'Visible cracking to rear external wall. Structural engineer assessment commissioned.', amountClaimed: 12400, priority: 'Critical', status: 'Awaiting Information', assignedHandlerId: 'U-HAND-001', assignedHandlerName: 'Omar Hassan', daysOpen: 19, lastActivityDate: '15 Jul 2026', lastActivityNote: 'Awaiting structural engineer report. Participant chased 15 Jul.' },
+  { id: 'CLM-2024-0885', participantId: 'P-0073', participantName: 'Zahra Hussein', certificateId: 'TK-2024-0073', propertyAddress: '45 Pine Way, Sheffield, S7 2MN', coverType: 'Buildings', type: 'Water Leak', incidentDate: '1 Jul 2026', submittedDate: '2 Jul 2026', description: 'Burst pipe under kitchen sink causing water damage to floorboards and cabinets.', amountClaimed: 2150, amountApproved: 2150, priority: 'Medium', status: 'Approved', assignedHandlerId: 'U-HAND-001', assignedHandlerName: 'Omar Hassan', daysOpen: 19, lastActivityDate: '20 Jul 2026', lastActivityNote: 'Approved. Documentation verified and passed to finance.' },
+  { id: 'CLM-2024-0884', participantId: 'P-0042', participantName: 'Fatima Al-Rashid', certificateId: 'TK-2024-0042', propertyAddress: '14 Elm Street, Birmingham, B1 2PQ', coverType: 'Buildings', type: 'Fire Damage', incidentDate: '28 Jun 2026', submittedDate: '29 Jun 2026', description: 'Minor kitchen fire caused by electrical short circuit in extractor hood. Wall discolored and hood damaged.', amountClaimed: 1600, amountApproved: 1600, priority: 'High', status: 'Paid', assignedHandlerId: 'U-HAND-001', assignedHandlerName: 'Omar Hassan', daysOpen: 22, lastActivityDate: '12 Jul 2026', lastActivityNote: 'Settled. Payment of £1,600 transferred.' },
 ];
 
 /* ─── Contributions ──────────────────────────────────────────────────────── */

@@ -41,7 +41,7 @@ function Navbar() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between p-4 sm:p-5 transition-all duration-500">
-        <Link href="/"><img src="/logo-dark.png" alt="Takaful" className="h-6 transition-all duration-500" /></Link>
+        <Link href="/"><img src="/brand/logo-dark.png" alt="Takaful" className="h-6 transition-all duration-500" /></Link>
         <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-2 items-center gap-1 bg-gray-100/80 border border-gray-200 backdrop-blur-md">
           {links.map(([label, href]) => (
             <Link
@@ -291,7 +291,7 @@ export default function ContactPage() {
           <motion.h1
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1, ease }}
-            className="text-4xl md:text-6xl font-normal font-playfair italic text-gray-900 mb-5 tracking-[-0.03em] leading-[1.08]"
+            className="text-4xl md:text-6xl font-normal font-heading text-gray-900 mb-5 tracking-[-0.03em] leading-[1.08]"
           >
             How can we{' '}
             <span style={{ color: GREEN }}>help?</span>

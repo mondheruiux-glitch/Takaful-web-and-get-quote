@@ -88,7 +88,7 @@ export function MinimalAuthPage({ onClose }: MinimalAuthPageProps) {
 
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-4">
         <Link href="/" className="absolute top-6 left-6 cursor-pointer z-50">
-          <img src="/logo-light.png" alt="Takaful Logo" className="h-6" />
+          <img src="/brand/logo-light.png" alt="Takaful Logo" className="h-6" />
         </Link>
 
         <div className="mx-auto w-full sm:w-[400px] relative">
@@ -124,7 +124,7 @@ function WelcomeView({ onNavigate }: { onNavigate: (v: ViewState, d?: number) =>
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-1 text-center sm:text-left">
-        <h1 className="font-heading font-playfair italic font-normal text-3xl tracking-wide text-white">
+        <h1 className="font-heading font-normal text-3xl tracking-wide text-white">
           Sign In or Join Now!
         </h1>
         <p className="text-gray-400 text-base">
@@ -133,11 +133,11 @@ function WelcomeView({ onNavigate }: { onNavigate: (v: ViewState, d?: number) =>
       </div>
       <div className="space-y-3">
         <Button type="button" size="lg" className="w-full bg-[#00c685] hover:bg-[#00a871] text-[#0a1a14] font-bold transition-colors cursor-pointer">
-          <img src="/google.svg" alt="Google Logo" className="me-2 size-4" />
+          <img src="/icons/google.svg" alt="Google Logo" className="me-2 size-4" />
           Continue with Google
         </Button>
         <Button type="button" size="lg" className="w-full border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-colors cursor-pointer">
-          <img src="/apple.svg" alt="Apple Logo" className="me-2 size-4" />
+          <img src="/icons/apple.svg" alt="Apple Logo" className="me-2 size-4" />
           Continue with Apple
         </Button>
         
@@ -200,7 +200,7 @@ function SignInView({ onNavigate, email, setEmail }: { onNavigate: (v: ViewState
         <ArrowLeft className="w-4 h-4 mr-1" /> Back
       </button>
       <div className="flex flex-col space-y-1">
-        <h1 className="font-heading font-playfair italic font-normal text-3xl tracking-wide text-white">
+        <h1 className="font-heading font-normal text-3xl tracking-wide text-white">
           Welcome back
         </h1>
         <p className="text-gray-400 text-base">
@@ -313,7 +313,7 @@ function SignUpView({ onNavigate, email, setEmail }: { onNavigate: (v: ViewState
         <ArrowLeft className="w-4 h-4 mr-1" /> Back
       </button>
       <div className="flex flex-col space-y-1">
-        <h1 className="font-heading font-playfair italic font-normal text-3xl tracking-wide text-white">
+        <h1 className="font-heading font-normal text-3xl tracking-wide text-white">
           Create an account
         </h1>
         <p className="text-gray-400 text-base">
@@ -458,7 +458,7 @@ function VerifyOTPView({ onNavigate, email }: { onNavigate: (v: ViewState, d?: n
         <ArrowLeft className="w-4 h-4 mr-1" /> Back
       </button>
       <div className="flex flex-col space-y-1">
-        <h1 className="font-heading font-playfair italic font-normal text-3xl tracking-wide text-white">
+        <h1 className="font-heading font-normal text-3xl tracking-wide text-white">
           Verify your email
         </h1>
         <p className="text-gray-400 text-base">
@@ -533,7 +533,7 @@ function ForgotPasswordView({ onNavigate, email, setEmail }: { onNavigate: (v: V
         <ArrowLeft className="w-4 h-4 mr-1" /> Back to Sign In
       </button>
       <div className="flex flex-col space-y-1">
-        <h1 className="font-heading font-playfair italic font-normal text-3xl tracking-wide text-white">
+        <h1 className="font-heading font-normal text-3xl tracking-wide text-white">
           Reset password
         </h1>
         <p className="text-gray-400 text-base">

@@ -410,7 +410,7 @@ export function Component({
 	const defaultLeftComponent = (
 		<div className="relative min-h-screen min-w-screen h-full w-full">
 			<Image
-				src="/image1.webp"
+				src="/home-general/image1.webp"
 				alt={leftAlt}
 				fill
 				priority
@@ -422,7 +422,7 @@ export function Component({
 	const defaultRightComponent = (
 		<div className="relative min-h-screen min-w-screen h-full w-full">
 			<Image
-				src="/image2.webp"
+				src="/home-general/image2.webp"
 				alt={rightAlt}
 				fill
 				priority
