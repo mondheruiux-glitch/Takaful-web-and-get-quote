@@ -117,10 +117,10 @@ function SuccessScreen({ ref: quoteRef, plan, pc }: { ref: string; plan: string;
       <div className="space-y-2 pt-1">
         <button
           type="button"
-          onClick={() => router.push('/dashboard')}
+          onClick={() => router.push('/')}
           className="w-full py-3 rounded-xl bg-[#00c685] hover:bg-[#00b576] text-[#0a1a14] font-bold text-sm transition-colors cursor-pointer"
         >
-          Go to Dashboard
+          Back to Home
         </button>
         <button
           type="button"

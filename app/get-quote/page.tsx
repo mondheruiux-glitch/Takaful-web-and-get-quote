@@ -129,9 +129,9 @@ function PaySuccessScreen({ quoteRef, plan, pc }: { quoteRef: string; plan: stri
         <p className="text-white font-mono font-bold text-lg">{quoteRef}</p>
         <p className="text-[11px] text-gray-500">Keep this for your records. A confirmation email is on its way.</p>
       </div>
-      <button type="button" onClick={() => router.push('/dashboard')}
+      <button type="button" onClick={() => router.push('/')}
         className="w-full py-3 rounded-xl bg-[#00c685] hover:bg-[#00b576] text-[#0a1a14] font-bold text-sm transition-colors cursor-pointer">
-        Go to Dashboard
+        Back to Home
       </button>
     </motion.div>
   );

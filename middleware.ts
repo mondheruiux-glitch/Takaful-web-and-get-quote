@@ -27,18 +27,9 @@ export function middleware(request: NextRequest) {
   const hostname = request.nextUrl.hostname;
   const headers = new Headers(request.headers);
 
-  // ── 1. Hide Dashboard on production server (Wasmer / deployed domains) ────
-  // Keeps accessible on localhost / 127.0.0.1 for local development
-  const isLocalhost =
-    hostname === 'localhost' ||
-    hostname === '127.0.0.1' ||
-    hostname.includes('localhost') ||
-    process.env.ENABLE_DASHBOARD === 'true';
-
-  if (pathname.startsWith('/dashboard') && !isLocalhost) {
-    const homeUrl = request.nextUrl.clone();
-    homeUrl.pathname = '/';
-    return NextResponse.redirect(homeUrl, { status: 307 });
+  // ── 1. Dashboard is permanently hidden — no access from any URL or environment ─
+  if (pathname.startsWith('/dashboard')) {
+    return new NextResponse(null, { status: 404 });
   }
 
   // ── 2. HTTPS redirect in production ────────────────────────────────────────

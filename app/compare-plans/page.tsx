@@ -263,7 +263,6 @@ function Nav() {
     { label: 'How it Works', href: '/how-it-works' },
     { label: 'Compare Plans', href: '/compare-plans' },
     { label: 'About Us', href: '/about' },
-    { label: 'Dashboard', href: '/dashboard' },
     { label: 'Contact', href: '/contact' },
   ];
 
@@ -296,12 +295,7 @@ function Nav() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard"
-            className={`hidden md:block text-sm font-semibold px-4 py-2.5 rounded-full transition-all duration-300 ${onDark ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-black/5'}`}
-          >
-            Dashboard
-          </Link>
+
           <Link
             href="/signup"
             className={`hidden md:block text-sm font-semibold px-6 py-2.5 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer ${onDark ? 'bg-white text-gray-900 hover:bg-gray-50' : 'bg-[#00c685] text-white hover:bg-[#00a871]'}`}
