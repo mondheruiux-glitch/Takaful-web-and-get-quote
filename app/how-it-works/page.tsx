@@ -113,7 +113,7 @@ function Nav() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between p-4 sm:p-5 transition-all duration-500">
-        <Link href="/"><img src={onDark ? '/brand/logo-light.png' : '/brand/logo-dark.png'} alt="Takaful" className="h-6 transition-all duration-500" /></Link>
+        <Link href="/"><img src={onDark ? '/brand/logo-light.png' : '/brand/logo-dark.png'} alt="Takaful" className="h-6 transition-all duration-500" fetchPriority="high" decoding="async" /></Link>
         <div className={`hidden md:flex absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-2 items-center gap-1 transition-all duration-500 ${onDark ? 'bg-white/20 backdrop-blur-md border border-white/30' : 'bg-gray-100/80 border border-gray-200'}`}>
           {links.map(([label, href], i) => (
             <Link key={label} href={href} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${i === 1 ? onDark ? 'bg-white/20 text-white' : 'bg-white text-gray-900 shadow-sm' : onDark ? 'text-white/80 hover:bg-white/30 hover:text-white' : 'text-gray-600 hover:bg-white hover:text-gray-900'}`}>{label}</Link>
@@ -134,7 +134,7 @@ function Nav() {
               <Menu size={24} />
             </button>
             <div className="flex flex-col gap-6 mt-12">
-              <img src="/brand/logo-dark.png" alt="Takaful Logo" className="h-6 w-auto self-start" />
+              <img src="/brand/logo-dark.png" alt="Takaful Logo" className="h-6 w-auto self-start" loading="lazy" decoding="async" />
               <div className="flex flex-col gap-2">
                 {links.map(([label, href]) => (
                   <Link key={label} href={href} onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-base font-semibold text-gray-900 hover:bg-gray-100 transition-colors">{label}</Link>
@@ -445,7 +445,7 @@ function IntroSection() {
             </motion.div>
           </div>
           <motion.div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/10" initial={{ opacity: 0, scale: 0.92 }} animate={inView ? { opacity: 1, scale: 1 } : {}} transition={{ duration: 0.8, delay: 0.15, ease }}>
-            <img src="/home-about/OurApproach.png" alt="Community Protection" className="w-full h-[480px] object-cover" />
+            <img src="/home-about/OurApproach.png" alt="Community Protection" className="w-full h-[480px] object-cover" loading="lazy" decoding="async" />
             <div className="absolute top-6 left-6 right-6 p-5 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xl">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: `${GREEN}20` }}><Users size={16} style={{ color: GREEN }} /></div>
@@ -514,13 +514,13 @@ function Timeline() {
             return (
               <div key={step.step} ref={ref} className="relative flex items-start mb-16 last:mb-0">
                 <motion.div className={`flex-1 ${isEven ? 'md:pr-16' : 'md:order-2 md:pl-16'}`} initial={{ opacity: 0, x: isEven ? -32 : 32 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.7, ease }}>
-                  {isEven ? <StepCard step={step} align="right" /> : <div className="hidden md:block"><img src={step.img} alt={step.title} className="w-full h-64 object-cover rounded-2xl shadow-xl" /></div>}
+                  {isEven ? <StepCard step={step} align="right" /> : <div className="hidden md:block"><img src={step.img} alt={step.title} className="w-full h-64 object-cover rounded-2xl shadow-xl" loading="lazy" decoding="async" /></div>}
                 </motion.div>
                 <motion.div className="hidden md:flex w-14 h-14 rounded-full items-center justify-center shrink-0 z-10 font-mono font-bold text-[13px] mx-1" style={{ background: step.bg, color: step.color, boxShadow: `0 0 0 4px white, 0 8px 24px ${step.color}30` }} initial={{ scale: 0, opacity: 0 }} animate={inView ? { scale: 1, opacity: 1 } : {}} transition={{ duration: 0.5, delay: 0.2, ease }}>{step.step}</motion.div>
                 <motion.div className={`flex-1 ${isEven ? 'md:order-2 md:pl-16' : 'md:pr-16'}`} initial={{ opacity: 0, x: isEven ? 32 : -32 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.7, delay: 0.1, ease }}>
-                  {isEven ? <div className="hidden md:block"><img src={step.img} alt={step.title} className="w-full h-64 object-cover rounded-2xl shadow-xl" /></div> : <StepCard step={step} align="left" />}
+                  {isEven ? <div className="hidden md:block"><img src={step.img} alt={step.title} className="w-full h-64 object-cover rounded-2xl shadow-xl" loading="lazy" decoding="async" /></div> : <StepCard step={step} align="left" />}
                 </motion.div>
-                <div className="md:hidden w-full flex flex-col gap-4"><StepCard step={step} align="left" /><img src={step.img} alt={step.title} className="w-full h-48 object-cover rounded-2xl shadow-lg" /></div>
+                <div className="md:hidden w-full flex flex-col gap-4"><StepCard step={step} align="left" /><img src={step.img} alt={step.title} className="w-full h-48 object-cover rounded-2xl shadow-lg" loading="lazy" decoding="async" /></div>
               </div>
             );
           })}
@@ -568,7 +568,7 @@ function CoverageViz() {
         <div ref={ref} className="relative flex items-center justify-center overflow-hidden" style={{ height: '620px' }}>
           <div className="relative w-[42rem] h-[42rem] flex items-center justify-center translate-x-[20%]">
             {/* Center Logo */}
-            <img alt="Takaful" className="absolute z-20 h-7 w-auto bg-white p-1 rounded-lg shadow-sm" src="/brand/logo-dark.png" />
+            <img alt="Takaful" className="absolute z-20 h-7 w-auto bg-white p-1 rounded-lg shadow-sm" src="/brand/logo-dark.png" loading="lazy" decoding="async" />
 
             {/* Orbit 1 */}
             <div className="absolute rounded-full border-2 border-dashed border-gray-300 pointer-events-none" style={{ width: '17rem', height: '17rem', animation: 'orbit-spin 18s linear infinite' }}>

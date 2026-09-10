@@ -128,6 +128,8 @@ function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'cen
               src={onDark ? "/brand/logo-light.png" : "/brand/logo-dark.png"}
               alt="Takaful Logo"
               className="h-6 transition-all duration-500 cursor-pointer"
+              fetchPriority="high"
+              decoding="async"
             />
           </Link>
         </div>
@@ -186,7 +188,7 @@ function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'cen
             </button>
             <div className="flex flex-col gap-6 mt-12">
               <div className="flex items-center gap-2 mb-4">
-                <img src="/brand/logo-dark.png" alt="Takaful Logo" className="h-6" />
+                <img src="/brand/logo-dark.png" alt="Takaful Logo" className="h-6" loading="lazy" decoding="async" />
               </div>
               <div className="flex flex-col gap-2">
                 {navItems.map((item) => (

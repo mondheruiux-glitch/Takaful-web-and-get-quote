@@ -1,5 +1,34 @@
 import type { Metadata, Viewport } from 'next';
+import { Inter, Barlow, Instrument_Serif } from 'next/font/google';
+import { Suspense } from 'react';
+import { NavProgress } from '@/components/ui/nav-progress';
 import './globals.css';
+
+// ─── Self-hosted fonts via next/font (zero extra network round-trips) ────────
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-inter',
+  preload: true,
+});
+
+const barlow = Barlow({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  display: 'swap',
+  variable: '--font-barlow',
+  preload: false, // not critical path
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-instrument-serif',
+  preload: false,
+});
 
 const APP_URL = process.env.APP_URL || 'https://takaful.com';
 
@@ -48,30 +77,24 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${inter.variable} ${barlow.variable} ${instrumentSerif.variable}`}
+    >
       <head>
-        {/* Non-blocking font preconnect */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-        {/* Google Fonts — non-blocking, font-display=swap prevents FOIT */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-
         {/* Preload critical LCP background images */}
         <link rel="preload" href="/home-hero/hero-bg.webp" as="image" type="image/webp" />
         <link rel="preload" href="/home-hero/bg-image-2.webp" as="image" type="image/webp" />
 
-        {/* Preconnect for external images */}
+        {/* Preconnect for external images only */}
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://i.postimg.cc" />
       </head>
-      <body
-        suppressHydrationWarning
-        style={{ fontFamily: "'Inter', sans-serif" }}
-      >
+      <body suppressHydrationWarning style={{ fontFamily: 'var(--font-inter), sans-serif' }}>
+        {/* Navigation progress bar — fires on every route change */}
+        <Suspense fallback={null}>
+          <NavProgress />
+        </Suspense>
         {children}
       </body>
     </html>
