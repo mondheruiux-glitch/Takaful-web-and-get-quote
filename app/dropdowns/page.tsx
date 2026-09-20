@@ -5,7 +5,8 @@ import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Flame, Zap, Droplets, Wrench, Trees, CircleSlash, Clock, Lock, Key,
-  Shield, Laptop, Plus, Check, ChevronDown, User, BriefcaseBusiness, ArrowLeft
+  Shield, Laptop, Plus, Check, ChevronDown, User, BriefcaseBusiness, ArrowLeft,
+  Armchair, Tv, Shirt, Gem, Layers, Hammer, Bike, Package,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -149,6 +150,7 @@ export default function AllDropdownsPage() {
   const [d12, setD12] = useState('');
   const [d13, setD13] = useState('');
   const [d14, setD14] = useState('');
+  const [d15, setD15] = useState('');
 
   const dropdownsList = [
     { id: 1, title: 'Flat Type', state: d1, setState: setD1, options: [
@@ -254,6 +256,18 @@ export default function AllDropdownsPage() {
       { v: 'prof', l: 'Prof' },
       { v: 'other', l: 'Other' },
     ]},
+    { id: 15, title: 'Item Category (Claim Submission)', state: d15, setState: setD15, options: [
+      { v: 'furniture', l: 'Furniture', icon: <Armchair className="w-3.5 h-3.5 text-[#00c685]" /> },
+      { v: 'appliance', l: 'Appliance', icon: <Tv className="w-3.5 h-3.5 text-[#00c685]" /> },
+      { v: 'electronics', l: 'Electronics', icon: <Laptop className="w-3.5 h-3.5 text-[#00c685]" /> },
+      { v: 'clothing', l: 'Clothing', icon: <Shirt className="w-3.5 h-3.5 text-[#00c685]" /> },
+      { v: 'jewellery', l: 'Jewellery', icon: <Gem className="w-3.5 h-3.5 text-[#00c685]" /> },
+      { v: 'flooring', l: 'Flooring', icon: <Layers className="w-3.5 h-3.5 text-[#00c685]" /> },
+      { v: 'fixture', l: 'Fixture', icon: <Wrench className="w-3.5 h-3.5 text-[#00c685]" /> },
+      { v: 'tool', l: 'Tool', icon: <Hammer className="w-3.5 h-3.5 text-[#00c685]" /> },
+      { v: 'bicycle', l: 'Bicycle', icon: <Bike className="w-3.5 h-3.5 text-[#00c685]" /> },
+      { v: 'other', l: 'Other', icon: <Package className="w-3.5 h-3.5 text-[#00c685]" /> },
+    ]},
   ];
 
   return (
@@ -266,13 +280,13 @@ export default function AllDropdownsPage() {
             <Link href="/" className="inline-flex items-center gap-2 text-xs text-[#00c685] hover:underline mb-2">
               <ArrowLeft size={14} /> Back to Home
             </Link>
-            <h1 className="text-2xl font-bold text-white tracking-tight">All 14 Dropdown Components</h1>
+            <h1 className="text-2xl font-bold text-white tracking-tight">All 15 Dropdown Components</h1>
             <p className="text-sm text-white/50 mt-1">
-              Complete collection of custom portal-based select components used across the Get Quote flow.
+              Complete collection of custom portal-based select components used across Get Quote and Claims flows.
             </p>
           </div>
           <div className="px-3.5 py-1.5 rounded-full bg-[#00c685]/10 border border-[#00c685]/20 text-[#00c685] text-xs font-semibold">
-            14 Components
+            15 Components
           </div>
         </div>
 

@@ -1,7 +1,18 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
-const APP_URL = process.env.APP_URL || 'https://takaful.com';
+const getAppUrl = () => {
+  try {
+    if (process.env.APP_URL && process.env.APP_URL.startsWith('http')) {
+      return new URL(process.env.APP_URL).toString().replace(/\/$/, '');
+    }
+  } catch {
+    // fallback
+  }
+  return 'https://takaful.com';
+};
+
+const APP_URL = getAppUrl();
 
 export const viewport: Viewport = {
   themeColor: '#00c685',

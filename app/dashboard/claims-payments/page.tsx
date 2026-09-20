@@ -12,7 +12,7 @@ import { Claim } from '@/lib/dashboard/types';
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 1, y: 0 },
   visible: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.45, ease, delay: i * 0.06 } }),
 };
 

@@ -22,7 +22,7 @@ import { Contribution } from '@/lib/dashboard/types';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 1, y: 0 },
   visible: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.45, ease, delay: i * 0.07 } }),
 };
 const GREEN = '#00c685';
@@ -504,9 +504,17 @@ function TreasuryContributionsView({ theme }: { theme: string }) {
       {/* Chart */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={4}
         className={`rounded-2xl p-5 ${isLight ? 'shadow-sm' : ''}`} style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
-        <h3 className={`font-semibold text-sm mb-1 ${isLight ? 'text-black/85' : 'text-white/85'}`}>Monthly Collection Inflows</h3>
-        <p className={`text-xs mb-5 ${isLight ? 'text-black/45' : 'text-white/40'}`}>Collected cash volume versus targets</p>
-        <div className="h-44">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+          <div>
+            <h3 className={`font-semibold text-sm ${isLight ? 'text-black/85' : 'text-white/85'}`}>Monthly Collection Inflows</h3>
+            <p className={`text-xs mt-0.5 ${isLight ? 'text-black/45' : 'text-white/40'}`}>Collected cash volume versus targets</p>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs shrink-0">
+            <span className="w-2.5 h-2.5 rounded-full" style={{ background: GREEN }} />
+            <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>Collected</span>
+          </div>
+        </div>
+        <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={CONTRIBUTION_TREND}>
               <defs>
@@ -515,11 +523,11 @@ function TreasuryContributionsView({ theme }: { theme: string }) {
                   <stop offset="95%" stopColor={GREEN} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid vertical={false} stroke={CHART_GRID} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={CHART_GRID} />
               <XAxis dataKey="month" tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
               <RechartsTooltip content={<ChartTooltip theme={theme} />} />
-              <Area type="monotone" dataKey="total" name="Collected" stroke={GREEN} fill="url(#gC2)" strokeWidth={2} dot={false} />
+              <Area type="monotone" dataKey="total" name="Collected" stroke={GREEN} fill="url(#gC2)" strokeWidth={2.5} dot={{ r: 3, fill: GREEN }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>

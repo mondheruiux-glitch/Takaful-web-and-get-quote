@@ -9,11 +9,19 @@ import {
   Phone, Car, AlertCircle, Clock, Calendar, MapPin, Users,
   ShieldCheck, ChevronRight, Save, Trash2, Eye, Edit2,
   CloudUpload, PaperclipIcon, Hash, BarChart2,
+  Armchair, Tv, Laptop, Shirt, Gem, Layers, Wrench, Hammer, Bike,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '../../ThemeRoleContext';
 import { CERTIFICATES } from '@/lib/dashboard/mock-data';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface UploadedFile {
@@ -114,13 +122,26 @@ const DAMAGE_CATS = [
 
 const ITEM_CATS = ['Furniture', 'Appliance', 'Electronics', 'Clothing', 'Jewellery', 'Flooring', 'Fixture', 'Tool', 'Bicycle', 'Other'];
 
+const ITEM_CAT_ICONS: Record<string, React.ElementType> = {
+  'Furniture': Armchair,
+  'Appliance': Tv,
+  'Electronics': Laptop,
+  'Clothing': Shirt,
+  'Jewellery': Gem,
+  'Flooring': Layers,
+  'Fixture': Wrench,
+  'Tool': Hammer,
+  'Bicycle': Bike,
+  'Other': Package,
+};
+
 const STEP_LABELS = ['Incident', 'Location', 'Damage', 'Loss', 'Other Parties', 'Documents', 'Review', 'Submit'];
 const TOTAL_STEPS = 8;
 
 const GREEN = '#00c685';
 
 const ease = [0.16, 1, 0.3, 1] as const;
-const fadeUp = { hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease } } };
+const fadeUp = { hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease } } };
 
 function uid() { return Math.random().toString(36).slice(2, 9); }
 
@@ -568,11 +589,21 @@ function Step4({ d, setD, errors, isLight }: { d: ClaimDraft; setD: (u: Partial<
                   </div>
                   <div>
                     <LightFieldLabel isLight={isLight}>Category</LightFieldLabel>
-                    <select value={item.category} onChange={e => updateItem(item.id, { category: e.target.value })}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm h-10 focus:outline-none focus:border-[#00c685]/40 transition-colors ${isLight ? 'border-black/[0.06] bg-black/[0.03] text-black' : 'border-white/[0.05] bg-white/[0.04] text-white'}`}>
-                      <option value="">Select…</option>
-                      {ITEM_CATS.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <Select value={item.category} onValueChange={v => updateItem(item.id, { category: v })}>
+                      <SelectTrigger className={`w-full rounded-xl text-sm h-10 ${isLight ? 'border-black/[0.08] bg-white text-black' : 'border-white/[0.08] bg-white/[0.04] text-white'}`}>
+                        <SelectValue placeholder="Select category…" />
+                      </SelectTrigger>
+                      <SelectContent className={isLight ? 'bg-white border-black/10' : 'bg-[#061812] border-white/10 text-white'}>
+                        {ITEM_CATS.map(c => {
+                          const Icon = ITEM_CAT_ICONS[c] || Package;
+                          return (
+                            <SelectItem key={c} value={c} icon={<Icon className="w-3.5 h-3.5 text-[#00c685]" />}>
+                              {c}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <LightFieldLabel isLight={isLight}>Approximate age</LightFieldLabel>
@@ -641,13 +672,17 @@ function Step5({ d, setD, isLight }: { d: ClaimDraft; setD: (u: Partial<ClaimDra
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <LightFieldLabel isLight={isLight}>Which service?</LightFieldLabel>
-                    <select value={svc.service} onChange={e => updateService(svc.id, { service: e.target.value as any })}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm h-10 focus:outline-none focus:border-[#00c685]/40 ${isLight ? 'border-black/[0.06] bg-black/[0.03] text-black' : 'border-white/[0.05] bg-white/[0.04] text-white'}`}>
-                      <option>Police</option>
-                      <option>Fire Service</option>
-                      <option>Ambulance</option>
-                      <option>Other</option>
-                    </select>
+                    <Select value={svc.service} onValueChange={v => updateService(svc.id, { service: v as any })}>
+                      <SelectTrigger className={`w-full rounded-xl text-sm h-10 ${isLight ? 'border-black/[0.08] bg-white text-black' : 'border-white/[0.08] bg-white/[0.04] text-white'}`}>
+                        <SelectValue placeholder="Select service…" />
+                      </SelectTrigger>
+                      <SelectContent className={isLight ? 'bg-white border-black/10' : 'bg-[#061812] border-white/10 text-white'}>
+                        <SelectItem value="Police" icon={<Shield className="w-3.5 h-3.5 text-[#00c685]" />}>Police</SelectItem>
+                        <SelectItem value="Fire Service" icon={<Flame className="w-3.5 h-3.5 text-[#00c685]" />}>Fire Service</SelectItem>
+                        <SelectItem value="Ambulance" icon={<Plus className="w-3.5 h-3.5 text-[#00c685]" />}>Ambulance</SelectItem>
+                        <SelectItem value="Other" icon={<Phone className="w-3.5 h-3.5 text-[#00c685]" />}>Other</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <LightFieldLabel isLight={isLight}>Date contacted</LightFieldLabel>

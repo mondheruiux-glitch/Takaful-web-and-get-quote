@@ -26,8 +26,18 @@ export function HoverFooter() {
       ],
     },
     {
+      title: "Resources & Docs",
+      links: [
+        { label: "Documentation", href: "/documentation" },
+        { label: "Design System", href: "/design-system" },
+        { label: "14 Dropdowns Showcase", href: "/dropdowns" },
+        { label: "How It Works", href: "/how-it-works" },
+      ],
+    },
+    {
       title: "Helpful Links",
       links: [
+        { label: "Documentation", href: "/documentation" },
         { label: "FAQs", href: "#" },
         { label: "Support", href: "#" },
         {

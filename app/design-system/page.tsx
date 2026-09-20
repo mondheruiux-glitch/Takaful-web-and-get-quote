@@ -10,7 +10,7 @@ import {
   TrendingUp, TrendingDown, Bell, AlertTriangle, Activity,
   Sparkles, Package, ArrowLeft, Tv, MapPin, Calendar, Users,
   LayoutGrid, Percent, Expand, User, Briefcase, PoundSterling,
-  Settings, HelpCircle, LogOut, Sun, Moon,
+  Settings, HelpCircle, LogOut, Sun, Moon, Armchair, Shirt, Bike, Hammer, Phone,
 } from 'lucide-react';
 import Link from 'next/link';
 import { DEMO_USERS } from '@/lib/dashboard/mock-data';
@@ -676,6 +676,9 @@ export default function DesignSystemPage() {
   const [d10,setD10]=useState('');
   const [d11,setD11]=useState(''); const [d12,setD12]=useState(''); const [d13,setD13]=useState('');
   const [d14,setD14]=useState(''); const [d15,setD15]=useState(''); const [d16,setD16]=useState('');
+  const [dClaimItemCat, setDClaimItemCat] = useState('');
+  const [dClaimEmergency, setDClaimEmergency] = useState('');
+  const [dClaimDamageCat, setDClaimDamageCat] = useState('');
 
   return (
     <DSThemeCtx.Provider value={{ isLight }}>
@@ -870,7 +873,7 @@ export default function DesignSystemPage() {
         </DSSection>
 
         {/* DROPDOWNS */}
-        <DSSection id="dropdowns" title="Dropdowns — All 16 by Step" desc="Portal-based select components organised by get-quote step. Click any trigger to open — fully interactive." isLight={isLight}>
+        <DSSection id="dropdowns" title="Dropdowns — All 19 by Step & Workflow" desc="Portal-based select components organised by get-quote steps and claim workflows. Click any trigger to open — fully interactive." isLight={isLight}>
           <Code label="<Select value={} onValueChange={}><SelectTrigger/><SelectContent><SelectItem icon={}/></SelectContent></Select>" />
 
           {/* ── STEP 2: Your Property ──────────────────────────────────────────── */}
@@ -1324,6 +1327,110 @@ export default function DesignSystemPage() {
                   <OptionPreviewItem icon={<Flame className="w-3.5 h-3.5 text-[#00c685]"/>}>Fire / Explosion</OptionPreviewItem>
                   <OptionPreviewItem icon={<Building className="w-3.5 h-3.5 text-[#00c685]"/>}>Subsidence</OptionPreviewItem>
                   <OptionPreviewItem icon={<Shield className="w-3.5 h-3.5 text-[#00c685]"/>}>Malicious Damage</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Plus className="w-3.5 h-3.5 text-[#00c685]"/>}>Other</OptionPreviewItem>
+                </OptionPreviewCard>
+              </div>
+            </div>
+          </div>
+
+          {/* ── CLAIMS WORKFLOW: Add New Claim ──────────────────────────────────── */}
+          <div className="mt-8 pt-6 border-t space-y-4" style={{ borderColor: isLight ? '#E5E7EB' : 'rgba(255,255,255,0.05)' }}>
+            <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: isLight ? '#E5E7EB' : 'rgba(255,255,255,0.05)' }}>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold tracking-[0.12em] uppercase text-[#00c685]">Claims Workflow — Add New Claim</span>
+                <span className="text-[10px] font-mono" style={{ color: isLight ? '#6B7280' : 'rgba(255,255,255,0.25)' }}>· 3 dropdowns (Item Categories, Emergency Services, Damage)</span>
+              </div>
+              <span className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: isLight ? '#6B7280' : 'rgba(255,255,255,0.4)' }}>Live Triggers &amp; Option Previews</span>
+            </div>
+
+            {/* Live Interactive Triggers */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+              {/* 1. Add Items - Item Category */}
+              <div className="space-y-1.5">
+                <FieldLabel>Add Items — Category</FieldLabel>
+                <Select value={dClaimItemCat} onValueChange={setDClaimItemCat}>
+                  <SelectTrigger/><SelectContent>
+                    <SelectItem value="furniture" icon={<Armchair className="w-3.5 h-3.5"/>}>Furniture</SelectItem>
+                    <SelectItem value="appliance" icon={<Tv className="w-3.5 h-3.5"/>}>Appliance</SelectItem>
+                    <SelectItem value="electronics" icon={<Laptop className="w-3.5 h-3.5"/>}>Electronics</SelectItem>
+                    <SelectItem value="clothing" icon={<Shirt className="w-3.5 h-3.5"/>}>Clothing</SelectItem>
+                    <SelectItem value="jewellery" icon={<Gem className="w-3.5 h-3.5"/>}>Jewellery</SelectItem>
+                    <SelectItem value="flooring" icon={<Layers className="w-3.5 h-3.5"/>}>Flooring</SelectItem>
+                    <SelectItem value="fixture" icon={<Wrench className="w-3.5 h-3.5"/>}>Fixture</SelectItem>
+                    <SelectItem value="tool" icon={<Hammer className="w-3.5 h-3.5"/>}>Tool</SelectItem>
+                    <SelectItem value="bicycle" icon={<Bike className="w-3.5 h-3.5"/>}>Bicycle</SelectItem>
+                    <SelectItem value="other" icon={<Package className="w-3.5 h-3.5"/>}>Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 2. Emergency Services */}
+              <div className="space-y-1.5">
+                <FieldLabel>Emergency Services Contacted</FieldLabel>
+                <Select value={dClaimEmergency} onValueChange={setDClaimEmergency}>
+                  <SelectTrigger/><SelectContent>
+                    <SelectItem value="police" icon={<Shield className="w-3.5 h-3.5"/>}>Police</SelectItem>
+                    <SelectItem value="fire" icon={<Flame className="w-3.5 h-3.5"/>}>Fire Service</SelectItem>
+                    <SelectItem value="ambulance" icon={<Plus className="w-3.5 h-3.5"/>}>Ambulance</SelectItem>
+                    <SelectItem value="other" icon={<Phone className="w-3.5 h-3.5"/>}>Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 3. Primary Damage Category */}
+              <div className="space-y-1.5">
+                <FieldLabel>Primary Damage Category</FieldLabel>
+                <Select value={dClaimDamageCat} onValueChange={setDClaimDamageCat}>
+                  <SelectTrigger/><SelectContent>
+                    <SelectItem value="structure" icon={<Building2 className="w-3.5 h-3.5"/>}>Building structure</SelectItem>
+                    <SelectItem value="walls" icon={<Layers className="w-3.5 h-3.5"/>}>Walls or ceilings</SelectItem>
+                    <SelectItem value="roof" icon={<Home className="w-3.5 h-3.5"/>}>Roof</SelectItem>
+                    <SelectItem value="flooring" icon={<Grid className="w-3.5 h-3.5"/>}>Flooring</SelectItem>
+                    <SelectItem value="fixtures" icon={<Wrench className="w-3.5 h-3.5"/>}>Fixtures and fittings</SelectItem>
+                    <SelectItem value="furniture" icon={<Armchair className="w-3.5 h-3.5"/>}>Furniture</SelectItem>
+                    <SelectItem value="appliances" icon={<Tv className="w-3.5 h-3.5"/>}>Appliances</SelectItem>
+                    <SelectItem value="belongings" icon={<Package className="w-3.5 h-3.5"/>}>Personal belongings</SelectItem>
+                    <SelectItem value="other" icon={<Plus className="w-3.5 h-3.5"/>}>Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+            </div>
+
+            {/* Expanded Previews */}
+            <div className="pt-2">
+              <p className="text-[11px] font-semibold mb-3 uppercase tracking-wider" style={{ color: isLight ? '#4B5563' : 'rgba(255,255,255,0.5)' }}>Add New Claim Dropdown Options (Expanded Previews)</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <OptionPreviewCard title="Add Items — Categories">
+                  <OptionPreviewItem icon={<Armchair className="w-3.5 h-3.5 text-[#00c685]"/>}>Furniture</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Tv className="w-3.5 h-3.5 text-[#00c685]"/>}>Appliance</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Laptop className="w-3.5 h-3.5 text-[#00c685]"/>}>Electronics</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Shirt className="w-3.5 h-3.5 text-[#00c685]"/>}>Clothing</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Gem className="w-3.5 h-3.5 text-[#00c685]"/>}>Jewellery</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Layers className="w-3.5 h-3.5 text-[#00c685]"/>}>Flooring</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Wrench className="w-3.5 h-3.5 text-[#00c685]"/>}>Fixture</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Hammer className="w-3.5 h-3.5 text-[#00c685]"/>}>Tool</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Bike className="w-3.5 h-3.5 text-[#00c685]"/>}>Bicycle</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Package className="w-3.5 h-3.5 text-[#00c685]"/>}>Other</OptionPreviewItem>
+                </OptionPreviewCard>
+
+                <OptionPreviewCard title="Emergency Services Contacted">
+                  <OptionPreviewItem icon={<Shield className="w-3.5 h-3.5 text-[#00c685]"/>}>Police</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Flame className="w-3.5 h-3.5 text-[#00c685]"/>}>Fire Service</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Plus className="w-3.5 h-3.5 text-[#00c685]"/>}>Ambulance</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Phone className="w-3.5 h-3.5 text-[#00c685]"/>}>Other</OptionPreviewItem>
+                </OptionPreviewCard>
+
+                <OptionPreviewCard title="Primary Damage Categories">
+                  <OptionPreviewItem icon={<Building2 className="w-3.5 h-3.5 text-[#00c685]"/>}>Building structure</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Layers className="w-3.5 h-3.5 text-[#00c685]"/>}>Walls or ceilings</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Home className="w-3.5 h-3.5 text-[#00c685]"/>}>Roof</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Grid className="w-3.5 h-3.5 text-[#00c685]"/>}>Flooring</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Wrench className="w-3.5 h-3.5 text-[#00c685]"/>}>Fixtures and fittings</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Armchair className="w-3.5 h-3.5 text-[#00c685]"/>}>Furniture</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Tv className="w-3.5 h-3.5 text-[#00c685]"/>}>Appliances</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Package className="w-3.5 h-3.5 text-[#00c685]"/>}>Personal belongings</OptionPreviewItem>
                   <OptionPreviewItem icon={<Plus className="w-3.5 h-3.5 text-[#00c685]"/>}>Other</OptionPreviewItem>
                 </OptionPreviewCard>
               </div>

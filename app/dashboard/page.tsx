@@ -7,7 +7,8 @@ import {
   CheckCircle2, AlertCircle, TrendingUp, TrendingDown,
   Users, PieChart, Banknote, BarChart3, Activity,
   CircleDot, ChevronRight, Bell, RefreshCw, XCircle,
-  Building2, Package, AlertTriangle, Flame,
+  Building2, Package, AlertTriangle, Flame, MessageSquare,
+  HelpCircle, MessageCircle,
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line,
@@ -17,19 +18,22 @@ import {
 import Link from 'next/link';
 import { useRole } from './ThemeRoleContext';
 import { useTheme } from './ThemeRoleContext';
+import { TakafulPoolBarChart } from '@/components/ui/takaful-pool-bar-chart';
+import { Vo2MaxCard } from '@/components/ui/progress';
 import {
   CLAIMS, CONTRIBUTIONS, POOL, PARTICIPANT_GROWTH,
   CLAIMS_TREND, CONTRIBUTION_TREND, POOL_HISTORY,
   PARTICIPANTS, CERTIFICATES, CLAIMS_AWAITING_PAYMENT,
   TRANSACTIONS,
 } from '@/lib/dashboard/mock-data';
+import { getDicebearAvatar } from '@/lib/dashboard/avatars';
 
 /* ─── Shared tokens ──────────────────────────────────────────────────────── */
 const GREEN = '#00c685';
 const ease = [0.16, 1, 0.3, 1] as const;
 const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.45, ease, delay: i * 0.07 } }),
+  hidden: { opacity: 1, y: 0 },
+  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.35, ease, delay: i * 0.04 } }),
 };
 
 /* ─── Shared sub-components ─────────────────────────────────────────────── */
@@ -40,13 +44,21 @@ function ChartTooltip({ active, payload, label, theme }: any) {
     <div className="rounded-xl p-3 text-xs shadow-2xl"
       style={{ background: isLight ? '#fff' : '#0d2117', border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)', color: isLight ? '#000' : '#fff' }}>
       <p className={`${isLight ? 'text-black/50' : 'text-white/50'} mb-1.5 font-medium`}>{label}</p>
-      {payload.map((p: any, i: number) => (
-        <div key={i} className="flex items-center gap-2 mb-1">
-          <span className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-          <span className={isLight ? 'text-black/70' : 'text-white/70'}>{p.name}:</span>
-          <span className="font-semibold">{typeof p.value === 'number' && (p.name?.toLowerCase().includes('£') || p.name?.toLowerCase().includes('amount') || p.name?.toLowerCase().includes('value') || p.name?.toLowerCase().includes('contribution') || p.name?.toLowerCase().includes('balance') || p.name?.toLowerCase().includes('collected') || p.name?.toLowerCase().includes('failed') || p.name?.toLowerCase().includes('paid') || p.name?.toLowerCase().includes('claim') || p.name?.toLowerCase().includes('total')) ? `£${p.value.toLocaleString()}` : p.value.toLocaleString()}</span>
-        </div>
-      ))}
+      {payload.map((p: any, i: number) => {
+        const val = p?.value;
+        const formatted = typeof val === 'number'
+          ? ((p?.name?.toLowerCase().includes('£') || p?.name?.toLowerCase().includes('amount') || p?.name?.toLowerCase().includes('value') || p?.name?.toLowerCase().includes('contribution') || p?.name?.toLowerCase().includes('balance') || p?.name?.toLowerCase().includes('collected') || p?.name?.toLowerCase().includes('failed') || p?.name?.toLowerCase().includes('paid') || p?.name?.toLowerCase().includes('claim') || p?.name?.toLowerCase().includes('total'))
+            ? `£${val.toLocaleString()}`
+            : val.toLocaleString())
+          : String(val ?? '—');
+        return (
+          <div key={i} className="flex items-center gap-2 mb-1">
+            <span className="w-2 h-2 rounded-full" style={{ background: p?.color }} />
+            <span className={isLight ? 'text-black/70' : 'text-white/70'}>{p?.name}:</span>
+            <span className="font-semibold">{formatted}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -88,20 +100,41 @@ function KPICard({ label, value, sub, icon: Icon, trend, color = GREEN, custom, 
   );
 }
 
-function SectionCard({ title, children, action, theme }: { title: string; children: React.ReactNode; action?: React.ReactNode; theme: string }) {
+function SectionCard({ title, children, action, theme, className }: { title: string; children: React.ReactNode; action?: React.ReactNode; theme: string; className?: string }) {
   const isLight = theme === 'light';
   return (
     <motion.div
       variants={fadeUp} initial="hidden" animate="visible"
-      className={`rounded-2xl overflow-hidden ${isLight ? 'shadow-sm' : ''}`}
+      className={`rounded-2xl overflow-hidden ${isLight ? 'shadow-sm' : ''} ${className ?? ''}`}
       style={{ background: isLight ? '#fff' : '#0d2117', border: isLight ? '1px solid #E4E7EC' : '1px solid rgba(255,255,255,0.06)' }}
     >
-      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: isLight ? '1px solid #E4E7EC' : '1px solid rgba(255,255,255,0.05)' }}>
+      <div className="flex items-center justify-between px-5 py-4 shrink-0" style={{ borderBottom: isLight ? '1px solid #E4E7EC' : '1px solid rgba(255,255,255,0.05)' }}>
         <h3 className={`text-sm font-semibold ${isLight ? 'text-black/80' : 'text-white/80'}`}>{title}</h3>
         {action}
       </div>
       {children}
     </motion.div>
+  );
+}
+
+function SafeChartContainer({ children, height = 'h-52' }: { children: React.ReactNode; height?: string }) {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className={`w-full ${height} flex items-center justify-center opacity-40`}>
+        <div className="w-5 h-5 border-2 border-[#00c685] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`w-full ${height}`}>
+      {children}
+    </div>
   );
 }
 
@@ -194,8 +227,8 @@ function ParticipantOverview({ theme }: { theme: string }) {
               <p className={`p-5 text-sm ${isLight ? 'text-black/40' : 'text-white/35'}`}>No claims on record.</p>
             ) : myClaims.map(claim => (
               <Link key={claim.id} href={`/dashboard/claims/${claim.id}`} className={`flex items-start gap-3 p-4 transition-colors ${isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]'}`}>
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${GREEN}15` }}>
-                  <FileText size={15} style={{ color: GREEN }} />
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: claim.status === 'Rejected' ? 'rgba(239, 68, 68, 0.12)' : `${GREEN}15` }}>
+                  <FileText size={15} style={{ color: claim.status === 'Rejected' ? '#ef4444' : GREEN }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
@@ -203,7 +236,13 @@ function ParticipantOverview({ theme }: { theme: string }) {
                     <StatusBadge status={claim.status} />
                   </div>
                   <p className={`text-xs ${isLight ? 'text-black/50' : 'text-white/45'} truncate`}>{claim.type} · {claim.incidentDate}</p>
-                  <p className={`text-xs mt-0.5 ${isLight ? 'text-black/45' : 'text-white/40'}`}>{claim.lastActivityNote}</p>
+                  {claim.status === 'Rejected' && claim.rejectionReason ? (
+                    <p className="text-[11px] mt-1 text-red-500 font-medium line-clamp-1">
+                      Reason: {claim.rejectionReason}
+                    </p>
+                  ) : (
+                    <p className={`text-xs mt-0.5 ${isLight ? 'text-black/45' : 'text-white/40'}`}>{claim.lastActivityNote}</p>
+                  )}
                 </div>
                 <span className={`text-xs font-semibold ${isLight ? 'text-black/60' : 'text-white/60'}`}>£{claim.amountClaimed.toLocaleString()}</span>
               </Link>
@@ -212,8 +251,92 @@ function ParticipantOverview({ theme }: { theme: string }) {
         </SectionCard>
       </div>
 
-      {/* Recent contributions + Pool transparency */}
+      {/* Messages & Support + Recent Contributions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Dedicated Messages & Support Section for Participant */}
+        <SectionCard
+          title="Messages & Handler Support"
+          theme={theme}
+          action={
+            <Link href="/dashboard/support" className="text-xs font-medium text-[#00c685] flex items-center gap-1">
+              Support Desk <ChevronRight size={12} />
+            </Link>
+          }
+        >
+          <div className="p-5 space-y-4">
+            <div className={`flex items-center justify-between p-3.5 rounded-xl border ${isLight ? 'bg-gray-50/80 border-gray-200' : 'bg-white/5 border-white/10'}`}>
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <img
+                    src={getDicebearAvatar('Omar Hassan', 'male')}
+                    alt="Omar Hassan"
+                    className="w-10 h-10 rounded-full object-cover border-2 border-blue-500/30 bg-blue-500/10 shadow-sm"
+                  />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-[#0d2117]" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <p className={`text-xs font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>Omar Hassan</p>
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-blue-500/15 text-blue-500">Assigned Handler</span>
+                  </div>
+                  <p className={`text-[11px] ${isLight ? 'text-black/50' : 'text-white/45'}`}>Online now · Responds within 2 business hours</p>
+                </div>
+              </div>
+              <Link
+                href="/dashboard/claims/CLM-2024-0891"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-opacity hover:opacity-90 shadow-sm"
+                style={{ background: GREEN }}
+              >
+                Chat
+              </Link>
+            </div>
+
+            <div className="space-y-2.5">
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-black/40' : 'text-white/35'}`}>Recent Claim Communications</p>
+              {[
+                {
+                  sender: 'Omar Hassan (Handler)',
+                  msg: 'Assessor Dave Miller has been booked for Friday 25 July at 10:00 AM for your roof storm claim.',
+                  time: '20 Jul, 09:30',
+                  claimId: 'CLM-2024-0891',
+                  unread: true,
+                },
+                {
+                  sender: 'Omar Hassan (Handler)',
+                  msg: 'Settlement of £1,600 for fire damage claim has been transferred to your registered account.',
+                  time: '12 Jul, 10:15',
+                  claimId: 'CLM-2024-0884',
+                  unread: false,
+                },
+              ].map((item, i) => (
+                <Link
+                  key={i}
+                  href={`/dashboard/claims/${item.claimId}`}
+                  className={`block p-3 rounded-xl border transition-colors ${
+                    item.unread
+                      ? isLight ? 'bg-emerald-50/50 border-emerald-200/80 hover:bg-emerald-50' : 'bg-emerald-500/[0.04] border-emerald-500/20 hover:bg-emerald-500/[0.08]'
+                      : isLight ? 'bg-white border-gray-100 hover:bg-gray-50' : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-semibold text-[#00c685]">{item.claimId}</span>
+                    <span className={`text-[10px] ${isLight ? 'text-black/40' : 'text-white/35'}`}>{item.time}</span>
+                  </div>
+                  <p className={`text-xs leading-relaxed line-clamp-2 ${isLight ? 'text-black/75' : 'text-white/75'}`}>{item.msg}</p>
+                </Link>
+              ))}
+            </div>
+
+            <div className="pt-1 flex items-center justify-between text-xs">
+              <Link href="/dashboard/support" className="text-xs font-semibold text-[#00c685] hover:underline flex items-center gap-1">
+                <HelpCircle size={12} /> Open General Support Ticket
+              </Link>
+              <span className={`text-[10px] ${isLight ? 'text-black/40' : 'text-white/35'}`}>24/7 Takaful Care</span>
+            </div>
+          </div>
+        </SectionCard>
+
+        {/* Recent Contributions Card */}
         <SectionCard title="Recent Contributions" theme={theme} action={<Link href="/dashboard/contributions" className="text-xs font-medium text-[#00c685] flex items-center gap-1">Manage <ChevronRight size={12} /></Link>}>
           <div className="divide-y" style={{ borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.04)' }}>
             {myContribs.map(c => (
@@ -231,30 +354,11 @@ function ParticipantOverview({ theme }: { theme: string }) {
             ))}
           </div>
         </SectionCard>
+      </div>
 
-        <SectionCard title="Takaful Pool — Your Share" theme={theme} action={<Link href="/dashboard/pool" className="text-xs font-medium text-[#00c685] flex items-center gap-1">Learn more <ChevronRight size={12} /></Link>}>
-          <div className="p-5 space-y-3">
-            <p className={`text-xs leading-relaxed ${isLight ? 'text-black/55' : 'text-white/50'}`}>
-              Your contributions go into a shared pool used to help all participants. Here's how the pool is structured:
-            </p>
-            {[
-              { label: 'Participant Fund', pct: POOL.participantFundPct, color: GREEN },
-              { label: 'Claims Reserve', pct: POOL.claimsReservePct, color: '#f59e0b' },
-              { label: 'Wakāla Fee', pct: POOL.wakalaFeePct, color: '#94a3b8' },
-            ].map(item => (
-              <div key={item.label}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className={isLight ? 'text-black/60' : 'text-white/55'}>{item.label}</span>
-                  <span className="font-semibold" style={{ color: item.color }}>{item.pct}%</span>
-                </div>
-                <div className="h-2 rounded-full overflow-hidden" style={{ background: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)' }}>
-                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${item.pct}%`, background: item.color }} />
-                </div>
-              </div>
-            ))}
-            <p className={`text-[11px] mt-2 ${isLight ? 'text-black/35' : 'text-white/30'}`}>Pool balance: £{POOL.balance.toLocaleString()} · {POOL.periodLabel}</p>
-          </div>
-        </SectionCard>
+      {/* Takaful Pool — Your Share */}
+      <div>
+        <TakafulPoolBarChart theme={theme} />
       </div>
     </div>
   );
@@ -272,58 +376,109 @@ function ClaimHandlerOverview({ theme }: { theme: string }) {
 
   const statusCounts = ['Submitted', 'Under Review', 'Awaiting Information', 'Approved', 'Paid'].map(s => ({
     name: s.replace('Awaiting Information', 'Awaiting'), count: CLAIMS.filter(c => c.status === s).length,
+    color: s === 'Submitted' ? '#3b82f6' : s === 'Under Review' ? '#f59e0b' : s === 'Awaiting Information' ? '#f97316' : s === 'Approved' ? '#10b981' : '#00c685',
   }));
 
+  const maxCount = Math.max(...statusCounts.map(s => s.count));
+
+  const priorityClaims = CLAIMS
+    .filter(c => !['Paid', 'Rejected'].includes(c.status))
+    .sort((a, b) => {
+      const pOrder: Record<string, number> = { Critical: 0, High: 1, Medium: 2, Low: 3 };
+      return (pOrder[a.priority] ?? 9) - (pOrder[b.priority] ?? 9) || b.daysOpen - a.daysOpen;
+    })
+    .slice(0, 6);
+
   return (
-    <div className="p-4 sm:p-6 space-y-6">
-      {/* Header */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div className="p-4 sm:p-6 space-y-5">
+
+      {/* ── Header ── */}
+      <motion.div variants={fadeUp} initial="hidden" animate="visible"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className={`text-xl font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>Claims Handler Dashboard</h1>
-          <p className={`text-sm mt-0.5 ${isLight ? 'text-black/50' : 'text-white/45'}`}>Omar Hassan · {new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+          <h1 className={`text-xl font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>
+            Claims Handler Dashboard
+          </h1>
+          <p className={`text-sm mt-0.5 ${isLight ? 'text-black/50' : 'text-white/45'}`}>
+            Omar Hassan · {new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
+          </p>
         </div>
-        <Link href="/dashboard/queue" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white" style={{ background: GREEN }}>
-          <ClipboardList size={15} />
-          My Queue
-        </Link>
+        <div className="flex items-center gap-2 flex-wrap">
+          {overdue.length > 0 && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold"
+              style={{ background: 'rgba(239,68,68,0.12)', color: '#ef4444' }}>
+              <AlertCircle size={12} /> {overdue.length} overdue claim{overdue.length > 1 ? 's' : ''}
+            </div>
+          )}
+          {awaitingDocs.length > 0 && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold"
+              style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}>
+              <Clock size={12} /> {awaitingDocs.length} awaiting docs
+            </div>
+          )}
+          <Link href="/dashboard/queue"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white"
+            style={{ background: GREEN }}>
+            <Activity size={14} /> My Queue
+          </Link>
+        </div>
       </motion.div>
 
-      {/* KPI row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard label="My Queue" value={`${myQueue.length}`} sub="Claims assigned to me" icon={Activity} delay={0} theme={theme} />
-        <KPICard label="Awaiting Documents" value={`${awaitingDocs.length}`} sub="On hold for evidence" icon={AlertCircle} delay={1} theme={theme} color="#f59e0b" />
-        <KPICard label="Overdue (>10 days)" value={`${overdue.length}`} sub="Breaching SLA" icon={Clock} delay={2} theme={theme} color="#ef4444" />
-        <KPICard label="Approved (MTD)" value={`${approvedMTD.length}`} sub={`£${approvedMTD.reduce((s, c) => s + (c.amountApproved ?? 0), 0).toLocaleString()} total`} icon={CheckCircle2} delay={3} theme={theme} color="#10b981" />
+      {/* ── KPI Row ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <KPICard label="My Queue" value={`${myQueue.length}`} sub="Active claims assigned" icon={Activity} delay={0} theme={theme} />
+        <KPICard label="Awaiting Docs" value={`${awaitingDocs.length}`} sub="Pending evidence" icon={AlertCircle} delay={1} theme={theme} color="#f59e0b" />
+        <KPICard label="Overdue (>10d)" value={`${overdue.length}`} sub="Breaching SLA" icon={Clock} delay={2} theme={theme} color="#ef4444" />
+        <KPICard label="Approved MTD" value={`${approvedMTD.length}`}
+          sub={`£${approvedMTD.reduce((s, c) => s + (c.amountApproved ?? 0), 0).toLocaleString()} settled`}
+          icon={CheckCircle2} delay={3} theme={theme} color="#10b981" />
       </div>
 
-      {/* Priority queue table + pipeline */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div className="xl:col-span-2">
-          <SectionCard title="Priority Claims — Action Required" theme={theme} action={<Link href="/dashboard/claims" className="text-xs font-medium text-[#00c685] flex items-center gap-1">All claims <ChevronRight size={12} /></Link>}>
-            <div className="overflow-x-auto">
+      {/* ── Main Content: Table (left) + Sidebar (right) ── */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 items-stretch">
+
+        {/* Priority Queue Table — spans 2 cols and fills full column height */}
+        <div className="xl:col-span-2 flex flex-col h-full">
+          <SectionCard
+            title="Priority Claims — Action Required"
+            theme={theme}
+            className="h-full flex flex-col"
+            action={
+              <Link href="/dashboard/claims" className="text-xs font-medium text-[#00c685] flex items-center gap-1">
+                View all <ChevronRight size={12} />
+              </Link>
+            }
+          >
+            <div className="flex-1 flex flex-col justify-between overflow-x-auto min-h-0">
               <table className="w-full text-xs">
                 <thead>
                   <tr className={isLight ? 'text-black/40 border-b border-black/[0.04]' : 'text-white/30 border-b border-white/[0.04]'}>
                     {['Claim ID', 'Participant', 'Type', 'Days Open', 'Priority', 'Status', ''].map(h => (
-                      <th key={h} className="px-4 py-3 text-left font-semibold">{h}</th>
+                      <th key={h} className="px-5 py-3.5 text-left font-semibold">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className={`divide-y ${isLight ? 'divide-black/04' : 'divide-white/04'}`}>
-                  {CLAIMS.filter(c => !['Paid', 'Rejected'].includes(c.status)).sort((a, b) => b.daysOpen - a.daysOpen).map(c => (
-                    <tr key={c.id} className={`transition-colors ${isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]'}`}>
-                      <td className="px-4 py-3">
-                        <span className={`font-mono font-semibold ${isLight ? 'text-gray-900' : 'text-white/90'}`}>{c.id}</span>
+                  {priorityClaims.map(c => (
+                    <tr key={c.id} className={`transition-colors ${isLight ? 'hover:bg-black/[0.03]' : 'hover:bg-white/[0.03]'}`}>
+                      <td className="px-5 py-3.5">
+                        <span className="font-mono font-semibold text-[#00c685]">{c.id}</span>
                       </td>
-                      <td className={`px-4 py-3 font-medium ${isLight ? 'text-black/75' : 'text-white/75'}`}>{c.participantName}</td>
-                      <td className={`px-4 py-3 ${isLight ? 'text-black/55' : 'text-white/55'}`}>{c.type}</td>
-                      <td className="px-4 py-3">
-                        <span className={`font-bold ${c.daysOpen > 10 ? 'text-red-400' : c.daysOpen > 5 ? 'text-amber-400' : isLight ? 'text-black/70' : 'text-white/70'}`}>{c.daysOpen}d</span>
+                      <td className={`px-5 py-3.5 font-medium ${isLight ? 'text-black/75' : 'text-white/75'}`}>
+                        {c.participantName}
                       </td>
-                      <td className="px-4 py-3"><StatusBadge status={c.priority} /></td>
-                      <td className="px-4 py-3"><StatusBadge status={c.status} /></td>
-                      <td className="px-4 py-3">
-                        <Link href={`/dashboard/claims/${c.id}`} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-white" style={{ background: GREEN }}>
+                      <td className={`px-5 py-3.5 ${isLight ? 'text-black/55' : 'text-white/55'}`}>{c.type}</td>
+                      <td className="px-5 py-3.5">
+                        <span className={`font-bold tabular-nums ${c.daysOpen > 10 ? 'text-red-400' : c.daysOpen > 5 ? 'text-amber-400' : isLight ? 'text-black/70' : 'text-white/70'}`}>
+                          {c.daysOpen}d
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5"><StatusBadge status={c.priority} /></td>
+                      <td className="px-5 py-3.5"><StatusBadge status={c.status} /></td>
+                      <td className="px-5 py-3.5 text-right">
+                        <Link href={`/dashboard/claims/${c.id}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-white transition-opacity hover:opacity-90"
+                          style={{ background: GREEN }}>
                           Review <ArrowRight size={10} />
                         </Link>
                       </td>
@@ -331,52 +486,110 @@ function ClaimHandlerOverview({ theme }: { theme: string }) {
                   ))}
                 </tbody>
               </table>
+
+              {/* Bottom footer pinned to fill full height */}
+              <div className={`mt-auto px-5 py-3.5 flex items-center justify-between border-t text-xs ${isLight ? 'border-black/[0.05] bg-black/[0.01]' : 'border-white/[0.04] bg-white/[0.01]'}`}>
+                <span className={isLight ? 'text-black/45 font-medium' : 'text-white/40 font-medium'}>
+                  Showing <span className="font-bold text-[#00c685]">{priorityClaims.length}</span> actionable priority claims
+                </span>
+                <Link
+                  href="/dashboard/queue"
+                  className="font-semibold text-[#00c685] hover:underline inline-flex items-center gap-1"
+                >
+                  Manage queue <ChevronRight size={12} />
+                </Link>
+              </div>
             </div>
           </SectionCard>
         </div>
 
-        <div className="space-y-4">
+        {/* Right sidebar — Pipeline + Handling Time */}
+        <div className="flex flex-col gap-4">
+
+          {/* Pipeline Overview */}
           <SectionCard title="Pipeline Overview" theme={theme}>
-            <div className="p-4 space-y-2">
-              {statusCounts.map(({ name, count }) => (
-                <div key={name} className="flex items-center gap-3">
-                  <span className={`text-xs w-28 shrink-0 ${isLight ? 'text-black/60' : 'text-white/55'}`}>{name}</span>
-                  <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)' }}>
-                    <div className="h-full rounded-full" style={{ width: `${Math.min(count * 20, 100)}%`, background: GREEN }} />
+            <div className="p-4 space-y-3">
+              {statusCounts.map(({ name, count, color }) => (
+                <div key={name} className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+                      <span className={`text-xs font-medium ${isLight ? 'text-black/70' : 'text-white/65'}`}>{name}</span>
+                    </div>
+                    <span className={`text-xs font-bold tabular-nums ${isLight ? 'text-black/80' : 'text-white/80'}`}>{count}</span>
                   </div>
-                  <span className={`text-xs font-bold w-4 text-right ${isLight ? 'text-black/70' : 'text-white/70'}`}>{count}</span>
+                  <div className="h-1.5 rounded-full overflow-hidden"
+                    style={{ background: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.06)' }}>
+                    <div className="h-full rounded-full transition-all duration-700"
+                      style={{ width: `${maxCount > 0 ? (count / maxCount) * 100 : 0}%`, background: color }} />
+                  </div>
                 </div>
               ))}
             </div>
           </SectionCard>
 
-          <SectionCard title="My Avg. Handling Time" theme={theme}>
-            <div className="p-5 text-center">
-              <p className="text-4xl font-bold" style={{ color: GREEN }}>6.2</p>
-              <p className={`text-xs mt-1 ${isLight ? 'text-black/50' : 'text-white/45'}`}>days average (MTD)</p>
-              <div className={`mt-3 flex items-center justify-center gap-1.5 text-xs font-medium text-emerald-400`}>
-                <TrendingDown size={12} />
-                <span>0.8 days faster than last month</span>
-              </div>
-            </div>
-          </SectionCard>
+          {/* Avg Handling Time Card */}
+          <Vo2MaxCard
+            title="My Avg. Handling Time"
+            value={6.2}
+            decimals={1}
+            unit="d"
+            status="On Target"
+            progress={78}
+            icon={<Clock size={20} />}
+            theme={theme}
+            description={
+              <>
+                SLA target: <span className="font-semibold text-[#00c685]">7.0 days</span>
+                <br />
+                <span className="font-medium text-emerald-500">0.8 days faster</span> than last month
+              </>
+            }
+          />
         </div>
       </div>
 
-      {/* Claims trend */}
-      <SectionCard title="Claims Volume & Value (2026)" theme={theme}>
-        <div className="p-5 h-56">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={CLAIMS_TREND} barGap={4}>
-              <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-              <YAxis yAxisId="left" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
-              <RechartsTooltip content={<ChartTooltip theme={theme} />} />
-              <Bar yAxisId="left" dataKey="count" name="Count" fill={`${GREEN}80`} radius={[4,4,0,0]} />
-              <Bar yAxisId="right" dataKey="value" name="£ Value" fill={GREEN} radius={[4,4,0,0]} />
-            </BarChart>
-          </ResponsiveContainer>
+      {/* ── Full-Width Claims Trend ── */}
+      <SectionCard
+        title="Claims Volume & Value (2026)"
+        theme={theme}
+        action={
+          <div className="flex items-center gap-4 text-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]" />
+              <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>Claims Count</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]" />
+              <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>£ Value</span>
+            </div>
+          </div>
+        }
+      >
+        <div className="p-5">
+          <SafeChartContainer height="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={CLAIMS_TREND}>
+                <defs>
+                  <linearGradient id="gclaimscount" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="gclaimsval" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
+                <YAxis yAxisId="left" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
+                <RechartsTooltip content={<ChartTooltip theme={theme} />} />
+                <Area yAxisId="left" type="monotone" dataKey="count" name="Claims Count" stroke="#3b82f6" fill="url(#gclaimscount)" strokeWidth={2.5} dot={{ r: 3, fill: '#3b82f6' }} />
+                <Area yAxisId="right" type="monotone" dataKey="value" name="Claims Value (£)" stroke="#f59e0b" fill="url(#gclaimsval)" strokeWidth={2.5} dot={{ r: 3, fill: '#f59e0b' }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </SafeChartContainer>
         </div>
       </SectionCard>
     </div>
@@ -476,26 +689,48 @@ function FinanceOverview({ theme }: { theme: string }) {
       </div>
 
       {/* Contribution trend chart */}
-      <SectionCard title="Contribution Collection Trend (2026)" theme={theme}>
-        <div className="p-5 h-56">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={CONTRIBUTION_TREND}>
-              <defs>
-                <linearGradient id="gcollected" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={GREEN} stopOpacity={0.25} />
-                  <stop offset="95%" stopColor={GREEN} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
-              <RechartsTooltip content={<ChartTooltip theme={theme} />} />
-              <Area type="monotone" dataKey="collected" name="Collected" stroke={GREEN} fill="url(#gcollected)" strokeWidth={2} dot={false} />
-              <Area type="monotone" dataKey="failed" name="Failed" stroke="#ef4444" fill="none" strokeWidth={1.5} dot={false} strokeDasharray="4 2" />
-            </AreaChart>
-          </ResponsiveContainer>
+      <SectionCard
+        title="Contribution Collection Trend (2026)"
+        theme={theme}
+        action={
+          <div className="flex items-center gap-4 text-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: GREEN }} />
+              <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>Collected</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#ef4444]" />
+              <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>Failed</span>
+            </div>
+          </div>
+        }
+      >
+        <div className="p-5">
+          <SafeChartContainer height="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={CONTRIBUTION_TREND}>
+                <defs>
+                  <linearGradient id="gcollected" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={GREEN} stopOpacity={0.25} />
+                    <stop offset="95%" stopColor={GREEN} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
+                <RechartsTooltip content={<ChartTooltip theme={theme} />} />
+                <Area type="monotone" dataKey="collected" name="Collected" stroke={GREEN} fill="url(#gcollected)" strokeWidth={2.5} dot={{ r: 3, fill: GREEN }} />
+                <Area type="monotone" dataKey="failed" name="Failed" stroke="#ef4444" fill="none" strokeWidth={1.5} dot={{ r: 3, fill: '#ef4444' }} strokeDasharray="4 2" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </SafeChartContainer>
         </div>
       </SectionCard>
+
+      {/* Takaful Pool Allocation Breakdown */}
+      <div>
+        <TakafulPoolBarChart theme={theme} />
+      </div>
     </div>
   );
 }
@@ -548,43 +783,65 @@ function ManagementOverview({ theme }: { theme: string }) {
 
       {/* Growth + Pool trend charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <SectionCard title="Participant Growth (2026)" theme={theme}>
-          <div className="p-4 h-52">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={PARTICIPANT_GROWTH}>
-                <defs>
-                  <linearGradient id="gpart" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={GREEN} stopOpacity={0.3} />
-                    <stop offset="95%" stopColor={GREEN} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} domain={['dataMin - 50', 'dataMax + 20']} />
-                <RechartsTooltip content={<ChartTooltip theme={theme} />} />
-                <Area type="monotone" dataKey="participants" name="Participants" stroke={GREEN} fill="url(#gpart)" strokeWidth={2.5} dot={false} />
-              </AreaChart>
-            </ResponsiveContainer>
+        <SectionCard
+          title="Participant Growth (2026)"
+          theme={theme}
+          action={
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: GREEN }} />
+              <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>Participants</span>
+            </div>
+          }
+        >
+          <div className="p-4">
+            <SafeChartContainer height="h-52">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={PARTICIPANT_GROWTH}>
+                  <defs>
+                    <linearGradient id="gpart" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={GREEN} stopOpacity={0.3} />
+                      <stop offset="95%" stopColor={GREEN} stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} domain={['dataMin - 50', 'dataMax + 20']} />
+                  <RechartsTooltip content={<ChartTooltip theme={theme} />} />
+                  <Area type="monotone" dataKey="participants" name="Participants" stroke={GREEN} fill="url(#gpart)" strokeWidth={2.5} dot={{ r: 3, fill: GREEN }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </SafeChartContainer>
           </div>
         </SectionCard>
 
-        <SectionCard title="Pool Balance Trend (2026)" theme={theme}>
-          <div className="p-4 h-52">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={POOL_HISTORY}>
-                <defs>
-                  <linearGradient id="gpool" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
-                <RechartsTooltip content={<ChartTooltip theme={theme} />} />
-                <Area type="monotone" dataKey="balance" name="Pool Balance" stroke="#6366f1" fill="url(#gpool)" strokeWidth={2.5} dot={false} />
-              </AreaChart>
-            </ResponsiveContainer>
+        <SectionCard
+          title="Pool Balance Trend (2026)"
+          theme={theme}
+          action={
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#6366f1]" />
+              <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>Pool Balance</span>
+            </div>
+          }
+        >
+          <div className="p-4">
+            <SafeChartContainer height="h-52">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={POOL_HISTORY}>
+                  <defs>
+                    <linearGradient id="gpool" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
+                  <RechartsTooltip content={<ChartTooltip theme={theme} />} />
+                  <Area type="monotone" dataKey="balance" name="Pool Balance" stroke="#6366f1" fill="url(#gpool)" strokeWidth={2.5} dot={{ r: 3, fill: '#6366f1' }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </SafeChartContainer>
           </div>
         </SectionCard>
       </div>
@@ -592,19 +849,46 @@ function ManagementOverview({ theme }: { theme: string }) {
       {/* Claims performance + Operational alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
-          <SectionCard title="Claims Performance (2026)" theme={theme}>
-            <div className="p-4 h-52">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={CLAIMS_TREND} barGap={4}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-                  <YAxis yAxisId="l" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-                  <YAxis yAxisId="r" orientation="right" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
-                  <RechartsTooltip content={<ChartTooltip theme={theme} />} />
-                  <Bar yAxisId="l" dataKey="count" name="Count" fill={`${GREEN}70`} radius={[3,3,0,0]} />
-                  <Bar yAxisId="r" dataKey="value" name="£ Value" fill={GREEN} radius={[3,3,0,0]} />
-                </BarChart>
-              </ResponsiveContainer>
+          <SectionCard
+            title="Claims Performance (2026)"
+            theme={theme}
+            action={
+              <div className="flex items-center gap-4 text-xs">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]" />
+                  <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>Claims Count</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]" />
+                  <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>£ Value</span>
+                </div>
+              </div>
+            }
+          >
+            <div className="p-4">
+              <SafeChartContainer height="h-52">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={CLAIMS_TREND}>
+                    <defs>
+                      <linearGradient id="gclaimsperf_count" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25} />
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="gclaimsperf_val" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
+                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
+                    <YAxis yAxisId="l" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
+                    <YAxis yAxisId="r" orientation="right" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
+                    <RechartsTooltip content={<ChartTooltip theme={theme} />} />
+                    <Area yAxisId="l" type="monotone" dataKey="count" name="Claims Count" stroke="#3b82f6" fill="url(#gclaimsperf_count)" strokeWidth={2.5} dot={{ r: 3, fill: '#3b82f6' }} />
+                    <Area yAxisId="r" type="monotone" dataKey="value" name="Claims Value (£)" stroke="#f59e0b" fill="url(#gclaimsperf_val)" strokeWidth={2.5} dot={{ r: 3, fill: '#f59e0b' }} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </SafeChartContainer>
             </div>
           </SectionCard>
         </div>
@@ -639,6 +923,11 @@ function ManagementOverview({ theme }: { theme: string }) {
             </div>
           </div>
         </SectionCard>
+      </div>
+
+      {/* Takaful Pool Allocation Breakdown */}
+      <div>
+        <TakafulPoolBarChart theme={theme} />
       </div>
     </div>
   );

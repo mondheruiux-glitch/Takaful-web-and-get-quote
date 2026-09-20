@@ -13,13 +13,14 @@ import {
   ResponsiveContainer, ReferenceLine, Legend,
 } from 'recharts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { TakafulPoolBarChart } from '@/components/ui/takaful-pool-bar-chart';
 import { useTheme, useRole } from '../ThemeRoleContext';
 import { POOL, POOL_HISTORY, CONTRIBUTION_TREND } from '@/lib/dashboard/mock-data';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 1, y: 0 },
   visible: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.45, ease, delay: i * 0.07 } }),
 };
 
@@ -109,8 +110,12 @@ function ParticipantPoolView({ theme }: { theme: string }) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <MetricCard label="Active Community Pool" value={`£${POOL.balance.toLocaleString()}`} sub="Current available balance" color={GREEN} tooltip="The pool balance available for payouts" theme={theme} />
         <MetricCard label="Paid Out Claims" value={`£${POOL.totalClaimsPaid.toLocaleString()}`} sub="Claims settled this period" color="#ef4444" tooltip="Total amount released to help participants who had incidents" theme={theme} />
-        <MetricCard label="Community Surplus Rate" value="78%" sub="Of contributions stay in pool" color="#3b82f6" tooltip="The portion of contributions strictly dedicated to mutual help" theme={theme} />
       </div>
+
+      {/* Visual Category Bar Chart */}
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2}>
+        <TakafulPoolBarChart theme={theme} showLearnMore={false} />
+      </motion.div>
 
       {/* Allocation breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -211,8 +216,16 @@ function StrategicPoolView({ theme, isFinance }: { theme: string; isFinance?: bo
           className="lg:col-span-2 rounded-2xl p-5 transition-colors"
           style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
         >
-          <h3 className={`font-semibold text-sm mb-1 ${isLight ? 'text-black/80' : 'text-white/80'}`}>Participant Fund Balance Trend</h3>
-          <p className={`text-xs mb-5 ${isLight ? 'text-black/45' : 'text-white/40'}`}>Cumulative closing pool balance by month (2026)</p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+            <div>
+              <h3 className={`font-semibold text-sm ${isLight ? 'text-black/80' : 'text-white/80'}`}>Participant Fund Balance Trend</h3>
+              <p className={`text-xs mt-0.5 ${isLight ? 'text-black/45' : 'text-white/40'}`}>Cumulative closing pool balance by month (2026)</p>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs shrink-0">
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: GREEN }} />
+              <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>Pool Balance</span>
+            </div>
+          </div>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={POOL_HISTORY}>
@@ -222,11 +235,11 @@ function StrategicPoolView({ theme, isFinance }: { theme: string; isFinance?: bo
                     <stop offset="95%" stopColor={GREEN} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid vertical={false} stroke={CHART_GRID} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={CHART_GRID} />
                 <XAxis dataKey="month" tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
                 <RechartsTooltip content={<ChartTooltip theme={theme} />} />
-                <Area type="monotone" dataKey="balance" name="Pool Balance" stroke={GREEN} strokeWidth={2.5} fill="url(#gpoolBalance)" dot={false} />
+                <Area type="monotone" dataKey="balance" name="Pool Balance" stroke={GREEN} strokeWidth={2.5} fill="url(#gpoolBalance)" dot={{ r: 3, fill: GREEN }} />
               </AreaChart>
             </ResponsiveContainer>
           </div>

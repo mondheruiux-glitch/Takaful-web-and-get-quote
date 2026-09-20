@@ -15,16 +15,42 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip as RechartsTooltip, ResponsiveContainer,
 } from 'recharts';
 
 const GREEN = '#00c685';
 const ease = [0.16, 1, 0.3, 1] as const;
 const fadeUp = {
-  hidden: { opacity: 0, y: 14 },
+  hidden: { opacity: 1, y: 0 },
   visible: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.4, ease, delay: i * 0.06 } }),
 };
+
+function ChartTooltip({ active, payload, label, theme }: any) {
+  if (!active || !payload?.length) return null;
+  const isLight = theme === 'light';
+  return (
+    <div className="rounded-xl p-3 text-xs shadow-2xl"
+      style={{ background: isLight ? '#fff' : '#0d2117', border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)', color: isLight ? '#000' : '#fff' }}>
+      <p className={`${isLight ? 'text-black/50' : 'text-white/50'} mb-1.5 font-medium`}>{label}</p>
+      {payload.map((p: any, i: number) => {
+        const val = p?.value;
+        const formatted = typeof val === 'number'
+          ? (p?.name?.toLowerCase().includes('value') || p?.name?.toLowerCase().includes('£')
+            ? `£${val.toLocaleString()}`
+            : val.toLocaleString())
+          : String(val ?? '—');
+        return (
+          <div key={i} className="flex items-center gap-2 mb-1">
+            <span className="w-2 h-2 rounded-full" style={{ background: p?.color }} />
+            <span className={isLight ? 'text-black/70' : 'text-white/70'}>{p?.name}:</span>
+            <span className="font-semibold">{formatted}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
@@ -52,10 +78,25 @@ function ParticipantClaimsView({ theme }: { theme: string }) {
   const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.06)';
   const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
 
-  const myClaims = CLAIMS.filter(c => c.participantId === 'P-0042');
-  const totalClaimed = myClaims.reduce((acc, c) => acc + c.amountClaimed, 0);
-  const totalApproved = myClaims.filter(c => ['Approved', 'Paid'].includes(c.status)).reduce((acc, c) => acc + (c.amountApproved ?? c.amountClaimed), 0);
-  const inReviewCount = myClaims.filter(c => !['Paid', 'Approved', 'Rejected'].includes(c.status)).length;
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+
+  const allMyClaims = CLAIMS.filter(c => c.participantId === 'P-0042');
+  const myClaims = allMyClaims
+    .filter(c => statusFilter === 'All'
+      || (statusFilter === 'In Review' && !['Paid', 'Approved', 'Rejected'].includes(c.status))
+      || (statusFilter === 'Approved' && ['Approved', 'Paid'].includes(c.status))
+      || c.status === statusFilter
+    )
+    .filter(c => !search
+      || c.id.toLowerCase().includes(search.toLowerCase())
+      || c.type.toLowerCase().includes(search.toLowerCase())
+      || c.status.toLowerCase().includes(search.toLowerCase())
+    );
+
+  const totalClaimed = allMyClaims.reduce((acc, c) => acc + c.amountClaimed, 0);
+  const totalApproved = allMyClaims.filter(c => ['Approved', 'Paid'].includes(c.status)).reduce((acc, c) => acc + (c.amountApproved ?? c.amountClaimed), 0);
+  const inReviewCount = allMyClaims.filter(c => !['Paid', 'Approved', 'Rejected'].includes(c.status)).length;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
@@ -104,20 +145,54 @@ function ParticipantClaimsView({ theme }: { theme: string }) {
         </div>
       </div>
 
+      {/* Search + Status Filter Bar */}
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+        <div className="relative flex-1 max-w-xs">
+          <Search size={14} className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${isLight ? 'text-gray-400' : 'text-white/30'}`} />
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search by claim ID or type..."
+            className={`w-full pl-9 pr-3 py-2.5 rounded-xl border text-xs focus:outline-none focus:border-[#00c685]/40 transition-colors ${
+              isLight ? 'border-[#E4E7EC] bg-white text-black' : 'border-white/[0.05] bg-white/[0.02] text-white'
+            }`}
+          />
+        </div>
+        <div className="flex gap-1.5 flex-wrap">
+          {['All', 'In Review', 'Approved', 'Rejected'].map(s => (
+            <button
+              key={s}
+              onClick={() => setStatusFilter(s)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                statusFilter === s
+                  ? 'bg-[#00c685]/15 border-[#00c685]/35 text-[#00c685]'
+                  : isLight
+                    ? 'border-[#E4E7EC] bg-gray-50 text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                    : 'border-white/5 bg-white/5 text-white/55 hover:text-white hover:border-white/15'
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Claims List */}
       {myClaims.length === 0 ? (
         <div className={`rounded-2xl p-12 text-center shadow-sm`} style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
           <FileText size={36} className={`mx-auto mb-3 ${isLight ? 'text-gray-300' : 'text-white/20'}`} />
-          <p className={`text-sm font-medium ${isLight ? 'text-gray-500' : 'text-white/40'}`}>No claims on record. Click &quot;New Claim&quot; to make your first claim.</p>
+          <p className={`text-sm font-medium ${isLight ? 'text-gray-500' : 'text-white/40'}`}>
+            {search || statusFilter !== 'All' ? 'No claims match your filters.' : 'No claims on record. Click "New Claim" to make your first claim.'}
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
           <h3 className={`font-bold text-base ${isLight ? 'text-gray-900' : 'text-white'}`}>Claim Records</h3>
           {myClaims.map((c, i) => (
             <motion.div key={c.id} variants={fadeUp} initial="hidden" animate="visible" custom={i}>
-              <Link href={`/dashboard/claims/${c.id}`} className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl transition-all shadow-sm ${isLight ? 'bg-white border border-[#E4E7EC] hover:border-gray-300 hover:shadow-md' : 'bg-[#0d2117] border border-white/5 hover:border-white/20'}`}>
+              <Link href={`/dashboard/claims/${c.id}`} className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl transition-all shadow-sm ${c.status === 'Rejected' ? (isLight ? 'bg-red-50/40 border border-red-200/80 hover:border-red-300' : 'bg-red-950/10 border border-red-500/20 hover:border-red-500/30') : (isLight ? 'bg-white border border-[#E4E7EC] hover:border-gray-300 hover:shadow-md' : 'bg-[#0d2117] border border-white/5 hover:border-white/20')}`}>
                 <div className="flex items-start gap-4">
-                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${isLight ? 'bg-gray-100 text-gray-700' : 'bg-white/10 text-white/80'}`}>
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${c.status === 'Rejected' ? 'bg-red-500/15 text-red-500' : (isLight ? 'bg-gray-100 text-gray-700' : 'bg-white/10 text-white/80')}`}>
                     <FileText size={20} />
                   </div>
                   <div>
@@ -128,9 +203,14 @@ function ParticipantClaimsView({ theme }: { theme: string }) {
                     </div>
                     <p className={`text-sm font-semibold ${isLight ? 'text-gray-900' : 'text-white'}`}>{c.type} · {c.propertyAddress}</p>
                     <p className={`text-xs mt-1 ${isLight ? 'text-gray-500' : 'text-white/45'}`}>Submitted {c.submittedDate} · Incident date {c.incidentDate}</p>
-                    {c.lastActivityNote && (
+                    {c.status === 'Rejected' && c.rejectionReason ? (
+                      <div className={`mt-2.5 p-2.5 rounded-xl border text-xs ${isLight ? 'bg-red-50 border-red-200 text-red-700' : 'bg-red-500/10 border-red-500/20 text-red-300'}`}>
+                        <span className="font-bold">Rejection Reason: </span>
+                        {c.rejectionReason}
+                      </div>
+                    ) : c.lastActivityNote ? (
                       <p className={`text-xs mt-2 leading-relaxed ${isLight ? 'text-gray-600' : 'text-white/55'}`}>{c.lastActivityNote}</p>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 
@@ -291,21 +371,62 @@ function HandlerClaimsView({ theme, isFinance }: { theme: string; isFinance?: bo
         </div>
       </motion.div>
 
-      {/* Claims trend chart for management */}
+      {/* Claims trend chart with modern AreaChart design */}
       {!isFinance && (
-        <motion.div variants={fadeUp} initial="hidden" animate="visible" className="rounded-2xl p-6 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
-          <h3 className={`text-sm font-bold mb-1 ${isLight ? 'text-gray-900' : 'text-white'}`}>Claims Volume Trend</h3>
-          <p className={`text-xs mb-5 ${isLight ? 'text-gray-500' : 'text-white/40'}`}>Monthly claim frequency and inflow</p>
-          <div className="h-44">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={CLAIMS_TREND} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
-                <XAxis dataKey="month" tick={{ fontSize: 10, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-                <RechartsTooltip contentStyle={{ background: isLight ? '#fff' : '#0d2117', border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }} />
-                <Bar dataKey="count" name="Claims" fill={GREEN} radius={[6,6,0,0]} />
-              </BarChart>
-            </ResponsiveContainer>
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          className="rounded-2xl overflow-hidden shadow-sm"
+          style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
+        >
+          <div
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4"
+            style={{ borderBottom: `1px solid ${BORDER}` }}
+          >
+            <div>
+              <h3 className={`text-sm font-semibold ${isLight ? 'text-black/85' : 'text-white/85'}`}>
+                Claims Volume & Value (2026)
+              </h3>
+              <p className={`text-xs mt-0.5 ${isLight ? 'text-black/45' : 'text-white/40'}`}>
+                Monthly claim frequency and total claim value inflow
+              </p>
+            </div>
+            <div className="flex items-center gap-4 text-xs shrink-0">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]" />
+                <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>Claims Count</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]" />
+                <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>£ Value</span>
+              </div>
+            </div>
+          </div>
+          <div className="p-5">
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={CLAIMS_TREND}>
+                  <defs>
+                    <linearGradient id="gclaimscount_page" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="gclaimsval_page" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
+                  <YAxis yAxisId="left" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
+                  <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
+                  <RechartsTooltip content={<ChartTooltip theme={theme} />} />
+                  <Area yAxisId="left" type="monotone" dataKey="count" name="Claims Count" stroke="#3b82f6" fill="url(#gclaimscount_page)" strokeWidth={2.5} dot={{ r: 3, fill: '#3b82f6' }} />
+                  <Area yAxisId="right" type="monotone" dataKey="value" name="Claims Value (£)" stroke="#f59e0b" fill="url(#gclaimsval_page)" strokeWidth={2.5} dot={{ r: 3, fill: '#f59e0b' }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </motion.div>
       )}

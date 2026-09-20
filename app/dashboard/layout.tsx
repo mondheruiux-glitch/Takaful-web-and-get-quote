@@ -399,19 +399,43 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
 /* ─── Dashboard Layout ───────────────────────────────────────────────────── */
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [role, setRole] = useState<DashboardRole>('management');
-  const [theme, setTheme] = useState<ThemeMode>('light');
+  const [role, setRoleState] = useState<DashboardRole>('claim_handler');
+  const [theme, setThemeState] = useState<ThemeMode>('light');
+
+  // Hydrate saved role & theme from localStorage
+  useEffect(() => {
+    try {
+      const savedRole = localStorage.getItem('takaful_dashboard_role') as DashboardRole;
+      if (savedRole && ['participant', 'claim_handler', 'finance', 'management'].includes(savedRole)) {
+        setRoleState(savedRole);
+      }
+      const savedTheme = localStorage.getItem('takaful_dashboard_theme') as ThemeMode;
+      if (savedTheme && ['light', 'dark'].includes(savedTheme)) {
+        setThemeState(savedTheme);
+      }
+    } catch {}
+  }, []);
+
+  const setRole = (r: DashboardRole) => {
+    setRoleState(r);
+    try { localStorage.setItem('takaful_dashboard_role', r); } catch {}
+  };
+
+  const setTheme = (t: ThemeMode) => {
+    setThemeState(t);
+    try { localStorage.setItem('takaful_dashboard_theme', t); } catch {}
+  };
 
   const BG_COLOR = theme === 'light' ? '#F9FAFB' : '#0a1a14';
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <RoleContext.Provider value={{ role, setRole }}>
-        <div className={`flex h-screen overflow-hidden transition-colors duration-200`} style={{ background: BG_COLOR, fontFamily: "'Inter', sans-serif" }}>
+        <div className="flex h-screen overflow-hidden transition-colors duration-200" style={{ background: BG_COLOR, fontFamily: "'Inter', sans-serif" }}>
           <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
           <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
             <TopBar onMenuClick={() => setSidebarOpen(true)} />
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 overflow-y-auto relative">
               {children}
             </main>
           </div>

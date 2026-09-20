@@ -99,6 +99,10 @@ export interface Claim {
   daysOpen: number;
   lastActivityDate: string;
   lastActivityNote: string;
+  rejectionReason?: string;
+  rejectionDate?: string;
+  rejectionClause?: string;
+  rejectionNotes?: string;
 }
 
 export interface ClaimDocument {
@@ -118,6 +122,9 @@ export interface ClaimNote {
   authorId: string;
   authorName: string;
   authorInitials: string;
+  authorRole?: string;
+  authorAvatar?: string;
+  authorGender?: 'male' | 'female';
   text: string;
   isInternal: boolean; // true = handler-only; false = visible to participant
   createdAt: string;

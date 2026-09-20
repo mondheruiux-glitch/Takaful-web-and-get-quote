@@ -2,6 +2,7 @@
 
 ## Overview
 This document tracks all project progress, decisions, custom components, and logic implementation for the **UK-based Takaful Home Protection** web application.
+> 🌐 **Interactive Web Documentation**: Visit [`/documentation`](http://localhost:3002/documentation) for live interactive flowcharts, calculation sandbox, and persona views.
 
 ---
 

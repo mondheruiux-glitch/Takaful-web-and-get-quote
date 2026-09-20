@@ -16,7 +16,7 @@ import { getDicebearAvatar } from '@/lib/dashboard/avatars';
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 1, y: 0 },
   visible: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.45, ease, delay: i * 0.06 } }),
 };
 
@@ -327,6 +327,9 @@ export default function SupportPage() {
   const [newDescription, setNewDescription] = useState('');
   const [newReference, setNewReference] = useState('');
   const [attachedFiles, setAttachedFiles] = useState<string[]>([]);
+
+  // FAQ search state
+  const [faqSearch, setFaqSearch] = useState('');
 
   // Live Chat state
   const [chats, setChats] = useState<ChatSession[]>(INITIAL_CHATS);
@@ -995,19 +998,33 @@ export default function SupportPage() {
             <div className="max-w-md mx-auto relative">
               <Search size={15} className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${TEXT_MUTED}`} />
               <input
+                value={faqSearch}
+                onChange={e => setFaqSearch(e.target.value)}
                 placeholder="Search articles, claim guides, direct debit help..."
                 className={`w-full pl-10 pr-4 py-3 rounded-2xl border text-xs focus:outline-none focus:border-[#00c685]/40 ${
                   isLight ? 'bg-black/[0.02] border-black/[0.08] text-black' : 'bg-white/[0.04] border-white/[0.05] text-white'
                 }`}
               />
             </div>
+            {faqSearch && (
+              <p className={`text-xs ${TEXT_MUTED}`}>
+                {FAQ_ITEMS.filter(f => f.question.toLowerCase().includes(faqSearch.toLowerCase()) || f.answer.toLowerCase().includes(faqSearch.toLowerCase()) || f.category.toLowerCase().includes(faqSearch.toLowerCase())).length} result(s) found for &quot;{faqSearch}&quot;
+              </p>
+            )}
           </div>
 
           {/* Accordion FAQ Items */}
           <div className="space-y-3">
             <h3 className={`text-xs font-bold uppercase tracking-wider mb-2 ${TEXT_MUTED}`}>Frequently Asked Questions</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {FAQ_ITEMS.map((faq, idx) => (
+              {(faqSearch
+                ? FAQ_ITEMS.filter(f =>
+                    f.question.toLowerCase().includes(faqSearch.toLowerCase()) ||
+                    f.answer.toLowerCase().includes(faqSearch.toLowerCase()) ||
+                    f.category.toLowerCase().includes(faqSearch.toLowerCase())
+                  )
+                : FAQ_ITEMS
+              ).map((faq, idx) => (
                 <div key={idx} className="p-4 rounded-2xl border space-y-2" style={{ background: BG_PANEL, borderColor: BORDER }}>
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-[#00c685]/15 text-[#00c685]">
