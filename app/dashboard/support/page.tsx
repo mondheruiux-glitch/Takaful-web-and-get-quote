@@ -270,6 +270,8 @@ function UserAvatar({ name, className = "w-7 h-7", isStaff }: { name: string; cl
       src={avatarUrl}
       alt={name}
       className={`${className} rounded-full object-cover border border-black/10 dark:border-white/10 shrink-0 bg-gray-100 dark:bg-emerald-950/30`}
+      loading="lazy"
+      decoding="async"
     />
   );
 }

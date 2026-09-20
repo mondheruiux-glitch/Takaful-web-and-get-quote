@@ -7,20 +7,20 @@
   }
 
   .font-heading {
-    font-family: 'Instrument Serif', Georgia, serif;
+    font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
     font-style: italic;
   }
 
   .font-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   .font-barlow {
-    font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-barlow), 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   .font-playfair {
-    font-family: 'Instrument Serif', Georgia, serif;
+    font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
     font-style: italic;
   }
 }
@@ -85,9 +85,9 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-heading: 'Instrument Serif', Georgia, serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-barlow: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  --font-body: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-barlow: var(--font-barlow), 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   --animate-meteor-effect: meteor 5s linear infinite;
 

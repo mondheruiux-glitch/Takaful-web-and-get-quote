@@ -517,6 +517,8 @@ function ProfileDropdownPreview({
               alt={user.name}
               className="w-8 h-8 rounded-full object-cover border-2"
               style={{ borderColor: isOpen ? GREEN : BORDER }}
+              loading="lazy"
+              decoding="async"
             />
             <span className={`hidden sm:block text-xs font-semibold ${isLight ? 'text-gray-800' : 'text-white/85'}`}>
               {user.name.split(' ')[0]}

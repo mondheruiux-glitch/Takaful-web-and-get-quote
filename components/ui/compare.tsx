@@ -216,6 +216,8 @@ export const Compare = ({
                   firstImageClassName
                 )}
                 draggable={false}
+                loading="lazy"
+                decoding="async"
               />
             </motion.div>
           ) : null}
@@ -232,6 +234,8 @@ export const Compare = ({
             alt="second image"
             src={secondImage}
             draggable={false}
+            loading="lazy"
+            decoding="async"
           />
         ) : null}
       </AnimatePresence>

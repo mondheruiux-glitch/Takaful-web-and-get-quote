@@ -75,6 +75,8 @@ export default function Testimonial1() {
                         alt="Person smiling"
                         className="object-cover w-full h-full"
                         style={{ objectPosition: "center" }}
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                   </div>
@@ -104,6 +106,8 @@ export default function Testimonial1() {
                         src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200&h=200"
                         alt="Employee"
                         className="object-cover w-full h-full"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                   </div>

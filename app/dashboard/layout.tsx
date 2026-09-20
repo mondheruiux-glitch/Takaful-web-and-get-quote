@@ -121,7 +121,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-5 shrink-0">
           <Link href="/" className="flex items-center gap-2.5">
-            <img src={theme === 'light' ? '/brand/logo-dark.png' : '/brand/logo-light.png'} alt="Takaful UK" className="h-7 w-auto" />
+            <img src={theme === 'light' ? '/brand/logo-dark.png' : '/brand/logo-light.png'} alt="Takaful UK" className="h-7 w-auto" fetchPriority="high" />
           </Link>
           <button onClick={onClose} className={`md:hidden p-1.5 rounded-lg ${theme === 'light' ? 'text-black/40 hover:text-black hover:bg-black/5' : 'text-white/40 hover:text-white hover:bg-white/5'}`}>
             <X size={18} />
@@ -169,6 +169,8 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
               alt={user?.name ?? 'User'}
               className="w-8 h-8 rounded-full object-cover border shrink-0 bg-gray-100"
               style={{ borderColor: BORDER }}
+              loading="lazy"
+              decoding="async"
             />
             <div className="flex-1 min-w-0">
               <p className={`text-xs font-semibold truncate ${theme === 'light' ? 'text-black/85' : 'text-white'}`}>{user?.name ?? 'User'}</p>
@@ -313,6 +315,7 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
             alt={user?.name ?? 'User'}
             className="w-8 h-8 rounded-full object-cover border-2"
             style={{ borderColor: profileOpen ? GREEN : BORDER }}
+            decoding="async"
           />
           <span className={`hidden sm:block text-xs font-semibold ${theme === 'light' ? 'text-black/80' : 'text-white/80'}`}>
             {user?.name?.split(' ')[0] ?? 'User'}

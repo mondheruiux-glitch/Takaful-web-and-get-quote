@@ -129,6 +129,7 @@ function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'cen
               src={onDark ? "/brand/logo-light.png" : "/brand/logo-dark.png"}
               alt="Takaful Logo"
               className="h-6 transition-all duration-500 cursor-pointer"
+              fetchPriority="high"
             />
           </Link>
         </div>
@@ -580,7 +581,7 @@ const Comparison = () => {
                   </div>
 
                   {/* Logo as title focal point */}
-                  <img src="/brand/logo-light.png" alt="Takaful" className="h-7 mb-1" />
+                  <img src="/brand/logo-light.png" alt="Takaful" className="h-7 mb-1" loading="lazy" decoding="async" />
                   <p className="text-[#4d7a5e] text-[0.8rem] mb-4 leading-[1.6]">Community-first. Built on Islamic principles.</p>
 
                   {/* Score bar */}

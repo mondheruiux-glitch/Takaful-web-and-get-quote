@@ -1994,7 +1994,7 @@ function GetQuoteForm() {
       </div>
 
       <Link href="/" className="absolute top-6 left-6 z-50">
-        <img src="/brand/logo-light.png" alt="Takaful" className="h-6" />
+        <img src="/brand/logo-light.png" alt="Takaful" className="h-6" fetchPriority="high" />
       </Link>
 
       {!done ? (

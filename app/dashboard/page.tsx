@@ -46,10 +46,22 @@ function ChartTooltip({ active, payload, label, theme }: any) {
       <p className={`${isLight ? 'text-black/50' : 'text-white/50'} mb-1.5 font-medium`}>{label}</p>
       {payload.map((p: any, i: number) => {
         const val = p?.value;
+        const nameLower = (p?.name || '').toLowerCase();
+        const isCount = nameLower.includes('count') || nameLower.includes('rate') || nameLower.includes('%') || nameLower.includes('participant') || nameLower.includes('ratio');
+        const isCurrency = !isCount && (
+          nameLower.includes('£') ||
+          nameLower.includes('amount') ||
+          nameLower.includes('value') ||
+          nameLower.includes('contribution') ||
+          nameLower.includes('balance') ||
+          nameLower.includes('collected') ||
+          nameLower.includes('failed') ||
+          nameLower.includes('paid') ||
+          nameLower.includes('surplus') ||
+          nameLower.includes('fund')
+        );
         const formatted = typeof val === 'number'
-          ? ((p?.name?.toLowerCase().includes('£') || p?.name?.toLowerCase().includes('amount') || p?.name?.toLowerCase().includes('value') || p?.name?.toLowerCase().includes('contribution') || p?.name?.toLowerCase().includes('balance') || p?.name?.toLowerCase().includes('collected') || p?.name?.toLowerCase().includes('failed') || p?.name?.toLowerCase().includes('paid') || p?.name?.toLowerCase().includes('claim') || p?.name?.toLowerCase().includes('total'))
-            ? `£${val.toLocaleString()}`
-            : val.toLocaleString())
+          ? (isCurrency ? `£${val.toLocaleString()}` : val.toLocaleString())
           : String(val ?? '—');
         return (
           <div key={i} className="flex items-center gap-2 mb-1">
@@ -622,56 +634,96 @@ function FinanceOverview({ theme }: { theme: string }) {
       </div>
 
       {/* Payments queue + contribution trend */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div className="xl:col-span-2">
-          <SectionCard title="Claims Awaiting Payment" theme={theme} action={<Link href="/dashboard/claims-payments" className="text-xs font-medium text-[#00c685] flex items-center gap-1">Manage all <ChevronRight size={12} /></Link>}>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className={isLight ? 'text-black/40 border-b border-black/[0.04]' : 'text-white/30 border-b border-white/[0.04]'}>
-                    {['Claim', 'Participant', 'Type', 'Approved £', 'Days Waiting', ''].map(h => (
-                      <th key={h} className="px-4 py-3 text-left font-semibold">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className={`divide-y ${isLight ? 'divide-black/04' : 'divide-white/04'}`}>
-                  {awaitingPayment.map(c => (
-                    <tr key={c.id} className={`transition-colors ${isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]'}`}>
-                      <td className="px-4 py-3 font-mono font-semibold" style={{ color: GREEN }}>{c.id}</td>
-                      <td className={`px-4 py-3 font-medium ${isLight ? 'text-black/75' : 'text-white/75'}`}>{c.participantName}</td>
-                      <td className={`px-4 py-3 ${isLight ? 'text-black/55' : 'text-white/55'}`}>{c.type}</td>
-                      <td className={`px-4 py-3 font-bold ${isLight ? 'text-black/80' : 'text-white/80'}`}>£{(c.amountApproved ?? 0).toLocaleString()}</td>
-                      <td className="px-4 py-3 font-semibold text-amber-400">{c.daysOpen}d</td>
-                      <td className="px-4 py-3">
-                        <Link href="/dashboard/claims-payments" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-white" style={{ background: GREEN }}>
-                          Release <Banknote size={10} />
-                        </Link>
-                      </td>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 items-stretch">
+        <div className="xl:col-span-2 flex flex-col">
+          <SectionCard
+            title="Claims Awaiting Payment"
+            theme={theme}
+            className="flex flex-col flex-1 h-full"
+            action={
+              <Link href="/dashboard/claims-payments" className="text-xs font-medium text-[#00c685] flex items-center gap-1">
+                Manage all <ChevronRight size={12} />
+              </Link>
+            }
+          >
+            <div className="flex flex-col flex-1 justify-between">
+              <div className="overflow-x-auto flex-1">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className={isLight ? 'text-black/40 border-b border-black/[0.04]' : 'text-white/30 border-b border-white/[0.04]'}>
+                      {['Claim', 'Participant', 'Type', 'Approved £', 'Days Waiting', ''].map(h => (
+                        <th key={h} className="px-4 py-3 text-left font-semibold">{h}</th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className={`divide-y ${isLight ? 'divide-black/[0.04]' : 'divide-white/[0.04]'}`}>
+                    {awaitingPayment.map(c => (
+                      <tr key={c.id} className={`transition-colors ${isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]'}`}>
+                        <td className="px-4 py-3 font-mono font-semibold" style={{ color: GREEN }}>{c.id}</td>
+                        <td className={`px-4 py-3 font-medium ${isLight ? 'text-black/75' : 'text-white/75'}`}>{c.participantName}</td>
+                        <td className={`px-4 py-3 ${isLight ? 'text-black/55' : 'text-white/55'}`}>{c.type}</td>
+                        <td className={`px-4 py-3 font-bold ${isLight ? 'text-black/80' : 'text-white/80'}`}>£{(c.amountApproved ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-3 font-semibold text-amber-400">{c.daysOpen}d</td>
+                        <td className="px-4 py-3 text-right">
+                          <Link href="/dashboard/claims-payments" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-white transition-opacity hover:opacity-90" style={{ background: GREEN }}>
+                            Release <Banknote size={10} />
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Bottom footer pinned to fill full height */}
+              <div className={`mt-auto px-5 py-3.5 flex items-center justify-between border-t text-xs ${isLight ? 'border-black/[0.05] bg-black/[0.01]' : 'border-white/[0.04] bg-white/[0.01]'}`}>
+                <span className={isLight ? 'text-black/45 font-medium' : 'text-white/40 font-medium'}>
+                  Total awaiting release: <span className="font-bold text-[#00c685]">£{totalAwaitingPmt.toLocaleString()}</span> ({awaitingPayment.length} claims)
+                </span>
+                <Link
+                  href="/dashboard/claims-payments"
+                  className="font-semibold text-[#00c685] hover:underline inline-flex items-center gap-1"
+                >
+                  Payment queue <ChevronRight size={12} />
+                </Link>
+              </div>
             </div>
           </SectionCard>
         </div>
 
-        <div className="space-y-4">
-          <SectionCard title="Pool Allocation" theme={theme}>
-            <div className="p-4">
-              <RechartsPie width={180} height={160} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                <Pie data={[
-                  { name: 'Participant Fund', value: POOL.participantFundPct },
-                  { name: 'Claims Reserve', value: POOL.claimsReservePct },
-                  { name: 'Wakāla Fee', value: POOL.wakalaFeePct },
-                ]} cx={85} cy={75} innerRadius={45} outerRadius={70} dataKey="value" paddingAngle={3}>
-                  {[GREEN, '#f59e0b', '#94a3b8'].map((c, i) => <Cell key={i} fill={c} />)}
-                </Pie>
-                <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '10px', color: isLight ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.55)' }} />
-              </RechartsPie>
+        <div className="flex flex-col gap-4">
+          <SectionCard title="Pool Allocation" theme={theme} className="flex flex-col flex-1 h-full">
+            <div className="p-4 flex flex-col flex-1 justify-between">
+              <div className="flex items-center justify-center py-2 flex-1">
+                <RechartsPie width={180} height={150} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                  <Pie data={[
+                    { name: 'Participant Fund', value: POOL.participantFundPct },
+                    { name: 'Claims Reserve', value: POOL.claimsReservePct },
+                    { name: 'Wakāla Fee', value: POOL.wakalaFeePct },
+                  ]} cx={85} cy={70} innerRadius={42} outerRadius={68} dataKey="value" paddingAngle={3}>
+                    {[GREEN, '#f59e0b', '#94a3b8'].map((c, i) => <Cell key={i} fill={c} />)}
+                  </Pie>
+                  <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '10px', color: isLight ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.55)' }} />
+                </RechartsPie>
+              </div>
+              <div className="grid grid-cols-3 gap-2 pt-3 border-t text-center text-[11px]" style={{ borderColor: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)' }}>
+                <div>
+                  <p className={`font-semibold ${isLight ? 'text-black/70' : 'text-white/70'}`}>{POOL.participantFundPct}%</p>
+                  <p className={`text-[10px] ${isLight ? 'text-black/40' : 'text-white/35'}`}>Participant</p>
+                </div>
+                <div>
+                  <p className={`font-semibold ${isLight ? 'text-black/70' : 'text-white/70'}`}>{POOL.claimsReservePct}%</p>
+                  <p className={`text-[10px] ${isLight ? 'text-black/40' : 'text-white/35'}`}>Reserve</p>
+                </div>
+                <div>
+                  <p className={`font-semibold ${isLight ? 'text-black/70' : 'text-white/70'}`}>{POOL.wakalaFeePct}%</p>
+                  <p className={`text-[10px] ${isLight ? 'text-black/40' : 'text-white/35'}`}>Wakāla</p>
+                </div>
+              </div>
             </div>
           </SectionCard>
 
-          <SectionCard title="Failed Direct Debits" theme={theme}>
+          <SectionCard title="Failed Direct Debits" theme={theme} className="flex flex-col shrink-0">
             <div className="divide-y" style={{ borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.04)' }}>
               {failedContribs.map(c => (
                 <div key={c.id} className="flex items-center gap-3 px-4 py-3">

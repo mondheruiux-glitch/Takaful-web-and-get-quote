@@ -63,6 +63,8 @@ export function Features8() {
                                             src="/home-about/transparent-flower.jpg"
                                             alt="100% Transparent"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
+                                            loading="lazy"
+                                            decoding="async"
                                         />
                                     </div>
                                 </CardContent>
@@ -258,7 +260,7 @@ export function Features8() {
                                                     className={`flex items-center gap-3 ${i === 1 ? 'ml-8' : ''}`}
                                                 >
                                                     <div className="ring-white size-9 ring-4 shrink-0 rounded-full overflow-hidden shadow-md">
-                                                        <img className="size-full object-cover" src={person.img} alt={person.name} />
+                                                        <img className="size-full object-cover" src={person.img} alt={person.name} loading="lazy" decoding="async" />
                                                     </div>
                                                     <div className="bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 shadow-sm">
                                                         <span className="text-xs font-medium text-gray-700">{person.name}</span>

@@ -19,9 +19,9 @@ const securityHeaders = [
     key: 'Content-Security-Policy-Report-Only',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self' data:",
       "img-src 'self' data: blob: https://images.unsplash.com https://picsum.photos https://i.postimg.cc https://images.higgs.ai https://d8j0ntlcm91z4.cloudfront.net https://fast-and-furious-output-prod-20250325165756275300000001.s3.eu-north-1.amazonaws.com",
       "connect-src 'self' https://api.postcodes.io https://generativelanguage.googleapis.com",
       "frame-ancestors 'none'",
@@ -33,6 +33,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  compress: true,
+  poweredByHeader: false,
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -57,7 +59,13 @@ const nextConfig: NextConfig = {
   },
   // ─── Reduce bundle size by tree-shaking large packages ─────────────────────
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion', 'three'],
+    optimizePackageImports: [
+      'lucide-react',
+      'framer-motion',
+      'three',
+      '@tabler/icons-react',
+      'recharts',
+    ],
   },
   // ─── Image optimisation ────────────────────────────────────────────────────
   images: {
@@ -79,9 +87,34 @@ const nextConfig: NextConfig = {
   },
   output: 'standalone',
   transpilePackages: ['motion'],
-  webpack: (config, {dev}) => {
+  webpack: (config, { dev, isServer }) => {
     if (dev && process.env.DISABLE_HMR === 'true') {
       config.watchOptions = { ignored: /.*/ };
+    }
+    if (!isServer && !dev) {
+      config.optimization = config.optimization || {};
+      config.optimization.splitChunks = config.optimization.splitChunks || {};
+      config.optimization.splitChunks.cacheGroups = {
+        ...(config.optimization.splitChunks.cacheGroups || {}),
+        framerMotion: {
+          test: /[\\/]node_modules[\\/](framer-motion|motion)[\\/]/,
+          name: 'framer-motion',
+          chunks: 'all',
+          priority: 30,
+        },
+        three: {
+          test: /[\\/]node_modules[\\/]three[\\/]/,
+          name: 'three',
+          chunks: 'all',
+          priority: 30,
+        },
+        recharts: {
+          test: /[\\/]node_modules[\\/]recharts[\\/]/,
+          name: 'recharts',
+          chunks: 'all',
+          priority: 30,
+        },
+      };
     }
     return config;
   },

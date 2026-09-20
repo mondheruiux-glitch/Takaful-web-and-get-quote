@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import NumberFlow from '@number-flow/react';
-import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -276,6 +275,7 @@ function Nav() {
               src={onDark ? '/brand/logo-light.png' : '/brand/logo-dark.png'}
               alt="Takaful Logo"
               className="h-6 transition-all duration-500 cursor-pointer"
+              fetchPriority="high"
             />
           </Link>
         </div>
@@ -544,7 +544,7 @@ const Comparison = () => {
                     <span className="text-[#00c685] text-[11px] font-bold tracking-[0.12em] uppercase">Takaful</span>
                   </div>
 
-                  <img src="/brand/logo-light.png" alt="Takaful" className="h-7 mb-1" />
+                  <img src="/brand/logo-light.png" alt="Takaful" className="h-7 mb-1" loading="lazy" decoding="async" />
                   <p className="text-[#4d7a5e] text-[0.8rem] mb-4 leading-[1.6]">Community-first. Built on Islamic principles.</p>
 
                   <div className="w-full bg-white/5 rounded-full h-1.5 mb-2 overflow-hidden">
@@ -973,7 +973,8 @@ export default function PlanComparisonPage() {
             const priceVal = billingPeriod === 'yearly' ? Math.round(baseMonthly * 10) : baseMonthly;
             const isFeatured = tier.popular;
 
-            const fireConfetti = () => {
+            const fireConfetti = async () => {
+              const confetti = (await import('canvas-confetti')).default;
               confetti({
                 particleCount: 80,
                 spread: 70,
@@ -1280,7 +1281,7 @@ export default function PlanComparisonPage() {
               </div>
             </div>
             <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/30 border border-white/5" style={{ opacity: 1, transform: 'none' }}>
-              <img alt="Community Protection" className="w-full h-[480px] object-cover opacity-80" src="/home-about/uploaded_protection.jpg" />
+              <img alt="Community Protection" className="w-full h-[480px] object-cover opacity-80" src="/home-about/uploaded_protection.jpg" loading="lazy" decoding="async" />
               <div className="absolute bottom-6 left-6 right-6 p-5 rounded-2xl bg-[#09120e]/90 backdrop-blur-md border border-white/10 shadow-xl">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(0, 198, 133, 0.125)' }}>

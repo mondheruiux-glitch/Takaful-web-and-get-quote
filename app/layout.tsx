@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from 'next';
+import { Inter, Barlow, Instrument_Serif } from 'next/font/google';
+import NavProgress from '@/components/ui/nav-progress';
 import './globals.css';
 
 const getAppUrl = () => {
@@ -13,6 +15,28 @@ const getAppUrl = () => {
 };
 
 const APP_URL = getAppUrl();
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
+});
+
+const barlow = Barlow({
+  subsets: ['latin'],
+  variable: '--font-barlow',
+  display: 'swap',
+  weight: ['300', '400', '500', '600'],
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  variable: '--font-instrument-serif',
+  display: 'swap',
+  weight: ['400'],
+  style: ['normal', 'italic'],
+});
 
 export const viewport: Viewport = {
   themeColor: '#00c685',
@@ -59,18 +83,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${barlow.variable} ${instrumentSerif.variable}`}>
       <head>
-        {/* Non-blocking font preconnect */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-        {/* Google Fonts — non-blocking, font-display=swap prevents FOIT */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-
         {/* Preload critical LCP background images */}
         <link rel="preload" href="/home-hero/hero-bg.webp" as="image" type="image/webp" />
         <link rel="preload" href="/home-hero/bg-image-2.webp" as="image" type="image/webp" />
@@ -81,8 +95,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body
         suppressHydrationWarning
-        style={{ fontFamily: "'Inter', sans-serif" }}
+        className="font-body antialiased"
       >
+        <NavProgress />
         {children}
       </body>
     </html>

@@ -101,6 +101,8 @@ export default function StackFeatureSection() {
               src="/brand/logo-dark.png"
               alt="Takaful"
               className="absolute z-20 h-7 w-auto"
+              loading="lazy"
+              decoding="async"
             />
 
             {/* Orbits */}

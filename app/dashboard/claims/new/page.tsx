@@ -825,7 +825,7 @@ function Step6({ d, setD, isLight }: { d: ClaimDraft; setD: (u: Partial<ClaimDra
             {photos.map(f => (
               <div key={f.id} className="relative group aspect-square rounded-xl overflow-hidden border" style={{ borderColor: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }}>
                 {f.preview ? (
-                  <img src={f.preview} alt={f.name} className="w-full h-full object-cover" />
+                  <img src={f.preview} alt={f.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 ) : (
                   <div className={`w-full h-full flex items-center justify-center ${isLight ? 'bg-black/5' : 'bg-white/5'}`}>
                     <ImageIcon size={20} className={isLight ? 'text-black/30' : 'text-white/30'} />

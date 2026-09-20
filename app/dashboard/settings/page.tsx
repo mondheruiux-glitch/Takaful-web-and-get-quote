@@ -182,6 +182,8 @@ function ProfileTab({ theme, role }: { theme: string; role: DashboardRole }) {
               alt={user.name}
               className="w-16 h-16 rounded-2xl object-cover border-2 shrink-0 bg-gray-100 dark:bg-emerald-950/40 shadow-sm"
               style={{ borderColor: GREEN }}
+              loading="lazy"
+              decoding="async"
             />
             <button
               type="button"
@@ -604,6 +606,8 @@ function TeamTab({ theme }: { theme: string }) {
                   src={avatar}
                   alt={m.name}
                   className="w-8 h-8 rounded-full object-cover border border-black/10 dark:border-white/10 shrink-0 bg-gray-100 dark:bg-emerald-950/30"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="flex-1 min-w-0">
                   <p className={`text-xs font-semibold truncate ${TEXT_MAIN}`}>{m.name}</p>

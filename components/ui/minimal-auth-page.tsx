@@ -88,7 +88,7 @@ export function MinimalAuthPage({ onClose }: MinimalAuthPageProps) {
 
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-4">
         <Link href="/" className="absolute top-6 left-6 cursor-pointer z-50">
-          <img src="/brand/logo-light.png" alt="Takaful Logo" className="h-6" />
+          <img src="/brand/logo-light.png" alt="Takaful Logo" className="h-6" fetchPriority="high" />
         </Link>
 
         <div className="mx-auto w-full sm:w-[400px] relative">
@@ -133,11 +133,11 @@ function WelcomeView({ onNavigate }: { onNavigate: (v: ViewState, d?: number) =>
       </div>
       <div className="space-y-3">
         <Button type="button" size="lg" className="w-full bg-[#00c685] hover:bg-[#00a871] text-[#0a1a14] font-bold transition-colors cursor-pointer">
-          <img src="/icons/google.svg" alt="Google Logo" className="me-2 size-4" />
+          <img src="/icons/google.svg" alt="Google Logo" className="me-2 size-4" loading="lazy" decoding="async" />
           Continue with Google
         </Button>
         <Button type="button" size="lg" className="w-full border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-colors cursor-pointer">
-          <img src="/icons/apple.svg" alt="Apple Logo" className="me-2 size-4" />
+          <img src="/icons/apple.svg" alt="Apple Logo" className="me-2 size-4" loading="lazy" decoding="async" />
           Continue with Apple
         </Button>
         

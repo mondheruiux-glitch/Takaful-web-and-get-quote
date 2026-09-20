@@ -49,6 +49,8 @@ function Avatar({ name }: { name: string }) {
       src={getDicebearAvatar(name)}
       alt={name}
       className="w-8 h-8 rounded-full object-cover border border-gray-200 bg-gray-100 shrink-0"
+      loading="lazy"
+      decoding="async"
     />
   );
 }

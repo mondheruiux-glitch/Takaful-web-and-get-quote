@@ -150,6 +150,8 @@ export function ScrollingFeatureShowcase() {
                         src={slide.image}
                         alt={slide.title}
                         className="h-full w-full object-cover transition-transform duration-[10s] hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                           (e.target as HTMLImageElement).onerror = null;
                           (e.target as HTMLImageElement).src = `https://placehold.co/800x1200/e2e8f0/4a5568?text=Image+Not+Found`;

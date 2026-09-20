@@ -96,7 +96,7 @@ function Nav() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between p-4 sm:p-5 transition-all duration-500">
-        <Link href="/"><img src={onDark ? '/brand/logo-light.png' : '/brand/logo-dark.png'} alt="Takaful" className="h-6 transition-all duration-500" /></Link>
+        <Link href="/"><img src={onDark ? '/brand/logo-light.png' : '/brand/logo-dark.png'} alt="Takaful" className="h-6 transition-all duration-500" fetchPriority="high" /></Link>
         <div className={`hidden md:flex absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-2 items-center gap-1 transition-all duration-500 ${onDark ? 'bg-white/20 backdrop-blur-md border border-white/30' : 'bg-gray-100/80 border border-gray-200'}`}>
           {links.map(([label, href], i) => (
             <Link
@@ -398,7 +398,7 @@ function OriginStory() {
           <div ref={ref} className="relative flex items-center justify-center overflow-hidden" style={{ height: '560px' }}>
             <div className="relative w-[42rem] h-[42rem] flex items-center justify-center translate-x-[20%]">
               {/* Center Logo */}
-              <img alt="Takaful" className="absolute z-20 h-7 w-auto bg-white p-1 rounded-lg shadow-sm" src="/brand/logo-dark.png" />
+              <img alt="Takaful" className="absolute z-20 h-7 w-auto bg-white p-1 rounded-lg shadow-sm" src="/brand/logo-dark.png" loading="lazy" decoding="async" />
 
               {/* Orbit 1 */}
               <div className="absolute rounded-full border-2 border-dashed border-gray-300 pointer-events-none" style={{ width: '17rem', height: '17rem', animation: 'orbit-spin 18s linear infinite' }}>
@@ -426,6 +426,8 @@ function OriginStory() {
                         src={item.photo}
                         alt={item.label}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                     <p className="text-center mt-1 font-semibold leading-tight text-gray-500" style={{ fontSize: '11px', maxWidth: '60px' }}>
@@ -461,6 +463,8 @@ function OriginStory() {
                         src={item.photo}
                         alt={item.label}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                     <p className="text-center mt-1 font-semibold leading-tight text-gray-500" style={{ fontSize: '11px', maxWidth: '60px' }}>
@@ -496,6 +500,8 @@ function OriginStory() {
                         src={item.photo}
                         alt={item.label}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                     <p className="text-center mt-1 font-semibold leading-tight text-gray-500" style={{ fontSize: '11px', maxWidth: '60px' }}>
@@ -789,6 +795,8 @@ function Team() {
                   src={member.img}
                   alt={member.name}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  loading="lazy"
+                  decoding="async"
                 />
                 {/* Overlay on hover */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a1a14]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
