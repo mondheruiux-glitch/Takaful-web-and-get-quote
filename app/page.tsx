@@ -40,7 +40,7 @@ const tooltipPeople = [
 ];
 
 // Critical above-the-fold components (eagerly loaded)
-import { BackgroundBeams } from '@/components/ui/background-beams';
+import { Particles } from '@/components/ui/particles';
 import { Input } from '@/components/ui/input';
 // LightningSplit removed — now using RevealLayer for cursor spotlight hero
 
@@ -753,7 +753,7 @@ const Waitlist = () => (
           </button>
         </motion.div>
       </motion.div>
-      <BackgroundBeams />
+      <Particles color="#00c685" quantity={70} ease={20} className="absolute inset-0 pointer-events-none" />
     </div>
   </section>
 );

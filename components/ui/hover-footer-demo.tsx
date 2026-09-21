@@ -10,41 +10,40 @@ import {
   Dribbble,
   Globe,
 } from "lucide-react";
+import Link from "next/link";
 import {FooterBackgroundGradient} from "@/components/ui/hover-footer";
 import { TextHoverEffect } from "@/components/ui/hover-footer";
 
+interface FooterLinkItem {
+  label: string;
+  href: string;
+  pulse?: boolean;
+}
+
+interface FooterLinkSection {
+  title: string;
+  links: FooterLinkItem[];
+}
+
 export function HoverFooter() {
-  // Footer link data
-  const footerLinks = [
+  // Footer link data requested by user
+  const footerLinks: FooterLinkSection[] = [
     {
-      title: "About Us",
+      title: "Navigation",
       links: [
-        { label: "Company History", href: "/about#our-story" },
-        { label: "Meet the Team", href: "/about" },
-        { label: "Our Values", href: "/about" },
-        { label: "Careers", href: "/about" },
-      ],
-    },
-    {
-      title: "Resources & Docs",
-      links: [
-        { label: "Documentation", href: "/documentation" },
-        { label: "Design System", href: "/design-system" },
-        { label: "14 Dropdowns Showcase", href: "/dropdowns" },
+        { label: "Home", href: "/" },
         { label: "How It Works", href: "/how-it-works" },
+        { label: "Compare Plans", href: "/compare-plans" },
+        { label: "About Us", href: "/about" },
+        { label: "Contact", href: "/contact" },
       ],
     },
     {
-      title: "Helpful Links",
+      title: "Legal & Clauses",
       links: [
-        { label: "Documentation", href: "/documentation" },
-        { label: "FAQs", href: "#" },
-        { label: "Support", href: "#" },
-        {
-          label: "Live Chat",
-          href: "#",
-          pulse: true,
-        },
+        { label: "Privacy Policy", href: "/privacy-policy" },
+        { label: "Terms and Conditions", href: "/terms-and-conditions" },
+        { label: "Policy Clauses", href: "/clauses" },
       ],
     },
   ];
@@ -98,12 +97,12 @@ export function HoverFooter() {
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.label} className="relative w-fit">
-                    <a
+                    <Link
                       href={link.href}
                       className="text-gray-400 hover:text-[#00c685] transition-colors"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                     {link.pulse && (
                       <span className="absolute top-0 -right-[12px] w-2 h-2 rounded-full bg-[#00c685] animate-pulse"></span>
                     )}

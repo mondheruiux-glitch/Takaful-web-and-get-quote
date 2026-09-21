@@ -137,10 +137,6 @@ function DotCanvas() {
 }
 
 // Lazy loaded
-const BackgroundBeams = dynamic(
-  () => import('@/components/ui/background-beams').then((m) => ({ default: m.BackgroundBeams })),
-  { ssr: false }
-);
 const HoverFooter = dynamic(
   () => import('@/components/ui/hover-footer-demo').then((m) => ({ default: m.HoverFooter })),
   { ssr: false }

@@ -12,8 +12,8 @@ import {
 import { PillBadge } from '@/components/ui/pill-badge';
 
 /* ─── Heavy below-fold components — lazy loaded ─────────────────────────── */
-const BackgroundBeams = dynamic(
-  () => import('@/components/ui/background-beams').then(m => ({ default: m.BackgroundBeams })),
+const Particles = dynamic(
+  () => import('@/components/ui/particles').then(m => ({ default: m.Particles })),
   { ssr: false }
 );
 const Boxes = dynamic(
@@ -837,7 +837,7 @@ function FinalCTA() {
         <div className="absolute top-0 right-0 w-80 h-80 rounded-full blur-[140px] opacity-10" style={{ background: GREEN }} />
         <div className="absolute bottom-0 left-0 w-60 h-60 rounded-full blur-[120px] opacity-[0.08]" style={{ background: '#62D2A2' }} />
       </div>
-      <BackgroundBeams />
+      <Particles color="#00c685" quantity={70} ease={20} className="absolute inset-0 pointer-events-none" />
       <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
         <motion.div initial="hidden" whileInView="visible" variants={containerVariants} viewport={{ once: true, margin: '-100px' }}>
           <motion.div variants={itemVariants}>
