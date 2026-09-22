@@ -19,6 +19,7 @@ import { usePermission } from '@/lib/dashboard/permissions';
 import { CLAIMS, CLAIM_DOCUMENTS, CLAIM_NOTES, PARTICIPANTS, DEMO_USERS } from '@/lib/dashboard/mock-data';
 import { Claim, ClaimDocument, ClaimNote } from '@/lib/dashboard/types';
 import { getDicebearAvatar } from '@/lib/dashboard/avatars';
+import { DashboardAlert } from '@/components/ui/dashboard-alert';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -1593,12 +1594,13 @@ export default function ClaimDetailPage({ params }: Props) {
 
                 {/* Warning if below excess */}
                 {belowExcess && (
-                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                    <AlertTriangle size={13} className="text-amber-400 mt-0.5 shrink-0" />
-                    <p className="text-[11px] text-amber-400 leading-relaxed">
-                      Assessed amount (£{gross.toLocaleString()}) is below the £{excess} policy excess. Net settlement will be £0. Consider using &quot;Reject Claim&quot; with the &quot;Below Policy Excess&quot; reason instead.
-                    </p>
-                  </div>
+                  <DashboardAlert
+                    variant="warning"
+                    isLight={isLight}
+                    title="Clause 4.2 Notice — Assessed Amount Below Excess"
+                  >
+                    Assessed amount (<span className="font-semibold">£{gross.toLocaleString()}</span>) is at or below the <span className="font-semibold">£{excess}</span> policy excess. Net settlement will be <span className="font-semibold">£0</span>. Consider using &quot;Reject Claim&quot; with the &quot;Below Policy Excess&quot; reason instead.
+                  </DashboardAlert>
                 )}
 
                 {/* Actions */}

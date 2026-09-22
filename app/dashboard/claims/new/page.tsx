@@ -22,6 +22,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
+import { DashboardAlert } from '@/components/ui/dashboard-alert';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface UploadedFile {
@@ -220,17 +221,11 @@ function RadioGroup({ options, value, onChange, isLight }: { options: { value: s
   );
 }
 
-function InfoBox({ children, isLight, variant = 'info' }: { children: React.ReactNode; isLight: boolean; variant?: 'info' | 'warning' | 'success' }) {
-  const styles = {
-    info: { border: 'border-blue-400/20', bg: 'bg-blue-400/5', text: 'text-blue-400', icon: <Info size={14} /> },
-    warning: { border: 'border-amber-400/20', bg: 'bg-amber-400/5', text: 'text-amber-400', icon: <AlertTriangle size={14} /> },
-    success: { border: 'border-[#00c685]/20', bg: 'bg-[#00c685]/5', text: 'text-[#00c685]', icon: <ShieldCheck size={14} /> },
-  }[variant];
+function InfoBox({ children, isLight, variant = 'info', title }: { children: React.ReactNode; isLight: boolean; variant?: 'info' | 'warning' | 'success'; title?: string }) {
   return (
-    <div className={`flex items-start gap-3 p-3.5 rounded-xl border ${styles.border} ${styles.bg}`}>
-      <span className={`${styles.text} shrink-0 mt-0.5`}>{styles.icon}</span>
-      <div className={`text-xs leading-relaxed ${isLight ? 'text-black/65' : 'text-white/60'}`}>{children}</div>
-    </div>
+    <DashboardAlert variant={variant} isLight={isLight} title={title}>
+      {children}
+    </DashboardAlert>
   );
 }
 
@@ -579,11 +574,14 @@ function Step4({ d, setD, errors, isLight }: { d: ClaimDraft; setD: (u: Partial<
                 </div>
               </div>
               {belowExcess && (
-                <div className="flex items-start gap-2 px-4 py-3 bg-amber-500/[0.06] border-t border-amber-500/20">
-                  <AlertTriangle size={12} className="text-amber-400 mt-0.5 shrink-0" />
-                  <p className={`text-[11px] text-amber-400 leading-relaxed`}>
-                    Your estimated loss (£{gross.toLocaleString()}) is at or below your £{excess} certificate excess. Under Clause 4.2, claims at or below the policy excess are not payable from the mutual pool. You can still submit this claim, and our team will confirm.
-                  </p>
+                <div className="p-3 border-t" style={{ borderColor: isLight ? 'rgba(245,158,11,0.25)' : 'rgba(245,158,11,0.2)' }}>
+                  <DashboardAlert
+                    variant="warning"
+                    isLight={isLight}
+                    title="Clause 4.2 Notice — Loss Below Certificate Excess"
+                  >
+                    Your estimated loss (<span className="font-semibold">£{gross.toLocaleString()}</span>) is at or below your <span className="font-semibold">£{excess}</span> certificate excess. Under Clause 4.2, claims at or below the policy excess are not payable from the mutual pool. You can still submit this claim, and our team will confirm.
+                  </DashboardAlert>
                 </div>
               )}
             </motion.div>
