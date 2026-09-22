@@ -542,6 +542,53 @@ function Step4({ d, setD, errors, isLight }: { d: ClaimDraft; setD: (u: Partial<
         <LightFieldLabel required isLight={isLight}>Estimated total loss (£)</LightFieldLabel>
         <Input value={d.estimatedAmount} onChange={v => setD({ estimatedAmount: v })} prefix="£" placeholder="0.00" type="number" isLight={isLight} />
         <FieldError msg={errors.estimatedAmount} />
+
+        {/* Live settlement calculator — shows the deduction in real-time */}
+        {d.estimatedAmount && parseFloat(d.estimatedAmount) > 0 && (() => {
+          const gross = parseFloat(d.estimatedAmount);
+          const excess = 300; // Clause 4.2 — £300 standard compulsory excess
+          const net = Math.max(0, gross - excess);
+          const belowExcess = gross <= excess;
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`mt-3 rounded-xl overflow-hidden ${belowExcess ? 'border border-amber-500/30' : 'border border-emerald-500/20'}`}
+              style={{ background: isLight ? '#f4f6f5' : '#112218' }}
+            >
+              <div className={`px-4 py-2 text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-black/40' : 'text-white/35'}`}
+                style={{ borderBottom: isLight ? '1px solid rgba(0,0,0,0.06)' : '1px solid rgba(255,255,255,0.05)' }}>
+                Your Estimated Settlement Breakdown
+              </div>
+              <div className="divide-y" style={{ borderColor: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.05)' }}>
+                <div className="flex items-center justify-between px-4 py-2.5">
+                  <span className={`text-xs ${isLight ? 'text-black/60' : 'text-white/50'}`}>Gross Estimated Loss</span>
+                  <span className={`text-xs font-semibold ${isLight ? 'text-black/90' : 'text-white'}`}>£{gross.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between px-4 py-2.5">
+                  <span className={`text-xs ${isLight ? 'text-black/60' : 'text-white/50'}`}>Certificate Excess (Clause 4.2)</span>
+                  <span className="text-xs font-semibold text-red-500">−£{excess.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between px-4 py-3">
+                  <span className={`text-xs font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>
+                    Expected Benefit (subject to assessment)
+                  </span>
+                  <span className={`text-sm font-bold ${net > 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                    £{net.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+              {belowExcess && (
+                <div className="flex items-start gap-2 px-4 py-3 bg-amber-500/[0.06] border-t border-amber-500/20">
+                  <AlertTriangle size={12} className="text-amber-400 mt-0.5 shrink-0" />
+                  <p className={`text-[11px] text-amber-400 leading-relaxed`}>
+                    Your estimated loss (£{gross.toLocaleString()}) is at or below your £{excess} certificate excess. Under Clause 4.2, claims at or below the policy excess are not payable from the mutual pool. You can still submit this claim, and our team will confirm.
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          );
+        })()}
       </div>
 
       {/* Has quote? */}
@@ -921,15 +968,32 @@ function Step7({ d, goToStep, isLight }: { d: ClaimDraft; goToStep: (n: number) 
         {d.damageDescription && <p className={`text-xs leading-relaxed pt-1 border-t ${isLight ? 'border-black/[0.04] text-black/60' : 'border-white/[0.04] text-white/55'}`}>{d.damageDescription}</p>}
       </ReviewSection>
 
-      <ReviewSection title="Estimated Loss" step={4}>
-        <Row label="Estimated amount" value={d.estimatedAmount ? `£${parseFloat(d.estimatedAmount).toLocaleString()}` : '—'} />
+      <ReviewSection title="Estimated Loss & Settlement" step={4}>
+        {d.estimatedAmount && parseFloat(d.estimatedAmount) > 0 ? (() => {
+          const gross = parseFloat(d.estimatedAmount);
+          const excess = 300;
+          const net = Math.max(0, gross - excess);
+          return (
+            <div className="space-y-1.5">
+              <Row label="Gross Estimated Loss" value={`£${gross.toLocaleString()}`} />
+              <Row label="Certificate Excess (Clause 4.2)" value={`−£${excess.toLocaleString()}`} />
+              <div className={`flex justify-between gap-4 pt-1.5 border-t font-bold`} style={{ borderColor: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)' }}>
+                <span className={`text-xs font-semibold ${isLight ? 'text-black/70' : 'text-white/70'}`}>Expected Net Benefit</span>
+                <span className={`text-xs font-bold ${net > 0 ? 'text-emerald-400' : 'text-amber-400'}`}>£{net.toLocaleString()}</span>
+              </div>
+              <p className={`text-[10px] leading-relaxed pt-1 ${isLight ? 'text-black/40' : 'text-white/35'}`}>
+                Subject to handler assessment. Excess applies per Clause 4.2.
+              </p>
+            </div>
+          );
+        })() : <Row label="Estimated amount" value="—" />}
         <Row label="Has quote?" value={d.hasQuote === true ? 'Yes' : d.hasQuote === false ? 'Not yet' : '—'} />
         {d.isItemised && d.items.length > 0 && (
           <div className="pt-1 border-t space-y-1" style={{ borderColor: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)' }}>
             {d.items.map(i => <Row key={i.id} label={`${i.name || 'Item'} × ${i.quantity}`} value={`£${(i.value * i.quantity).toLocaleString()}`} />)}
             <div className="flex justify-between pt-1 border-t font-semibold" style={{ borderColor: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)' }}>
               <span className={`text-xs ${isLight ? 'text-black/60' : 'text-white/60'}`}>Items total</span>
-              <span className="text-xs" style={{ color: GREEN }}>£{total.toLocaleString()}</span>
+              <span className="text-xs" style={{ color: GREEN }}>£{d.items.reduce((s, i) => s + i.value * i.quantity, 0).toLocaleString()}</span>
             </div>
           </div>
         )}

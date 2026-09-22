@@ -11,7 +11,7 @@ import {
   ShieldCheck, ArrowUpRight, FilePlus, Calendar, Eye,
   FileCheck, Shield, ChevronDown, CheckSquare, Square,
   CornerDownRight, Scale, AlertOctagon, Bell, FileQuestion,
-  Printer, FolderPlus,
+  Printer, FolderPlus, Banknote,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme, useRole } from '../../ThemeRoleContext';
@@ -158,7 +158,14 @@ export default function ClaimDetailPage({ params }: Props) {
   const [includeAppealSchedule, setIncludeAppealSchedule] = useState(true);
   const [notifyParticipantRejection, setNotifyParticipantRejection] = useState(true);
   const [complianceConfirmed, setComplianceConfirmed] = useState(false);
+  const [rejectionActiveTab, setRejectionActiveTab] = useState<'form' | 'preview'>('form');
+  const [rejectionSubmitAttempted, setRejectionSubmitAttempted] = useState(false);
   const [viewDecisionLetterModalOpen, setViewDecisionLetterModalOpen] = useState(false);
+
+  // Adjudication Settlement Modal States
+  const [approveModalOpen, setApproveModalOpen] = useState(false);
+  const [assessedAmountInput, setAssessedAmountInput] = useState(String(claim.amountClaimed));
+  const COMPULSORY_EXCESS = 300; // from Clause 4.2 — would come from CERTIFICATES in production
 
   // Document Request Modal States
   const [requestDocsModalOpen, setRequestDocsModalOpen] = useState(false);
@@ -241,11 +248,15 @@ export default function ClaimDetailPage({ params }: Props) {
   };
 
   // Status transitions
-  const updateStatus = (newStatus: Claim['status'], msg: string, approvedAmount?: number) => {
+  const updateStatus = (newStatus: Claim['status'], msg: string, approvedAmount?: number, excessDeducted?: number, grossAssessed?: number) => {
+    const net = approvedAmount;
     setClaim(prev => ({
       ...prev,
       status: newStatus,
       amountApproved: approvedAmount !== undefined ? approvedAmount : prev.amountApproved,
+      grossAssessedAmount: grossAssessed !== undefined ? grossAssessed : prev.grossAssessedAmount,
+      excessDeducted: excessDeducted !== undefined ? excessDeducted : prev.excessDeducted,
+      netSettlementAmount: net !== undefined ? net : prev.netSettlementAmount,
       lastActivityNote: msg,
       lastActivityDate: 'Today',
     }));
@@ -358,6 +369,12 @@ export default function ClaimDetailPage({ params }: Props) {
   // Confirm Rejection with Reason & Generate Formal Notice
   const handleConfirmRejection = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (!complianceConfirmed) {
+      setRejectionSubmitAttempted(true);
+      setRejectionActiveTab('form');
+      showToast('Please tick the mandatory declaration box to confirm this rejection', 'error');
+      return;
+    }
     const preset = REJECTION_PRESETS.find(p => p.id === rejectionReasonPreset);
     const finalReason = rejectionReasonPreset === 'custom'
       ? (customRejectionText.trim() || 'Claim rejected following comprehensive underwriting and policy excess review.')
@@ -424,6 +441,59 @@ export default function ClaimDetailPage({ params }: Props) {
     showToast('Claim rejected: Formal notice and audit record generated', 'info');
   };
 
+  // Handle Approve Claim via Adjudication Modal
+  const handleConfirmApproval = () => {
+    const gross = parseFloat(assessedAmountInput) || claim.amountClaimed;
+    const excess = COMPULSORY_EXCESS;
+    const net = Math.max(0, gross - excess);
+    const decisionDate = new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    setClaim(prev => ({
+      ...prev,
+      status: 'Approved',
+      grossAssessedAmount: gross,
+      excessDeducted: excess,
+      netSettlementAmount: net,
+      amountApproved: net,
+      lastActivityNote: `Claim approved. Net settlement £${net.toLocaleString()} (£${gross.toLocaleString()} assessed − £${excess} excess). Referred to Finance for BACS payment.`,
+      lastActivityDate: 'Today',
+    }));
+
+    // Add a formal internal adjudication audit note
+    const adjudicationNote: ClaimNote = {
+      id: `NOTE-${Date.now()}`,
+      claimId: claim.id,
+      authorId: 'U-HAND-001',
+      authorName: 'Omar Hassan',
+      authorInitials: 'OH',
+      authorRole: 'Senior Claims Handler',
+      authorGender: 'male',
+      authorAvatar: getDicebearAvatar('Omar Hassan', 'male'),
+      text: `Adjudication Summary:\n\nGross Assessed Loss: £${gross.toLocaleString()}\nCertificate Excess Deducted (Clause 4.2): −£${excess.toLocaleString()}\nNet Authorised Settlement: £${net.toLocaleString()}\n\nClaim authorised and forwarded to Finance Treasury for BACS disbursement. Participant to receive settlement net of their contractual excess.`,
+      isInternal: true,
+      createdAt: decisionDate,
+    };
+
+    // Add a participant-facing approval notice
+    const approvalNotice: ClaimNote = {
+      id: `NOTE-${Date.now() + 1}`,
+      claimId: claim.id,
+      authorId: 'U-HAND-001',
+      authorName: 'Omar Hassan',
+      authorInitials: 'OH',
+      authorRole: 'Senior Claims Handler',
+      authorGender: 'male',
+      authorAvatar: getDicebearAvatar('Omar Hassan', 'male'),
+      text: `Dear ${claim.participantName},\n\nWe are pleased to confirm that your ${claim.type} claim (${claim.id}) has been reviewed and approved following our assessor's inspection.\n\nSettlement Breakdown:\n• Gross Assessed Repair Cost: £${gross.toLocaleString()}\n• Certificate Policy Excess (Clause 4.2): −£${excess.toLocaleString()}\n• Net Authorised Settlement: £${net.toLocaleString()}\n\nYour net settlement of £${net.toLocaleString()} will be transferred to your registered bank account via BACS within 3–5 business days. A remittance advice will be emailed to you upon release.\n\nJazakAllah Khair for your patience throughout this process.`,
+      isInternal: false,
+      createdAt: decisionDate,
+    };
+
+    setNotes(prev => [adjudicationNote, approvalNotice, ...prev]);
+    setApproveModalOpen(false);
+    showToast(`Claim approved — Net settlement £${net.toLocaleString()} authorised (£${gross.toLocaleString()} − £${excess} excess)`, 'success');
+  };
+
   // Re-open Claim Action
   const handleReopenClaim = () => {
     updateStatus('Under Review', 'Claim re-opened by handler for supplementary loss evidence re-assessment.');
@@ -488,16 +558,18 @@ export default function ClaimDetailPage({ params }: Props) {
       <AnimatePresence>
         {toast && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-xl text-white font-semibold text-xs"
+            key="toast"
+            initial={{ opacity: 0, y: -24, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -16, scale: 0.95 }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
+            className="fixed top-5 right-5 z-[500] flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl text-white font-semibold text-xs max-w-sm"
             style={{ background: toast.type === 'error' ? '#ef4444' : toast.type === 'info' ? '#3b82f6' : GREEN }}
           >
-            {toast.type === 'success' && <Check size={14} />}
-            {toast.type === 'info' && <Info size={14} />}
-            {toast.type === 'error' && <AlertCircle size={14} />}
-            <span>{toast.message}</span>
+            {toast.type === 'success' && <Check size={15} className="shrink-0" />}
+            {toast.type === 'info' && <Info size={15} className="shrink-0" />}
+            {toast.type === 'error' && <AlertCircle size={15} className="shrink-0" />}
+            <span className="leading-snug">{toast.message}</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -949,11 +1021,16 @@ export default function ClaimDetailPage({ params }: Props) {
                   {claim.status !== 'Approved' && claim.status !== 'Paid' && claim.status !== 'Rejected' ? (
                     <>
                       <button
-                        onClick={() => updateStatus('Approved', 'Validator approved the assessed scope of works.', claim.amountClaimed)}
+                        onClick={() => {
+                          setAssessedAmountInput(String(claim.amountClaimed));
+                          setApproveModalOpen(true);
+                        }}
                         className="w-full text-xs font-bold py-2.5 rounded-xl text-white transition-opacity hover:opacity-90 shadow-sm"
                         style={{ background: GREEN }}
                       >
-                        Approve Claim (£{claim.amountClaimed.toLocaleString()})
+                        <span className="flex items-center justify-center gap-1.5">
+                          <CheckCircle2 size={13} /> Approve Claim &amp; Set Settlement...
+                        </span>
                       </button>
                       <button
                         onClick={() => {
@@ -967,6 +1044,8 @@ export default function ClaimDetailPage({ params }: Props) {
                       <button
                         onClick={() => {
                           setComplianceConfirmed(false);
+                          setRejectionSubmitAttempted(false);
+                          setRejectionActiveTab('form');
                           setRejectModalOpen(true);
                         }}
                         className="w-full text-xs font-semibold py-2.5 rounded-xl border border-red-500/20 text-red-500 bg-red-500/10 hover:bg-red-500/15 transition-colors flex items-center justify-center gap-1.5"
@@ -1009,17 +1088,38 @@ export default function ClaimDetailPage({ params }: Props) {
                 <div className="space-y-2">
                   {claim.status === 'Approved' ? (
                     <button
-                      onClick={() => updateStatus('Paid', 'Payment authorized and released by Treasury.')}
+                      onClick={() => {
+                        const net = claim.netSettlementAmount ?? claim.amountApproved ?? claim.amountClaimed;
+                        const bacsRef = `BACS-TK-2026-${claim.id.split('-').pop()}`;
+                        setClaim(prev => ({ ...prev, status: 'Paid', bacsReference: bacsRef, lastActivityDate: 'Today', lastActivityNote: `Payment of £${net.toLocaleString()} released via BACS. Reference: ${bacsRef}` }));
+                        const bacsNote: ClaimNote = {
+                          id: `NOTE-${Date.now()}`,
+                          claimId: claim.id,
+                          authorId: 'U-FIN-001',
+                          authorName: 'Amira Siddiqui',
+                          authorInitials: 'AS',
+                          authorRole: 'Finance Officer',
+                          authorGender: 'female',
+                          authorAvatar: getDicebearAvatar('Amira Siddiqui', 'female'),
+                          text: `Treasury Disbursement Confirmed.\n\nBACS Reference: ${bacsRef}\nNet Settlement Paid: £${net.toLocaleString()}\nRecipient: ${claim.participantName}\n\nFunds will clear within 3 working days. Remittance advice sent to ${claim.participantName.split(' ')[0]} via email.`,
+                          isInternal: false,
+                          createdAt: new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                        };
+                        setNotes(prev => [bacsNote, ...prev]);
+                        showToast(`Payment of £${net.toLocaleString()} authorized. BACS ref: ${bacsRef}`, 'success');
+                      }}
                       className="w-full text-xs font-bold py-2.5 rounded-xl text-white transition-opacity hover:opacity-90 shadow-sm"
                       style={{ background: GREEN }}
                     >
-                      Authorize & Release Payment (£{(claim.amountApproved || claim.amountClaimed).toLocaleString()})
+                      <span className="flex items-center justify-center gap-1.5">
+                        <Banknote size={13} /> Release BACS Payment (£{(claim.netSettlementAmount ?? claim.amountApproved ?? claim.amountClaimed).toLocaleString()})
+                      </span>
                     </button>
                   ) : claim.status === 'Paid' ? (
                     <div className="p-4 rounded-xl text-center space-y-2 bg-black/[0.02] dark:bg-white/[0.02]" style={{ border: `1px solid ${BORDER}` }}>
                       <CheckCircle2 size={20} className="mx-auto text-emerald-400" />
                       <p className="text-xs font-semibold text-emerald-400">Payment Transferred</p>
-                      <p className={`text-[10px] ${TEXT_SUB}`}>Reference: PYMNT-{claim.id}</p>
+                      <p className={`text-[10px] ${TEXT_SUB}`}>BACS Ref: {claim.bacsReference || `BACS-TK-2026-${claim.id.split('-').pop()}`}</p>
                     </div>
                   ) : (
                     <p className={`text-xs text-center ${TEXT_MUTED}`}>Awaiting Handler approval before treasury disbursement.</p>
@@ -1371,7 +1471,7 @@ export default function ClaimDetailPage({ params }: Props) {
                   <button
                     type="button"
                     onClick={() => setRequestDocsModalOpen(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold border border-black/10 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                   >
                     Cancel
                   </button>
@@ -1389,8 +1489,148 @@ export default function ClaimDetailPage({ params }: Props) {
         )}
       </AnimatePresence>
 
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* ADJUDICATION SETTLEMENT MODAL — Approve Claim                   */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {approveModalOpen && (() => {
+          const gross = parseFloat(assessedAmountInput) || 0;
+          const excess = COMPULSORY_EXCESS;
+          const net = Math.max(0, gross - excess);
+          const belowExcess = gross > 0 && gross <= excess;
+          return (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[300] flex items-center justify-center px-4 bg-black/75 backdrop-blur-sm"
+              onClick={() => setApproveModalOpen(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0, y: 12 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0, y: 12 }}
+                onClick={e => e.stopPropagation()}
+                className="w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-5"
+                style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <ShieldCheck size={16} className="text-emerald-400" />
+                      <h2 className={`text-sm font-bold ${TEXT_MAIN}`}>Adjudication Settlement</h2>
+                    </div>
+                    <p className={`text-xs ${TEXT_SUB}`}>
+                      Confirm assessed loss and calculate net payout for {claim.id}
+                    </p>
+                  </div>
+                  <button onClick={() => setApproveModalOpen(false)} className={`p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 ${TEXT_MUTED}`}>
+                    <X size={14} />
+                  </button>
+                </div>
+
+                {/* Claim reference */}
+                <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: isLight ? '#f4f6f5' : '#112218', border: `1px solid ${BORDER}` }}>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-[10px] uppercase tracking-wider font-semibold ${TEXT_MUTED}`}>Claim</p>
+                    <p className={`text-xs font-bold font-mono ${TEXT_MAIN}`}>{claim.id}</p>
+                    <p className={`text-[11px] ${TEXT_SUB} truncate`}>{claim.participantName} · {claim.type}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className={`text-[10px] uppercase tracking-wider font-semibold ${TEXT_MUTED}`}>Gross Claimed</p>
+                    <p className={`text-sm font-bold ${TEXT_MAIN}`}>£{claim.amountClaimed.toLocaleString()}</p>
+                  </div>
+                </div>
+
+                {/* Assessed Amount Input */}
+                <div className="space-y-1.5">
+                  <label className={`text-[11px] font-semibold uppercase tracking-wider ${TEXT_MUTED}`}>
+                    Assessed Repair / Loss Amount (£)
+                  </label>
+                  <p className={`text-[10px] ${TEXT_MUTED}`}>
+                    Default: participant's claimed amount. Adjust if the assessor negotiated a different scope.
+                  </p>
+                  <div className="relative">
+                    <span className={`absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold ${TEXT_SUB}`}>£</span>
+                    <input
+                      type="number"
+                      min={0}
+                      step={50}
+                      value={assessedAmountInput}
+                      onChange={e => setAssessedAmountInput(e.target.value)}
+                      className={`w-full pl-7 pr-4 py-2.5 rounded-xl text-sm font-bold border focus:outline-none focus:border-[#00c685]/60 transition-colors ${
+                        isLight ? 'bg-white border-black/10 text-black' : 'bg-white/[0.04] border-white/10 text-white'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Live Settlement Calculation */}
+                <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${BORDER}` }}>
+                  <div className={`px-4 py-2 text-[10px] font-bold uppercase tracking-wider ${TEXT_MUTED}`} style={{ background: isLight ? '#f4f6f5' : '#112218' }}>
+                    Settlement Calculation — Clause 4.2
+                  </div>
+                  <div className="divide-y" style={{ borderColor: BORDER }}>
+                    <div className="flex items-center justify-between px-4 py-2.5">
+                      <span className={`text-xs ${TEXT_SUB}`}>Gross Assessed Loss</span>
+                      <span className={`text-xs font-semibold ${TEXT_MAIN}`}>
+                        £{gross > 0 ? gross.toLocaleString() : '—'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between px-4 py-2.5">
+                      <span className={`text-xs ${TEXT_SUB}`}>Certificate Policy Excess (Clause 4.2)</span>
+                      <span className="text-xs font-semibold text-red-500">−£{excess.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between px-4 py-3" style={{ background: isLight ? '#f4f6f5' : '#112218' }}>
+                      <span className={`text-xs font-bold ${TEXT_MAIN}`}>Net Authorised Settlement</span>
+                      <span className={`text-sm font-bold ${net > 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                        £{gross > 0 ? net.toLocaleString() : '—'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Warning if below excess */}
+                {belowExcess && (
+                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                    <AlertTriangle size={13} className="text-amber-400 mt-0.5 shrink-0" />
+                    <p className="text-[11px] text-amber-400 leading-relaxed">
+                      Assessed amount (£{gross.toLocaleString()}) is below the £{excess} policy excess. Net settlement will be £0. Consider using &quot;Reject Claim&quot; with the &quot;Below Policy Excess&quot; reason instead.
+                    </p>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setApproveModalOpen(false)}
+                    className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-colors ${
+                      isLight ? 'border-black/10 text-gray-700 hover:bg-black/5' : 'border-white/10 text-gray-300 hover:bg-white/5'
+                    }`}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmApproval}
+                    disabled={!gross || gross <= 0}
+                    className="flex-1 px-4 py-2 rounded-xl text-xs font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+                    style={{ background: GREEN }}
+                  >
+                    <CheckCircle2 size={12} />
+                    Authorize Settlement {gross > 0 ? `(£${net.toLocaleString()} net)` : ''}
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
+
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* UPGRADED REJECT CLAIM MODAL (WITH LETTERHEAD PREVIEW)         */}
+      {/* UPGRADED REJECT CLAIM MODAL (WITH LIVE LETTERHEAD PREVIEW)     */}
       {/* ───────────────────────────────────────────────────────────── */}
       <AnimatePresence>
         {rejectModalOpen && (
@@ -1398,7 +1638,7 @@ export default function ClaimDetailPage({ params }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[300] flex items-start justify-center pt-16 pb-6 px-3 sm:px-4 bg-black/75 backdrop-blur-xs overflow-y-auto"
+            className="fixed inset-0 z-[300] flex items-start justify-center pt-10 pb-6 px-3 sm:px-4 bg-black/75 backdrop-blur-xs overflow-y-auto"
             onClick={() => setRejectModalOpen(false)}
           >
             <motion.div
@@ -1406,21 +1646,21 @@ export default function ClaimDetailPage({ params }: Props) {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 15 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-2xl rounded-2xl p-6 shadow-2xl space-y-4 my-8"
+              className="w-full max-w-3xl rounded-2xl p-6 shadow-2xl space-y-4 my-6"
               style={{
                 background: isLight ? '#ffffff' : '#0d2117',
                 border: `1px solid ${BORDER}`,
               }}
             >
-              {/* Modal Header */}
-              <div className="flex items-start justify-between pb-3 border-b" style={{ borderColor: BORDER }}>
+              {/* Header with Title & Action Tabs */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b" style={{ borderColor: BORDER }}>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-500/15 text-red-500 flex items-center justify-center border border-red-500/30">
+                  <div className="w-10 h-10 rounded-xl bg-red-500/15 text-red-500 flex items-center justify-center border border-red-500/30 shrink-0">
                     <AlertOctagon size={22} />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className={`text-base font-bold ${TEXT_MAIN}`}>Adjudicate Claim: Issue Rejection Notice</h3>
+                      <h3 className={`text-base font-bold ${TEXT_MAIN}`}>Adjudicate Claim: Issue Formal Rejection</h3>
                       <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-red-500/15 text-red-500 border border-red-500/20">
                         {claim.id}
                       </span>
@@ -1430,47 +1670,89 @@ export default function ClaimDetailPage({ params }: Props) {
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setRejectModalOpen(false)}
-                  className={`p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 ${TEXT_MUTED}`}
-                >
-                  <X size={18} />
-                </button>
-              </div>
 
-              <form onSubmit={handleConfirmRejection} className="space-y-4 pt-1">
-                  {/* Financial Impact Snapshot */}
-                  <div
-                  className="p-3 rounded-xl border grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs"
-                  style={{
-                    background: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.03)',
-                    borderColor: isLight ? '#E2E8F0' : 'rgba(255,255,255,0.08)',
-                  }}
-                  >
-                    <div>
-                      <p className={`text-[10px] uppercase font-bold tracking-wider ${TEXT_MUTED}`}>Claimed Value</p>
-                      <p className="text-sm font-extrabold mt-0.5" style={{ color: isLight ? '#111827' : '#f1f5f9' }}>£{claim.amountClaimed.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <p className={`text-[10px] uppercase font-bold tracking-wider ${TEXT_MUTED}`}>Policy Excess</p>
-                      <p className="text-sm font-extrabold text-amber-500 mt-0.5">£300.00</p>
-                    </div>
-                    <div>
-                      <p className={`text-[10px] uppercase font-bold tracking-wider ${TEXT_MUTED}`}>Approved Settlement</p>
-                      <p className="text-sm font-extrabold mt-0.5" style={{ color: isLight ? '#dc2626' : '#fca5a5' }}>£0.00</p>
-                    </div>
-                    <div>
-                      <p className={`text-[10px] uppercase font-bold tracking-wider ${TEXT_MUTED}`}>Pool Preservation</p>
-                      <p className="text-sm font-extrabold text-[#00c685] mt-0.5">+£{claim.amountClaimed.toLocaleString()}</p>
-                    </div>
+                <div className="flex items-center gap-2 self-end sm:self-center">
+                  {/* Mode Tabs */}
+                  <div className={`flex items-center p-1 rounded-xl border text-xs ${isLight ? 'bg-gray-100 border-gray-200' : 'bg-black/20 border-white/10'}`}>
+                    <button
+                      type="button"
+                      onClick={() => setRejectionActiveTab('form')}
+                      className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-all ${
+                        rejectionActiveTab === 'form'
+                          ? isLight ? 'bg-white text-gray-900 shadow-xs' : 'bg-white/10 text-white shadow-xs'
+                          : TEXT_MUTED
+                      }`}
+                    >
+                      <FileQuestion size={13} />
+                      <span>Form</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRejectionActiveTab('preview')}
+                      className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-all ${
+                        rejectionActiveTab === 'preview'
+                          ? isLight ? 'bg-white text-gray-900 shadow-xs' : 'bg-white/10 text-white shadow-xs'
+                          : TEXT_MUTED
+                      }`}
+                    >
+                      <Eye size={13} />
+                      <span>Letter Preview</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    </button>
                   </div>
 
-                  {/* Policy Grounds Selector */}
+                  <button
+                    onClick={() => setRejectModalOpen(false)}
+                    className={`p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 ${TEXT_MUTED}`}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              </div>
+
+              {/* TAB 1: FORM */}
+              {rejectionActiveTab === 'form' && (
+                <form onSubmit={handleConfirmRejection} className="space-y-4 pt-1">
+                  {/* Financial Overview (Clean & Monochrome) */}
+                  <div
+                    className="px-4 py-2.5 rounded-xl border flex flex-wrap items-center justify-between gap-3 text-xs"
+                    style={{
+                      background: isLight ? '#f9fafb' : 'rgba(255,255,255,0.02)',
+                      borderColor: isLight ? '#e5e7eb' : 'rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    <div className="flex items-center gap-5 flex-wrap">
+                      <div>
+                        <span className={`text-[11px] ${TEXT_MUTED}`}>Claimed Amount: </span>
+                        <span className={`font-semibold font-mono ${TEXT_MAIN}`}>£{claim.amountClaimed.toLocaleString()}</span>
+                      </div>
+                      <div className="h-3 w-px bg-gray-200 dark:bg-white/10 hidden sm:block" />
+                      <div>
+                        <span className={`text-[11px] ${TEXT_MUTED}`}>Policy Excess: </span>
+                        <span className={`font-semibold font-mono ${TEXT_MAIN}`}>£300.00</span>
+                      </div>
+                      <div className="h-3 w-px bg-gray-200 dark:bg-white/10 hidden sm:block" />
+                      <div>
+                        <span className={`text-[11px] ${TEXT_MUTED}`}>Settlement: </span>
+                        <span className={`font-semibold font-mono ${TEXT_MAIN}`}>£0.00</span>
+                      </div>
+                    </div>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-mono font-medium ${isLight ? 'bg-gray-200/80 text-gray-700' : 'bg-white/10 text-gray-300'}`}>
+                      Zero-Disbursement
+                    </span>
+                  </div>
+
+                  {/* Step 1: Policy Grounds Selector */}
                   <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${TEXT_MUTED}`}>
-                      Primary Policy Adjudication Ground:
-                    </label>
-                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className={`text-xs font-bold uppercase tracking-wider ${TEXT_MUTED}`}>
+                        1. Select Reason for Rejection:
+                      </label>
+                      <span className="text-[11px] text-rose-500 font-semibold">
+                        Select contractual ground
+                      </span>
+                    </div>
+                    <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
                       {REJECTION_PRESETS.map((preset) => {
                         const isSelected = rejectionReasonPreset === preset.id;
                         return (
@@ -1479,8 +1761,8 @@ export default function ClaimDetailPage({ params }: Props) {
                             className={`flex items-start gap-3 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
                               isSelected
                                 ? isLight
-                                  ? 'border-rose-400 bg-rose-50 shadow-xs'
-                                  : 'border-rose-500/50 bg-rose-500/[0.07] shadow-xs'
+                                  ? 'border-rose-400 bg-rose-50/70 shadow-xs ring-1 ring-rose-400/40'
+                                  : 'border-rose-500/60 bg-rose-500/[0.08] shadow-xs ring-1 ring-rose-500/40'
                                 : isLight
                                   ? 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                                   : 'border-white/10 hover:border-white/18 hover:bg-white/[0.03]'
@@ -1501,15 +1783,15 @@ export default function ClaimDetailPage({ params }: Props) {
                             />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between gap-2">
-                                <p className={`font-semibold ${isSelected ? (isLight ? 'text-rose-700' : 'text-rose-300') : TEXT_MAIN}`}>
+                                <p className={`font-semibold ${isSelected ? (isLight ? 'text-rose-800' : 'text-rose-200') : TEXT_MAIN}`}>
                                   {preset.label}
                                 </p>
-                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 ${isLight ? 'bg-rose-100 text-rose-600' : 'bg-rose-500/15 text-rose-300'}`}>
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 ${isLight ? 'bg-rose-100 text-rose-700' : 'bg-rose-500/20 text-rose-300'}`}>
                                   {preset.badge}
                                 </span>
                               </div>
                               {preset.clause && (
-                                <p className={`text-[10px] mt-0.5 font-mono font-medium ${isLight ? 'text-rose-500' : 'text-rose-400/80'}`}>
+                                <p className={`text-[10px] mt-0.5 font-mono font-medium ${isLight ? 'text-rose-600' : 'text-rose-400/90'}`}>
                                   {preset.clause}
                                 </p>
                               )}
@@ -1525,43 +1807,57 @@ export default function ClaimDetailPage({ params }: Props) {
                     </div>
                   </div>
 
-                  {/* Policy Clause Input */}
-                  <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${TEXT_MUTED}`}>
-                      Applicable Policy Clause Reference:
-                    </label>
-                    <input
-                      type="text"
-                      value={rejectionClauseInput}
-                      onChange={e => setRejectionClauseInput(e.target.value)}
-                      className={`w-full px-3.5 py-2.5 rounded-xl text-xs border font-mono outline-none transition-all focus:ring-2 focus:ring-rose-400/40 focus:border-rose-400/60 ${
-                        isLight
-                          ? 'border-gray-200 text-gray-800 bg-white'
-                          : 'border-white/10 text-gray-100 bg-white/[0.03]'
-                      }`}
-                    />
+                  {/* Step 2: Policy Clause & Customer Letter Explanation */}
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className={`text-xs font-bold uppercase tracking-wider ${TEXT_MUTED}`}>
+                          2. Applicable Policy Clause Reference:
+                        </label>
+                        <span className={`text-[11px] ${TEXT_MUTED}`}>Cited in formal notice</span>
+                      </div>
+                      <input
+                        type="text"
+                        value={rejectionClauseInput}
+                        onChange={e => setRejectionClauseInput(e.target.value)}
+                        placeholder="e.g. Clause 4.2 — Certificate Excess & Deductibles"
+                        className={`w-full px-3.5 py-2 rounded-xl text-xs border font-mono outline-none transition-all focus:ring-2 focus:ring-rose-400/40 focus:border-rose-400/60 ${
+                          isLight
+                            ? 'border-gray-200 text-gray-800 bg-white placeholder:text-gray-400'
+                            : 'border-white/10 text-gray-100 bg-white/[0.03] placeholder:text-gray-500'
+                        }`}
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className={`text-xs font-bold uppercase tracking-wider ${TEXT_MUTED}`}>
+                          3. Written Justification to {claim.participantName}:
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setRejectionActiveTab('preview')}
+                          className="text-[11px] text-rose-500 hover:underline flex items-center gap-1 font-semibold"
+                        >
+                          <Eye size={12} /> Preview in Official Letterhead
+                        </button>
+                      </div>
+                      <textarea
+                        rows={3}
+                        value={customRejectionText || REJECTION_PRESETS.find(p => p.id === rejectionReasonPreset)?.text || ''}
+                        onChange={e => setCustomRejectionText(e.target.value)}
+                        placeholder="Specify exact excess calculations, surveyor citations, and policy schedule disclaimers..."
+                        className={`w-full px-3.5 py-2.5 rounded-xl text-xs border resize-none leading-relaxed outline-none transition-all focus:ring-2 focus:ring-rose-400/40 focus:border-rose-400/60 ${
+                          isLight
+                            ? 'border-gray-200 text-gray-800 bg-white placeholder:text-gray-400'
+                            : 'border-white/10 text-gray-100 bg-white/[0.03] placeholder:text-gray-500'
+                        }`}
+                      />
+                    </div>
                   </div>
 
-                  {/* Detailed Explanation */}
-                  <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${TEXT_MUTED}`}>
-                      Detailed Written Justification to Participant:
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={customRejectionText || REJECTION_PRESETS.find(p => p.id === rejectionReasonPreset)?.text || ''}
-                      onChange={e => setCustomRejectionText(e.target.value)}
-                      placeholder="Specify exact excess calculations, surveyor citations, and policy schedule disclaimers..."
-                      className={`w-full px-3.5 py-2.5 rounded-xl text-xs border resize-none leading-relaxed outline-none transition-all focus:ring-2 focus:ring-rose-400/40 focus:border-rose-400/60 ${
-                        isLight
-                          ? 'border-gray-200 text-gray-800 bg-white placeholder:text-gray-400'
-                          : 'border-white/10 text-gray-100 bg-white/[0.03] placeholder:text-gray-500'
-                      }`}
-                    />
-                  </div>
-
-                  {/* Statutory Checkboxes & Compliance Attestation */}
-                  <div className="space-y-2.5 pt-2 border-t" style={{ borderColor: BORDER }}>
+                  {/* Step 3: Statutory Checkboxes & Compliance Attestation */}
+                  <div className="space-y-3 pt-2 border-t" style={{ borderColor: BORDER }}>
                     <div className="flex flex-wrap gap-4 text-xs">
                       <label className="flex items-center gap-2 cursor-pointer select-none">
                         <input
@@ -1570,7 +1866,7 @@ export default function ClaimDetailPage({ params }: Props) {
                           onChange={e => setIncludeAppealSchedule(e.target.checked)}
                           className="rounded accent-rose-500"
                         />
-                        <span className={TEXT_SUB}>Attach 14-day statutory participant appeal schedule</span>
+                        <span className={TEXT_SUB}>Include 14-day statutory participant appeal schedule</span>
                       </label>
                       <label className="flex items-center gap-2 cursor-pointer select-none">
                         <input
@@ -1583,43 +1879,225 @@ export default function ClaimDetailPage({ params }: Props) {
                       </label>
                     </div>
 
-                    <label className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer text-xs select-none transition-all ${
-                      isLight ? 'border-rose-200 bg-rose-50/60' : 'border-rose-500/20 bg-rose-500/[0.05]'
-                    }`}>
+                    {/* Sign-off Card */}
+                    <label
+                      className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer text-xs select-none transition-all ${
+                        rejectionSubmitAttempted && !complianceConfirmed
+                          ? 'border-rose-500 bg-rose-500/10 ring-2 ring-rose-500/30'
+                          : isLight
+                            ? 'border-rose-200 bg-rose-50/60'
+                            : 'border-rose-500/20 bg-rose-500/[0.05]'
+                      }`}
+                    >
                       <input
                         type="checkbox"
                         checked={complianceConfirmed}
-                        onChange={e => setComplianceConfirmed(e.target.checked)}
+                        onChange={e => {
+                          setComplianceConfirmed(e.target.checked);
+                          if (e.target.checked) setRejectionSubmitAttempted(false);
+                        }}
                         className="mt-0.5 rounded accent-rose-500"
                       />
-                      <span className={`text-[11px] leading-relaxed ${isLight ? 'text-rose-800' : 'text-rose-300/90'}`}>
-                        <strong>Mandatory Adjudication Declaration:</strong> I confirm this rejection has been substantiated against Certificate Terms, Policy Excess parameters, and Shariah Mutual Pool Governance rules.
-                      </span>
+                      <div className="space-y-0.5">
+                        <p className={`text-[11px] leading-relaxed font-semibold ${isLight ? 'text-rose-900' : 'text-rose-200'}`}>
+                          Mandatory Adjudication Declaration:
+                        </p>
+                        <p className={`text-[11px] leading-relaxed ${isLight ? 'text-rose-700' : 'text-rose-300/80'}`}>
+                          I confirm this rejection has been substantiated against Certificate Terms, Policy Excess parameters, and Shariah Mutual Pool Governance rules.
+                        </p>
+                        {rejectionSubmitAttempted && !complianceConfirmed && (
+                          <p className="text-[11px] font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1 pt-1">
+                            <AlertCircle size={12} /> Please tick this box to authorise rejection.
+                          </p>
+                        )}
+                      </div>
                     </label>
+
+                    {/* Reversibility Assurance Helper */}
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-[11px]">
+                      <Info size={14} className="shrink-0" />
+                      <span>
+                        <strong>Reversible action:</strong> You or another handler can re-open this claim anytime if the participant submits new evidence or appeals within 14 days.
+                      </span>
+                    </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center justify-end gap-2 pt-3 border-t" style={{ borderColor: BORDER }}>
+                  <div className="flex items-center justify-between pt-3 border-t gap-2" style={{ borderColor: BORDER }}>
                     <button
                       type="button"
-                      onClick={() => setRejectModalOpen(false)}
-                      className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                      onClick={() => setRejectionActiveTab('preview')}
+                      className={`px-3.5 py-2 rounded-xl text-xs font-semibold border flex items-center gap-1.5 transition-all ${
                         isLight ? 'border-gray-200 hover:bg-gray-50 text-gray-700' : 'border-white/10 hover:bg-white/5 text-gray-300'
                       }`}
                     >
-                      Cancel
+                      <Eye size={13} /> View Live Notice Preview
                     </button>
-                    <button
-                      type="submit"
-                      disabled={!complianceConfirmed}
-                      className={`px-5 py-2 rounded-xl text-xs font-bold text-white transition-all shadow-sm flex items-center gap-1.5 ${
-                        complianceConfirmed ? 'bg-rose-500 hover:bg-rose-600' : 'bg-rose-400/40 cursor-not-allowed opacity-60'
-                      }`}
-                    >
-                      <AlertOctagon size={13} /> Confirm Rejection
-                    </button>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setRejectModalOpen(false)}
+                        className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                          isLight ? 'border-gray-200 hover:bg-gray-50 text-gray-700' : 'border-white/10 hover:bg-white/5 text-gray-300'
+                        }`}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-5 py-2 rounded-xl text-xs font-bold text-white transition-all shadow-sm flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 active:scale-[0.98]"
+                      >
+                        <AlertOctagon size={13} /> Confirm Rejection & Issue Notice
+                      </button>
+                    </div>
                   </div>
                 </form>
+              )}
+
+              {/* TAB 2: LIVE LETTERHEAD PREVIEW */}
+              {rejectionActiveTab === 'preview' && (
+                <div className="space-y-4 pt-1">
+                  <div className="flex items-center justify-between text-xs px-1">
+                    <p className={`font-semibold ${TEXT_MUTED}`}>
+                      Live Preview of the Document that will be generated and issued:
+                    </p>
+                    <span className="text-[11px] font-mono text-emerald-500 font-bold flex items-center gap-1">
+                      <Check size={12} /> Auto-synced with form entries
+                    </span>
+                  </div>
+
+                  {/* Official Letterhead Container */}
+                  <div
+                    className="p-6 rounded-2xl border shadow-inner text-xs space-y-4 max-h-[460px] overflow-y-auto leading-relaxed"
+                    style={{
+                      background: isLight ? '#fefefe' : '#0a1610',
+                      borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.1)',
+                      color: isLight ? '#1f2937' : '#e5e7eb',
+                    }}
+                  >
+                    {/* Official Letterhead */}
+                    <div className="border-b pb-4 flex items-start justify-between gap-4 font-sans" style={{ borderColor: isLight ? '#e5e7eb' : 'rgba(255,255,255,0.1)' }}>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg bg-[#00c685] flex items-center justify-center text-white font-bold text-sm font-mono">
+                            T
+                          </div>
+                          <span className="font-extrabold tracking-tight text-sm">TAKAFUL UK MUTUAL BENEFIT SOCIETY</span>
+                        </div>
+                        <p className="text-[10px] text-gray-500 mt-1">
+                          Authorised by the Prudential Regulation Authority · Mutual Participant Protection Scheme
+                        </p>
+                      </div>
+
+                      <div className="text-right text-[10px] text-gray-500 font-mono">
+                        <p>REF: DISALLOW-{claim.id}</p>
+                        <p>DATE: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                        <p>CERTIFICATE: {claim.certificateId || 'TK-2024-0042'}</p>
+                      </div>
+                    </div>
+
+                    {/* Addressee */}
+                    <div className="font-sans text-xs space-y-0.5">
+                      <p className="font-bold">{claim.participantName}</p>
+                      <p className="text-gray-500">{claim.propertyAddress}</p>
+                    </div>
+
+                    {/* Subject */}
+                    <div className="font-sans font-bold text-sm text-red-600 dark:text-red-400 border-l-4 border-red-500 pl-3 py-0.5">
+                      FORMAL NOTICE OF CLAIM DISALLOWANCE — CLAIM {claim.id}
+                    </div>
+
+                    {/* Letter Body */}
+                    <div className="space-y-3 font-sans text-xs leading-relaxed">
+                      <p>
+                        Dear {claim.participantName},
+                      </p>
+                      <p>
+                        We write to formally record the determination reached by the Takaful Claims Adjudication Committee regarding your reported loss event of <strong>{claim.incidentDate}</strong> ({claim.type} Damage under {claim.coverType} cover).
+                      </p>
+                      <p>
+                        Following thorough evaluation of the loss adjusters' report, itemised trades estimates, and policy conditions, we regret to advise you that <strong>no disbursement can be issued from the participant mutual pool</strong> for this claim.
+                      </p>
+
+                      {/* Summary Box */}
+                      <div className="p-3.5 rounded-xl border bg-black/[0.02] dark:bg-white/[0.02] space-y-2 font-mono text-[11px]" style={{ borderColor: isLight ? '#e5e7eb' : 'rgba(255,255,255,0.08)' }}>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Gross Claimed Amount:</span>
+                          <span className="font-bold">£{claim.amountClaimed.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Mandatory Certificate Policy Excess:</span>
+                          <span className="font-bold">£300.00</span>
+                        </div>
+                        <div className="flex justify-between border-t pt-1 font-bold text-red-600 dark:text-red-400" style={{ borderColor: isLight ? '#e5e7eb' : 'rgba(255,255,255,0.08)' }}>
+                          <span>Assessed Pool Disbursement:</span>
+                          <span>£0.00</span>
+                        </div>
+                      </div>
+
+                      {/* Reason & Clause citations */}
+                      <div className="space-y-1.5 p-3 rounded-xl bg-red-500/[0.04] border border-red-500/20">
+                        <p className="font-bold text-red-600 dark:text-red-400">Grounds for Disallowance & Applicable Policy Clause:</p>
+                        <p className="font-mono text-[11px] font-semibold text-gray-700 dark:text-gray-300">
+                          {rejectionClauseInput || 'Clause 4.2 — Certificate Excess & Deductibles'}
+                        </p>
+                        <p className="text-gray-600 dark:text-gray-400 text-xs">
+                          {customRejectionText || REJECTION_PRESETS.find(p => p.id === rejectionReasonPreset)?.text || 'Claim falls below certificate excess threshold.'}
+                        </p>
+                      </div>
+
+                      {includeAppealSchedule && (
+                        <div className="space-y-1 text-[11px] text-gray-500 dark:text-gray-400 border-t pt-3" style={{ borderColor: isLight ? '#e5e7eb' : 'rgba(255,255,255,0.1)' }}>
+                          <p className="font-bold text-gray-700 dark:text-gray-300">Statutory Participant Appeal Procedure (14 Days):</p>
+                          <p>
+                            Under Rule 12 of the Takaful Governance Framework, you are entitled to appeal this determination within 14 calendar days from the date of this letter. Appeals should be submitted via your portal with any supplementary receipts, quotes, or specialist reports.
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="pt-2 text-[11px] text-gray-500">
+                        <p>Sincerely,</p>
+                        <p className="font-bold text-gray-700 dark:text-gray-300 mt-1">Omar Hassan</p>
+                        <p>Senior Claims Handler · Mutual Loss Assessment Team</p>
+                        <p>Takaful UK Ltd</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions for Preview tab */}
+                  <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: BORDER }}>
+                    <button
+                      type="button"
+                      onClick={() => setRejectionActiveTab('form')}
+                      className={`px-4 py-2 rounded-xl text-xs font-semibold border flex items-center gap-1.5 transition-all ${
+                        isLight ? 'border-gray-200 hover:bg-gray-50 text-gray-700' : 'border-white/10 hover:bg-white/5 text-gray-300'
+                      }`}
+                    >
+                      <ArrowLeft size={13} /> Back to Edit Form
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setRejectModalOpen(false)}
+                        className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                          isLight ? 'border-gray-200 hover:bg-gray-50 text-gray-700' : 'border-white/10 hover:bg-white/5 text-gray-300'
+                        }`}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleConfirmRejection}
+                        className="px-5 py-2 rounded-xl text-xs font-bold text-white transition-all shadow-sm flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 active:scale-[0.98]"
+                      >
+                        <AlertOctagon size={13} /> Confirm Rejection & Issue Notice
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

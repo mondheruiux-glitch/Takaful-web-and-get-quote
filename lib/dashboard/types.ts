@@ -40,6 +40,10 @@ export interface Certificate {
   renewalDate: string;
   status: 'Active' | 'Expiring' | 'Pending' | 'Cancelled';
   coveredRisks: string[];
+  /** Compulsory excess the participant always pays (default £300, per Clause 4.2) */
+  compulsoryExcess: number;
+  /** Voluntary excess selected during quote (0 = none selected) */
+  voluntaryExcess: number;
 }
 
 export type ContributionStatus = 'Collected' | 'Pending' | 'Failed' | 'Retried';
@@ -90,8 +94,18 @@ export interface Claim {
   incidentDate: string;
   submittedDate: string;
   description: string;
+  /** The gross repair/replacement cost submitted by the participant */
   amountClaimed: number;
+  /** The net settlement actually approved (= grossAssessedAmount - excessDeducted) */
   amountApproved?: number;
+  /** Gross assessed loss verified by handler (may differ from amountClaimed if adjusted) */
+  grossAssessedAmount?: number;
+  /** Total excess deducted (compulsoryExcess + voluntaryExcess) */
+  excessDeducted?: number;
+  /** Net payable to participant (= grossAssessedAmount - excessDeducted) */
+  netSettlementAmount?: number;
+  /** BACS reference generated when Finance releases payment */
+  bacsReference?: string;
   priority: ClaimPriority;
   status: ClaimStatus;
   assignedHandlerId?: string;

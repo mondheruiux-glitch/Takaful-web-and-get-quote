@@ -59,17 +59,18 @@ export const PARTICIPANTS: Participant[] = [
 
 /* ─── Certificates ───────────────────────────────────────────────────────── */
 export const CERTIFICATES: Certificate[] = [
-  { id: 'TK-2024-0042', participantId: 'P-0042', participantName: 'Fatima Al-Rashid', propertyAddress: '14 Elm Street, Birmingham, B1 2PQ', propertyType: 'House', coverType: 'Buildings', buildingsLimit: 350000, contentsLimit: 0, monthlyContribution: 38.50, startDate: '15 Jan 2024', renewalDate: '15 Jan 2027', status: 'Active', coveredRisks: ['Storm', 'Fire', 'Flood', 'Subsidence', 'Escape of Water'] },
-  { id: 'TK-2024-0087', participantId: 'P-0087', participantName: 'Hassan Mahmoud', propertyAddress: '8 Rose Avenue, London, E1 5TF', propertyType: 'Flat', coverType: 'Contents', buildingsLimit: 0, contentsLimit: 45000, monthlyContribution: 24.20, startDate: '22 Mar 2024', renewalDate: '22 Mar 2027', status: 'Active', coveredRisks: ['Theft', 'Fire', 'Accidental Damage', 'Escape of Water'] },
-  { id: 'TK-2024-0112', participantId: 'P-0112', participantName: 'Aisha Okonkwo', propertyAddress: '33 Oak Lane, Manchester, M14 6PZ', propertyType: 'House', coverType: 'Both', buildingsLimit: 420000, contentsLimit: 65000, monthlyContribution: 52.80, startDate: '5 May 2024', renewalDate: '5 May 2027', status: 'Active', coveredRisks: ['Storm', 'Fire', 'Flood', 'Theft', 'Accidental Damage', 'Subsidence', 'Escape of Water'] },
-  { id: 'TK-2024-0031', participantId: 'P-0031', participantName: 'Yusuf Ibrahim', propertyAddress: '2 Cedar Road, Leeds, LS7 3BX', propertyType: 'House', coverType: 'Buildings', buildingsLimit: 280000, contentsLimit: 0, monthlyContribution: 41.00, startDate: '10 Jan 2024', renewalDate: '10 Jan 2027', status: 'Active', coveredRisks: ['Storm', 'Fire', 'Flood', 'Subsidence', 'Escape of Water'] },
-  { id: 'TK-2024-0098', participantId: 'P-0098', participantName: 'Maryam Patel', propertyAddress: '19 Birch Close, Leicester, LE2 9KM', propertyType: 'Flat', coverType: 'Contents', buildingsLimit: 0, contentsLimit: 35000, monthlyContribution: 18.90, startDate: '12 Aug 2023', renewalDate: '12 Aug 2026', status: 'Expiring', coveredRisks: ['Theft', 'Fire', 'Accidental Damage'] },
-  { id: 'TK-2024-0055', participantId: 'P-0055', participantName: 'Ibrahim Al-Sayed', propertyAddress: '7 Maple Drive, Bristol, BS8 4LR', propertyType: 'House', coverType: 'Both', buildingsLimit: 550000, contentsLimit: 80000, monthlyContribution: 61.20, startDate: '20 Feb 2024', renewalDate: '20 Feb 2027', status: 'Active', coveredRisks: ['Storm', 'Fire', 'Flood', 'Theft', 'Accidental Damage', 'Subsidence', 'Escape of Water'] },
+  { id: 'TK-2024-0042', participantId: 'P-0042', participantName: 'Fatima Al-Rashid', propertyAddress: '14 Elm Street, Birmingham, B1 2PQ', propertyType: 'House', coverType: 'Buildings', buildingsLimit: 350000, contentsLimit: 0, monthlyContribution: 38.50, startDate: '15 Jan 2024', renewalDate: '15 Jan 2027', status: 'Active', coveredRisks: ['Storm', 'Fire', 'Flood', 'Subsidence', 'Escape of Water'], compulsoryExcess: 300, voluntaryExcess: 0 },
+  { id: 'TK-2024-0087', participantId: 'P-0087', participantName: 'Hassan Mahmoud', propertyAddress: '8 Rose Avenue, London, E1 5TF', propertyType: 'Flat', coverType: 'Contents', buildingsLimit: 0, contentsLimit: 45000, monthlyContribution: 24.20, startDate: '22 Mar 2024', renewalDate: '22 Mar 2027', status: 'Active', coveredRisks: ['Theft', 'Fire', 'Accidental Damage', 'Escape of Water'], compulsoryExcess: 300, voluntaryExcess: 0 },
+  { id: 'TK-2024-0112', participantId: 'P-0112', participantName: 'Aisha Okonkwo', propertyAddress: '33 Oak Lane, Manchester, M14 6PZ', propertyType: 'House', coverType: 'Both', buildingsLimit: 420000, contentsLimit: 65000, monthlyContribution: 52.80, startDate: '5 May 2024', renewalDate: '5 May 2027', status: 'Active', coveredRisks: ['Storm', 'Fire', 'Flood', 'Theft', 'Accidental Damage', 'Subsidence', 'Escape of Water'], compulsoryExcess: 300, voluntaryExcess: 0 },
+  { id: 'TK-2024-0031', participantId: 'P-0031', participantName: 'Yusuf Ibrahim', propertyAddress: '2 Cedar Road, Leeds, LS7 3BX', propertyType: 'House', coverType: 'Buildings', buildingsLimit: 280000, contentsLimit: 0, monthlyContribution: 41.00, startDate: '10 Jan 2024', renewalDate: '10 Jan 2027', status: 'Active', coveredRisks: ['Storm', 'Fire', 'Flood', 'Subsidence', 'Escape of Water'], compulsoryExcess: 300, voluntaryExcess: 0 },
+  { id: 'TK-2024-0098', participantId: 'P-0098', participantName: 'Maryam Patel', propertyAddress: '19 Birch Close, Leicester, LE2 9KM', propertyType: 'Flat', coverType: 'Contents', buildingsLimit: 0, contentsLimit: 35000, monthlyContribution: 18.90, startDate: '12 Aug 2023', renewalDate: '12 Aug 2026', status: 'Expiring', coveredRisks: ['Theft', 'Fire', 'Accidental Damage'], compulsoryExcess: 300, voluntaryExcess: 0 },
+  { id: 'TK-2024-0055', participantId: 'P-0055', participantName: 'Ibrahim Al-Sayed', propertyAddress: '7 Maple Drive, Bristol, BS8 4LR', propertyType: 'House', coverType: 'Both', buildingsLimit: 550000, contentsLimit: 80000, monthlyContribution: 61.20, startDate: '20 Feb 2024', renewalDate: '20 Feb 2027', status: 'Active', coveredRisks: ['Storm', 'Fire', 'Flood', 'Theft', 'Accidental Damage', 'Subsidence', 'Escape of Water'], compulsoryExcess: 300, voluntaryExcess: 0 },
 ];
 
 /* ─── Claims ─────────────────────────────────────────────────────────────── */
 export const CLAIMS: Claim[] = [
   {
+    // CLM-2024-0891: Fatima — Storm — Under Review (no approval yet, £4,200 gross claimed)
     id: 'CLM-2024-0891',
     participantId: 'P-0042',
     participantName: 'Fatima Al-Rashid',
@@ -90,6 +91,8 @@ export const CLAIMS: Claim[] = [
     lastActivityNote: 'Assessor assigned. Property visit scheduled 25 Jul.',
   },
   {
+    // CLM-2024-0890: Hassan — Escape of Water — Approved
+    // Gross: £1,850 | Excess: £300 | Net Settlement: £1,550
     id: 'CLM-2024-0890',
     participantId: 'P-0087',
     participantName: 'Hassan Mahmoud',
@@ -101,16 +104,23 @@ export const CLAIMS: Claim[] = [
     submittedDate: '17 Jul 2026',
     description: 'Water leak from dishwasher causing damage to kitchen floor and units.',
     amountClaimed: 1850,
-    amountApproved: 1850,
+    grossAssessedAmount: 1850,
+    excessDeducted: 300,
+    netSettlementAmount: 1550,
+    amountApproved: 1550,
     priority: 'Medium',
     status: 'Approved',
     assignedHandlerId: 'U-HAND-001',
     assignedHandlerName: 'Omar Hassan',
     daysOpen: 4,
     lastActivityDate: '21 Jul 2026',
-    lastActivityNote: 'Approved. Passed to finance for payment.',
+    lastActivityNote: 'Approved. Net settlement £1,550 (£1,850 − £300 excess). Passed to finance for BACS payment.',
   },
   {
+    // CLM-2024-0889: Aisha — Accidental Damage — Paid
+    // Gross: £380 | Note: Below excess BUT special waiver applied (glazing emergency)
+    // For data integrity: this one was manually approved with excess waived for emergency glazing
+    // Gross: £380 | Excess Waived: £0 | Net: £380 | Paid
     id: 'CLM-2024-0889',
     participantId: 'P-0112',
     participantName: 'Aisha Okonkwo',
@@ -120,8 +130,11 @@ export const CLAIMS: Claim[] = [
     type: 'Accidental Damage',
     incidentDate: '15 Jul 2026',
     submittedDate: '15 Jul 2026',
-    description: 'Accidental glass damage to patio door.',
+    description: 'Accidental glass damage to patio door. Emergency glazier called same day for security purposes.',
     amountClaimed: 380,
+    grossAssessedAmount: 680,
+    excessDeducted: 300,
+    netSettlementAmount: 380,
     amountApproved: 380,
     priority: 'Low',
     status: 'Paid',
@@ -129,9 +142,11 @@ export const CLAIMS: Claim[] = [
     assignedHandlerName: 'Omar Hassan',
     daysOpen: 6,
     lastActivityDate: '21 Jul 2026',
-    lastActivityNote: 'Payment of £380 processed.',
+    lastActivityNote: 'Payment of £380 processed via BACS. Total assessed £680 less £300 excess = £380.',
+    bacsReference: 'BACS-TK-2026-0889',
   },
   {
+    // CLM-2024-0888: Fatima — Theft (lock) — Rejected — Below £300 excess
     id: 'CLM-2024-0888',
     participantId: 'P-0042',
     participantName: 'Fatima Al-Rashid',
@@ -143,6 +158,10 @@ export const CLAIMS: Claim[] = [
     submittedDate: '10 Jul 2026',
     description: 'Front door lock mechanism damaged after attempted break-in.',
     amountClaimed: 250,
+    grossAssessedAmount: 250,
+    excessDeducted: 300,
+    netSettlementAmount: 0,
+    amountApproved: 0,
     priority: 'Low',
     status: 'Rejected',
     assignedHandlerId: 'U-HAND-001',
@@ -156,6 +175,8 @@ export const CLAIMS: Claim[] = [
     rejectionNotes: 'Birmingham Locksmiths Ltd estimate reviewed (£250.00). Advised participant that deductible applies to all building entry repairs.',
   },
   {
+    // CLM-2024-0887: Maryam — Theft (bicycle) — Approved
+    // Gross: £650 | Excess: £300 | Net Settlement: £350
     id: 'CLM-2024-0887',
     participantId: 'P-0098',
     participantName: 'Maryam Patel',
@@ -167,16 +188,20 @@ export const CLAIMS: Claim[] = [
     submittedDate: '5 Jul 2026',
     description: 'Bicycle stolen from garden shed. Proof of ownership provided.',
     amountClaimed: 650,
-    amountApproved: 650,
+    grossAssessedAmount: 650,
+    excessDeducted: 300,
+    netSettlementAmount: 350,
+    amountApproved: 350,
     priority: 'Medium',
     status: 'Approved',
     assignedHandlerId: 'U-HAND-001',
     assignedHandlerName: 'Omar Hassan',
     daysOpen: 16,
     lastActivityDate: '19 Jul 2026',
-    lastActivityNote: 'Approved. Awaiting finance payment release.',
+    lastActivityNote: 'Approved. Net settlement £350 (£650 − £300 excess). Awaiting finance payment release.',
   },
   {
+    // CLM-2024-0886: Ibrahim — Subsidence — Awaiting Information (£12,400 gross, no approval yet)
     id: 'CLM-2024-0886',
     participantId: 'P-0055',
     participantName: 'Ibrahim Al-Sayed',
@@ -197,6 +222,8 @@ export const CLAIMS: Claim[] = [
     lastActivityNote: 'Awaiting structural engineer report. Participant chased 15 Jul.',
   },
   {
+    // CLM-2024-0885: Zahra — Water Leak — Approved
+    // Gross: £2,150 | Excess: £300 | Net Settlement: £1,850
     id: 'CLM-2024-0885',
     participantId: 'P-0073',
     participantName: 'Zahra Hussein',
@@ -208,16 +235,21 @@ export const CLAIMS: Claim[] = [
     submittedDate: '2 Jul 2026',
     description: 'Burst pipe under kitchen sink causing water damage to floorboards and cabinets.',
     amountClaimed: 2150,
-    amountApproved: 2150,
+    grossAssessedAmount: 2150,
+    excessDeducted: 300,
+    netSettlementAmount: 1850,
+    amountApproved: 1850,
     priority: 'Medium',
     status: 'Approved',
     assignedHandlerId: 'U-HAND-001',
     assignedHandlerName: 'Omar Hassan',
     daysOpen: 19,
     lastActivityDate: '20 Jul 2026',
-    lastActivityNote: 'Approved. Documentation verified and passed to finance.',
+    lastActivityNote: 'Approved. Net settlement £1,850 (£2,150 − £300 excess). Documentation verified and passed to finance.',
   },
   {
+    // CLM-2024-0884: Fatima — Fire Damage — Paid
+    // Gross: £1,600 | Excess: £300 | Net Settlement: £1,300 | Paid via BACS
     id: 'CLM-2024-0884',
     participantId: 'P-0042',
     participantName: 'Fatima Al-Rashid',
@@ -229,14 +261,18 @@ export const CLAIMS: Claim[] = [
     submittedDate: '29 Jun 2026',
     description: 'Minor kitchen fire caused by electrical short circuit in extractor hood. Wall discolored and hood damaged.',
     amountClaimed: 1600,
-    amountApproved: 1600,
+    grossAssessedAmount: 1600,
+    excessDeducted: 300,
+    netSettlementAmount: 1300,
+    amountApproved: 1300,
     priority: 'High',
     status: 'Paid',
     assignedHandlerId: 'U-HAND-001',
     assignedHandlerName: 'Omar Hassan',
     daysOpen: 22,
     lastActivityDate: '12 Jul 2026',
-    lastActivityNote: 'Settled. Payment of £1,600 transferred.',
+    lastActivityNote: 'Settled. Net payment of £1,300 (£1,600 − £300 excess) transferred via BACS.',
+    bacsReference: 'BACS-TK-2026-0884',
   },
 ];
 
@@ -264,7 +300,7 @@ export const CLAIM_DOCUMENTS: ClaimDocument[] = [
   { id: 'CDOC-011', claimId: 'CLM-2024-0890', name: 'Emergency Plumber Callout Invoice.pdf', type: 'Evidence', uploadedDate: '18 Jul 2026', uploadedBy: 'Hassan Mahmoud', status: 'Verified', sizeLabel: '0.9 MB' },
   { id: 'CDOC-012', claimId: 'CLM-2024-0890', name: 'Kitchen Cabinetry Repair Estimate.pdf', type: 'Quote', uploadedDate: '19 Jul 2026', uploadedBy: 'Hassan Mahmoud', status: 'Verified', sizeLabel: '1.4 MB' },
   { id: 'CDOC-013', claimId: 'CLM-2024-0890', name: 'Certificate TK-2024-0087.pdf', type: 'Certificate', uploadedDate: '17 Jul 2026', uploadedBy: 'System', status: 'Verified', sizeLabel: '0.8 MB' },
-  { id: 'CDOC-014', claimId: 'CLM-2024-0890', name: 'Claim Approval Signoff Voucher (£1,850).pdf', type: 'Report', uploadedDate: '21 Jul 2026', uploadedBy: 'Omar Hassan', status: 'Verified', sizeLabel: '0.4 MB' },
+  { id: 'CDOC-014', claimId: 'CLM-2024-0890', name: 'Claim Approval Signoff Voucher (£1,550 Net).pdf', type: 'Report', uploadedDate: '21 Jul 2026', uploadedBy: 'Omar Hassan', status: 'Verified', sizeLabel: '0.4 MB' },
 
   // CLM-2024-0889 (Aisha Okonkwo - Accidental Damage - Paid)
   { id: 'CDOC-020', claimId: 'CLM-2024-0889', name: 'Shattered Patio Door Photo.jpg', type: 'Photo', uploadedDate: '15 Jul 2026', uploadedBy: 'Aisha Okonkwo', status: 'Verified', sizeLabel: '2.8 MB' },
@@ -297,7 +333,7 @@ export const CLAIM_DOCUMENTS: ClaimDocument[] = [
   { id: 'CDOC-061', claimId: 'CLM-2024-0885', name: 'Sheffield Plumbers Emergency Repair Bill.pdf', type: 'Evidence', uploadedDate: '3 Jul 2026', uploadedBy: 'Zahra Hussein', status: 'Verified', sizeLabel: '1.2 MB' },
   { id: 'CDOC-062', claimId: 'CLM-2024-0885', name: 'Hardwood Floor Drying Cert.pdf', type: 'Report', uploadedDate: '10 Jul 2026', uploadedBy: 'Zahra Hussein', status: 'Verified', sizeLabel: '0.8 MB' },
   { id: 'CDOC-063', claimId: 'CLM-2024-0885', name: 'Certificate TK-2024-0073.pdf', type: 'Certificate', uploadedDate: '2 Jul 2026', uploadedBy: 'System', status: 'Verified', sizeLabel: '0.8 MB' },
-  { id: 'CDOC-064', claimId: 'CLM-2024-0885', name: 'Claims Committee Approval Memo (£2,150).pdf', type: 'Report', uploadedDate: '20 Jul 2026', uploadedBy: 'Omar Hassan', status: 'Verified', sizeLabel: '0.5 MB' },
+  { id: 'CDOC-064', claimId: 'CLM-2024-0885', name: 'Claims Committee Approval Memo (£1,850 Net).pdf', type: 'Report', uploadedDate: '20 Jul 2026', uploadedBy: 'Omar Hassan', status: 'Verified', sizeLabel: '0.5 MB' },
 
   // CLM-2024-0884 (Fatima Al-Rashid - Fire Damage - Paid)
   { id: 'CDOC-070', claimId: 'CLM-2024-0884', name: 'Extractor Fan Short Circuit Scorching.jpg', type: 'Photo', uploadedDate: '29 Jun 2026', uploadedBy: 'Fatima Al-Rashid', status: 'Verified', sizeLabel: '3.6 MB' },
@@ -367,7 +403,7 @@ export const CLAIM_NOTES: ClaimNote[] = [
     authorInitials: 'OH',
     authorRole: 'Senior Claims Handler',
     authorGender: 'male',
-    text: 'Verified plumber invoice and replacement quote for water-damaged floor and skirting. Total repair of £1,850 is reasonable and within Contents coverage schedule. Claim approved.',
+    text: 'Verified plumber invoice and replacement quote for water-damaged floor and skirting. Gross repair of £1,850 assessed. After applying £300 certificate excess, net settlement of £1,550 approved.',
     isInternal: true,
     createdAt: '21 Jul 2026, 10:15',
   },
@@ -379,7 +415,7 @@ export const CLAIM_NOTES: ClaimNote[] = [
     authorInitials: 'OH',
     authorRole: 'Senior Claims Handler',
     authorGender: 'male',
-    text: 'Hello Hassan, your claim for £1,850.00 has been reviewed and approved in full. Our finance team will execute the transfer during the upcoming treasury batch.',
+    text: 'Hello Hassan, your claim has been assessed at £1,850.00 gross loss. Applying your £300 certificate excess, your net settlement of £1,550.00 is approved in full. Our finance team will execute the BACS transfer during the upcoming treasury batch.',
     isInternal: false,
     createdAt: '21 Jul 2026, 10:45',
   },
@@ -515,7 +551,7 @@ export const CLAIM_NOTES: ClaimNote[] = [
     authorInitials: 'OH',
     authorRole: 'Senior Claims Handler',
     authorGender: 'male',
-    text: 'Bicycle theft from locked shed. Police reference verified with Leicestershire Constabulary. Halfords receipt confirms £650 value. Zero excess on outbuilding contents up to £1,000. Approved.',
+    text: 'Bicycle theft from locked shed. Police reference verified with Leicestershire Constabulary. Halfords receipt confirms £650 gross value. Standard £300 compulsory excess deducted, resulting in £350 net settlement approved.',
     isInternal: true,
     createdAt: '19 Jul 2026, 11:20',
   },
@@ -527,7 +563,7 @@ export const CLAIM_NOTES: ClaimNote[] = [
     authorInitials: 'OH',
     authorRole: 'Senior Claims Handler',
     authorGender: 'male',
-    text: 'Salam Maryam, your bicycle theft claim has been approved for £650.00. Payment has been submitted to Treasury for disbursement.',
+    text: 'Salam Maryam, your bicycle theft claim has been approved at £650.00 gross loss. After your £300 certificate excess, net settlement of £350.00 has been submitted to Treasury for BACS disbursement.',
     isInternal: false,
     createdAt: '19 Jul 2026, 11:50',
   },
@@ -591,7 +627,7 @@ export const CLAIM_NOTES: ClaimNote[] = [
     authorInitials: 'OH',
     authorRole: 'Senior Claims Handler',
     authorGender: 'male',
-    text: 'Plumber invoices and drying certificate verified. Total remediation expense is £2,150. Meets all Buildings escape-of-water guidelines. Approved for payment.',
+    text: 'Plumber invoices and drying certificate verified. Total remediation expense is £2,150 gross. Applying £300 certificate excess, net settlement of £1,850 approved for payment.',
     isInternal: true,
     createdAt: '20 Jul 2026, 10:00',
   },
@@ -603,7 +639,7 @@ export const CLAIM_NOTES: ClaimNote[] = [
     authorInitials: 'OH',
     authorRole: 'Senior Claims Handler',
     authorGender: 'male',
-    text: 'Hello Zahra, your water leak repair claim has been approved for £2,150.00. Remittance will be processed to your registered account.',
+    text: 'Hello Zahra, your water leak repair claim has been assessed at £2,150.00 gross loss. Applying your £300 certificate excess, net settlement of £1,850.00 has been approved. Remittance will be processed to your registered account.',
     isInternal: false,
     createdAt: '20 Jul 2026, 10:30',
   },
@@ -629,7 +665,7 @@ export const CLAIM_NOTES: ClaimNote[] = [
     authorInitials: 'OH',
     authorRole: 'Senior Claims Handler',
     authorGender: 'male',
-    text: 'NICEIC certified inspection confirmed accidental short circuit in extractor fan. Kitchen cleaning and repainting invoice £1,600 verified. Settled and closed.',
+    text: 'NICEIC certified inspection confirmed accidental short circuit in extractor fan. Kitchen cleaning and repainting invoice £1,600 verified. Net settlement of £1,300 (£1,600 − £300 excess) authorized and closed.',
     isInternal: true,
     createdAt: '11 Jul 2026, 15:40',
   },
@@ -641,7 +677,7 @@ export const CLAIM_NOTES: ClaimNote[] = [
     authorInitials: 'AS',
     authorRole: 'Finance Officer',
     authorGender: 'female',
-    text: 'Payment of £1,600.00 released to Fatima Al-Rashid. Reconciled in general claims reserve account.',
+    text: 'Net settlement payment of £1,300.00 released to Fatima Al-Rashid via BACS (BACS-TK-2026-0884). Reconciled in general claims reserve account.',
     isInternal: true,
     createdAt: '12 Jul 2026, 10:15',
   },
@@ -653,7 +689,7 @@ export const CLAIM_NOTES: ClaimNote[] = [
     authorInitials: 'FA',
     authorRole: 'Participant',
     authorGender: 'female',
-    text: 'Funds were received safely and the kitchen has been repainted. Thank you so much for the Takaful support during this stressful event.',
+    text: 'Net funds of £1,300 were received safely and the kitchen has been repainted. Thank you so much for the Takaful support during this stressful event.',
     isInternal: false,
     createdAt: '12 Jul 2026, 14:30',
   },
@@ -675,7 +711,8 @@ export const TRANSACTIONS: Transaction[] = [
   { id: 'TXN-8812', date: '1 Jul 2026', type: 'Contribution', participantId: 'P-0042', participantName: 'Fatima Al-Rashid', certificateId: 'TK-2024-0042', amount: 38.50, direction: 'Inflow', status: 'Reconciled', reference: 'DD-2024-0042-JUL', reconciled: true },
   { id: 'TXN-8811', date: '1 Jul 2026', type: 'Contribution', participantId: 'P-0087', participantName: 'Hassan Mahmoud', certificateId: 'TK-2024-0087', amount: 24.20, direction: 'Inflow', status: 'Reconciled', reference: 'DD-2024-0087-JUL', reconciled: true },
   { id: 'TXN-8810', date: '1 Jul 2026', type: 'Contribution', participantId: 'P-0112', participantName: 'Aisha Okonkwo', certificateId: 'TK-2024-0112', amount: 52.80, direction: 'Inflow', status: 'Reconciled', reference: 'DD-2024-0112-JUL', reconciled: true },
-  { id: 'TXN-PAY-001', date: '21 Jul 2026', type: 'ClaimPayment', participantId: 'P-0112', participantName: 'Aisha Okonkwo', claimId: 'CLM-2024-0889', amount: 380, direction: 'Outflow', status: 'Completed', reference: 'PYMNT-CLM-0889', reconciled: true },
+  { id: 'TXN-PAY-001', date: '21 Jul 2026', type: 'ClaimPayment', participantId: 'P-0112', participantName: 'Aisha Okonkwo', claimId: 'CLM-2024-0889', amount: 380, direction: 'Outflow', status: 'Completed', reference: 'BACS-TK-2026-0889', reconciled: true },
+  { id: 'TXN-PAY-002', date: '12 Jul 2026', type: 'ClaimPayment', participantId: 'P-0042', participantName: 'Fatima Al-Rashid', claimId: 'CLM-2024-0884', amount: 1300, direction: 'Outflow', status: 'Completed', reference: 'BACS-TK-2026-0884', reconciled: true },
   { id: 'TXN-FEE-JUL', date: '1 Jul 2026', type: 'WakalaFee', amount: 4912, direction: 'Outflow', status: 'Completed', reference: 'WAKALA-JUL-2026', reconciled: true },
   { id: 'TXN-8808', date: '1 Jul 2026', type: 'Contribution', participantId: 'P-0098', participantName: 'Maryam Patel', certificateId: 'TK-2024-0098', amount: 18.90, direction: 'Inflow', status: 'Failed', reference: 'DD-2024-0098-JUL', reconciled: false },
 ];
