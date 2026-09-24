@@ -150,11 +150,13 @@ export default function ClaimDetailPage({ params }: Props) {
   const [newNoteText, setNewNoteText] = useState('');
   const [isInternalNote, setIsInternalNote] = useState(true);
 
-  // Rejection Modal & Appeal States
+  // Rejection Modal & Appeal States (Multi-Select Architecture)
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
-  const [rejectionReasonPreset, setRejectionReasonPreset] = useState('excess');
-  const [customRejectionText, setCustomRejectionText] = useState('');
+  const [selectedRejectionPresets, setSelectedRejectionPresets] = useState<string[]>(['excess']);
+  const [customRejectionText, setCustomRejectionText] = useState(REJECTION_PRESETS[0].text);
   const [rejectionClauseInput, setRejectionClauseInput] = useState(REJECTION_PRESETS[0].clause);
+  const [isTextCustomized, setIsTextCustomized] = useState(false);
+  const [isClauseCustomized, setIsClauseCustomized] = useState(false);
   const [showAppealGuide, setShowAppealGuide] = useState(false);
   const [includeAppealSchedule, setIncludeAppealSchedule] = useState(true);
   const [notifyParticipantRejection, setNotifyParticipantRejection] = useState(true);
@@ -162,6 +164,76 @@ export default function ClaimDetailPage({ params }: Props) {
   const [rejectionActiveTab, setRejectionActiveTab] = useState<'form' | 'preview'>('form');
   const [rejectionSubmitAttempted, setRejectionSubmitAttempted] = useState(false);
   const [viewDecisionLetterModalOpen, setViewDecisionLetterModalOpen] = useState(false);
+
+  const handleToggleRejectionPreset = (presetId: string) => {
+    const nextSelected = selectedRejectionPresets.includes(presetId)
+      ? selectedRejectionPresets.filter(id => id !== presetId)
+      : [...selectedRejectionPresets, presetId];
+
+    setSelectedRejectionPresets(nextSelected);
+
+    const chosen = REJECTION_PRESETS.filter(p => nextSelected.includes(p.id));
+
+    if (!isClauseCustomized) {
+      if (chosen.length === 0) {
+        setRejectionClauseInput('');
+      } else if (chosen.length === 1) {
+        setRejectionClauseInput(chosen[0].clause);
+      } else {
+        setRejectionClauseInput(chosen.map(p => p.clause).join(' ; '));
+      }
+    }
+
+    if (!isTextCustomized) {
+      if (chosen.length === 0) {
+        setCustomRejectionText('');
+      } else if (chosen.length === 1) {
+        setCustomRejectionText(chosen[0].text);
+      } else {
+        const composite = chosen
+          .map((p, idx) => `${idx + 1}. [${p.badge} — ${p.label}]\n${p.text}`)
+          .join('\n\n');
+        setCustomRejectionText(composite);
+      }
+    }
+  };
+
+  const handleSelectAllRejectionPresets = () => {
+    const allIds = REJECTION_PRESETS.map(p => p.id);
+    setSelectedRejectionPresets(allIds);
+    setIsClauseCustomized(false);
+    setIsTextCustomized(false);
+    setRejectionClauseInput(REJECTION_PRESETS.map(p => p.clause).join(' ; '));
+    setCustomRejectionText(
+      REJECTION_PRESETS.map((p, idx) => `${idx + 1}. [${p.badge} — ${p.label}]\n${p.text}`).join('\n\n')
+    );
+  };
+
+  const handleClearRejectionPresets = () => {
+    setSelectedRejectionPresets([]);
+    setIsClauseCustomized(false);
+    setIsTextCustomized(false);
+    setRejectionClauseInput('');
+    setCustomRejectionText('');
+  };
+
+  const handleResetRejectionAuto = () => {
+    setIsClauseCustomized(false);
+    setIsTextCustomized(false);
+    const chosen = REJECTION_PRESETS.filter(p => selectedRejectionPresets.includes(p.id));
+    if (chosen.length === 0) {
+      setRejectionClauseInput('');
+      setCustomRejectionText('');
+    } else if (chosen.length === 1) {
+      setRejectionClauseInput(chosen[0].clause);
+      setCustomRejectionText(chosen[0].text);
+    } else {
+      setRejectionClauseInput(chosen.map(p => p.clause).join(' ; '));
+      setCustomRejectionText(
+        chosen.map((p, idx) => `${idx + 1}. [${p.badge} — ${p.label}]\n${p.text}`).join('\n\n')
+      );
+    }
+  };
 
   // Adjudication Settlement Modal States
   const [approveModalOpen, setApproveModalOpen] = useState(false);
@@ -367,20 +439,27 @@ export default function ClaimDetailPage({ params }: Props) {
     showToast(`Request sent: ${allRequested.length} document(s) requested from ${claim.participantName} (Deadline: ${deadlineDate})`, 'success');
   };
 
-  // Confirm Rejection with Reason & Generate Formal Notice
+  // Confirm Rejection with Multi-Ground Reason & Generate Formal Notice
   const handleConfirmRejection = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (selectedRejectionPresets.length === 0 && !customRejectionText.trim()) {
+      showToast('Please select at least one contractual ground or enter written justification', 'error');
+      return;
+    }
     if (!complianceConfirmed) {
       setRejectionSubmitAttempted(true);
       setRejectionActiveTab('form');
       showToast('Please tick the mandatory declaration box to confirm this rejection', 'error');
       return;
     }
-    const preset = REJECTION_PRESETS.find(p => p.id === rejectionReasonPreset);
-    const finalReason = rejectionReasonPreset === 'custom'
-      ? (customRejectionText.trim() || 'Claim rejected following comprehensive underwriting and policy excess review.')
-      : (customRejectionText.trim() || preset?.text || 'Claim falls under certificate excess threshold.');
-    const finalClause = rejectionClauseInput.trim() || preset?.clause || 'Clause 4.2 — Certificate Excess & Deductibles';
+
+    const chosen = REJECTION_PRESETS.filter(p => selectedRejectionPresets.includes(p.id));
+    const autoReason = chosen.length > 1
+      ? chosen.map((p, i) => `${i + 1}. ${p.label}: ${p.text}`).join('\n\n')
+      : (chosen[0]?.text || 'Claim rejected following comprehensive underwriting and policy excess review.');
+
+    const finalReason = customRejectionText.trim() || autoReason;
+    const finalClause = rejectionClauseInput.trim() || (chosen.length > 0 ? chosen.map(p => p.clause).join(' ; ') : 'Clause 4.2 — Certificate Excess & Deductibles');
     const decisionDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
     setClaim(prev => ({
@@ -389,7 +468,7 @@ export default function ClaimDetailPage({ params }: Props) {
       rejectionReason: finalReason,
       rejectionClause: finalClause,
       rejectionDate: decisionDate,
-      rejectionNotes: `Formal rejection notice issued by Omar Hassan. Reason: ${finalReason}`,
+      rejectionNotes: `Formal rejection notice issued by Omar Hassan. Grounds cited (${chosen.length || 1}): ${finalReason}`,
       lastActivityNote: `Claim Rejected — ${finalReason.slice(0, 65)}...`,
       lastActivityDate: 'Today',
       amountApproved: 0,
@@ -650,22 +729,22 @@ export default function ClaimDetailPage({ params }: Props) {
               variants={fadeUp} initial="hidden" animate="visible" custom={1}
               className="rounded-2xl p-5 border transition-all duration-200 overflow-hidden relative"
               style={{
-                background: isLight ? 'linear-gradient(135deg, #fff5f5 0%, #ffffff 100%)' : 'linear-gradient(135deg, #220d0f 0%, #15090a 100%)',
-                borderColor: 'rgba(239, 68, 68, 0.28)',
-                boxShadow: '0 4px 20px rgba(239, 68, 68, 0.08)',
+                background: isLight ? '#ffffff' : '#0e1d17',
+                borderColor: isLight ? '#e5e7eb' : 'rgba(255,255,255,0.08)',
+                boxShadow: isLight ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
               }}
             >
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-red-500/15 text-red-500 flex items-center justify-center shrink-0 mt-0.5 border border-red-500/30">
-                  <XCircle size={22} />
+                <div className="w-10 h-10 rounded-xl bg-slate-500/10 text-slate-700 dark:text-slate-200 flex items-center justify-center shrink-0 mt-0.5 border border-slate-500/20">
+                  <XCircle size={20} className="text-red-500" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-red-500 text-white">
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold tracking-wide bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
                         Claim Decision: Rejected
                       </span>
-                      <span className={`text-xs font-semibold ${TEXT_MUTED}`}>
+                      <span className={`text-xs font-medium ${TEXT_MUTED}`}>
                         Decided on {claim.rejectionDate || '18 Jul 2026'}
                       </span>
                     </div>
@@ -673,14 +752,18 @@ export default function ClaimDetailPage({ params }: Props) {
                     <div className="flex items-center gap-2 flex-wrap">
                       <button
                         onClick={() => setViewDecisionLetterModalOpen(true)}
-                        className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-red-600 dark:text-red-300 bg-red-500/10 hover:bg-red-500/20 transition-colors border border-red-500/20"
+                        className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-colors border ${
+                          isLight
+                            ? 'border-gray-200 text-gray-700 bg-gray-50 hover:bg-gray-100'
+                            : 'border-white/10 text-gray-300 bg-white/5 hover:bg-white/10'
+                        }`}
                       >
                         <FileText size={12} /> View Decision Notice
                       </button>
                       {role !== 'participant' && (
                         <button
                           onClick={handleReopenClaim}
-                          className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-red-500 border border-red-500/20 hover:bg-red-500/10 transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-gray-600 dark:text-gray-300 border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                         >
                           <RefreshCw size={12} /> Re-open for Re-assessment
                         </button>
@@ -688,17 +771,17 @@ export default function ClaimDetailPage({ params }: Props) {
                     </div>
                   </div>
 
-                  <h3 className={`text-sm font-bold mt-2.5 ${isLight ? 'text-red-950' : 'text-red-100'}`}>
-                    Reason for Claim Rejection:
+                  <h3 className={`text-sm font-bold mt-2.5 ${TEXT_MAIN}`}>
+                    Contractual Grounds for Claim Rejection:
                   </h3>
-                  <p className={`text-xs mt-1 leading-relaxed font-medium ${isLight ? 'text-red-900/80' : 'text-red-200/80'}`}>
+                  <div className={`text-xs mt-1 leading-relaxed font-normal whitespace-pre-line ${TEXT_MUTED}`}>
                     {claim.rejectionReason || 'The claim falls under the mandatory certificate policy excess threshold or standard policy exclusion criteria.'}
-                  </p>
+                  </div>
 
-                  <div className="mt-3 pt-3 flex flex-wrap items-center justify-between gap-2 border-t border-red-500/15">
+                  <div className="mt-3 pt-3 flex flex-wrap items-center justify-between gap-2 border-t" style={{ borderColor: isLight ? '#f1f5f9' : 'rgba(255,255,255,0.06)' }}>
                     <div className="flex items-center gap-2">
-                      <ShieldCheck size={13} className="text-red-500" />
-                      <span className={`text-[11px] font-semibold ${isLight ? 'text-red-800' : 'text-red-300'}`}>
+                      <ShieldCheck size={13} className="text-gray-400 shrink-0" />
+                      <span className={`text-[11px] font-mono font-medium ${isLight ? 'text-gray-700' : 'text-gray-300'}`}>
                         {claim.rejectionClause || 'Clause 4.2 — Certificate Excess & Deductibles (£300 Minimum)'}
                       </span>
                     </div>
@@ -706,7 +789,7 @@ export default function ClaimDetailPage({ params }: Props) {
                     {role === 'participant' ? (
                       <button
                         onClick={() => setShowAppealGuide(!showAppealGuide)}
-                        className="text-[11px] font-bold text-red-600 dark:text-red-400 hover:underline flex items-center gap-1"
+                        className="text-[11px] font-semibold text-gray-700 dark:text-gray-300 hover:text-emerald-500 dark:hover:text-emerald-400 hover:underline flex items-center gap-1"
                       >
                         {showAppealGuide ? 'Hide Appeal Instructions' : 'How to Appeal / Dispute this Decision'}
                         <ChevronRight size={12} className={showAppealGuide ? 'rotate-90' : ''} />
@@ -1049,26 +1132,34 @@ export default function ClaimDetailPage({ params }: Props) {
                           setRejectionActiveTab('form');
                           setRejectModalOpen(true);
                         }}
-                        className="w-full text-xs font-semibold py-2.5 rounded-xl border border-red-500/20 text-red-500 bg-red-500/10 hover:bg-red-500/15 transition-colors flex items-center justify-center gap-1.5"
+                        className="w-full text-xs font-semibold py-2.5 rounded-xl border border-red-500/25 text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 hover:border-red-500/40 transition-colors flex items-center justify-center gap-1.5"
                       >
-                        <XCircle size={13} /> Reject Claim with Reason...
+                        <XCircle size={13} className="text-red-500" /> Adjudicate & Issue Rejection...
                       </button>
                     </>
                   ) : claim.status === 'Rejected' ? (
-                    <div className="p-4 rounded-xl text-center space-y-2 bg-red-500/[0.04] border border-red-500/20">
-                      <XCircle size={22} className="mx-auto text-red-500" />
-                      <p className={`text-xs font-bold text-red-500`}>Claim Rejected</p>
-                      <p className={`text-[11px] ${TEXT_SUB}`}>Reason recorded and participant notified.</p>
+                    <div className={`p-4 rounded-xl text-center space-y-2 border ${
+                      isLight ? 'bg-gray-50/80 border-gray-200' : 'bg-white/[0.02] border-white/10'
+                    }`}>
+                      <div className="w-8 h-8 rounded-full bg-slate-500/10 text-slate-700 dark:text-slate-300 flex items-center justify-center mx-auto border border-black/5 dark:border-white/10">
+                        <XCircle size={18} className="text-red-500" />
+                      </div>
+                      <p className={`text-xs font-bold ${TEXT_MAIN}`}>Claim Adjudication: Disallowed</p>
+                      <p className={`text-[11px] ${TEXT_MUTED}`}>Formal notice issued with 14-day statutory appeal window.</p>
                       <button
                         onClick={() => setViewDecisionLetterModalOpen(true)}
-                        className="w-full mt-2 inline-flex items-center justify-center gap-1 text-[11px] font-semibold text-red-600 dark:text-red-400 py-1.5 px-3 rounded-lg bg-red-500/10 hover:bg-red-500/20 transition-colors"
+                        className={`w-full mt-2 inline-flex items-center justify-center gap-1 text-[11px] font-semibold py-1.5 px-3 rounded-lg border transition-colors ${
+                          isLight
+                            ? 'border-gray-200 text-gray-800 bg-white hover:bg-gray-100 shadow-xs'
+                            : 'border-white/10 text-white bg-white/5 hover:bg-white/10'
+                        }`}
                       >
                         <FileText size={11} /> View Decision Letter
                       </button>
                       <div>
                         <button
                           onClick={handleReopenClaim}
-                          className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-red-600 dark:text-red-400 hover:underline"
+                          className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-gray-500 dark:text-gray-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:underline"
                         >
                           <RefreshCw size={10} /> Re-open Claim
                         </button>
@@ -1657,18 +1748,18 @@ export default function ClaimDetailPage({ params }: Props) {
               {/* Header with Title & Action Tabs */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b" style={{ borderColor: BORDER }}>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-500/15 text-red-500 flex items-center justify-center border border-red-500/30 shrink-0">
-                    <AlertOctagon size={22} />
+                  <div className="w-10 h-10 rounded-xl bg-slate-500/10 text-slate-700 dark:text-slate-200 flex items-center justify-center border border-slate-500/20 shrink-0">
+                    <Scale size={20} />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className={`text-base font-bold ${TEXT_MAIN}`}>Adjudicate Claim: Issue Formal Rejection</h3>
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-red-500/15 text-red-500 border border-red-500/20">
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-black/5 dark:bg-white/10 text-gray-700 dark:text-gray-300 border border-black/10 dark:border-white/10">
                         {claim.id}
                       </span>
                     </div>
                     <p className={`text-xs mt-0.5 ${TEXT_MUTED}`}>
-                      Participant: <span className="font-semibold text-red-500">{claim.participantName}</span> · Claimed: £{claim.amountClaimed.toLocaleString()} · Peril: {claim.type}
+                      Participant: <span className={`font-semibold ${TEXT_MAIN}`}>{claim.participantName}</span> · Claimed: £{claim.amountClaimed.toLocaleString()} · Peril: {claim.type}
                     </p>
                   </div>
                 </div>
@@ -1744,56 +1835,78 @@ export default function ClaimDetailPage({ params }: Props) {
                     </span>
                   </div>
 
-                  {/* Step 1: Policy Grounds Selector */}
+                  {/* Step 1: Policy Grounds Selector (Multi-Select) */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className={`text-xs font-bold uppercase tracking-wider ${TEXT_MUTED}`}>
-                        1. Select Reason for Rejection:
-                      </label>
-                      <span className="text-[11px] text-rose-500 font-semibold">
-                        Select contractual ground
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <label className={`text-xs font-bold uppercase tracking-wider ${TEXT_MUTED}`}>
+                          1. Select Rejection Grounds (Multi-Select):
+                        </label>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          {selectedRejectionPresets.length} selected
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={handleSelectAllRejectionPresets}
+                          className="text-[11px] text-gray-500 dark:text-gray-400 hover:text-emerald-500 font-medium"
+                        >
+                          Select All
+                        </button>
+                        <span className="text-gray-300 dark:text-white/20">·</span>
+                        <button
+                          type="button"
+                          onClick={handleClearRejectionPresets}
+                          className="text-[11px] text-gray-500 dark:text-gray-400 hover:text-red-500 font-medium"
+                        >
+                          Clear
+                        </button>
+                      </div>
                     </div>
-                    <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+
+                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
                       {REJECTION_PRESETS.map((preset) => {
-                        const isSelected = rejectionReasonPreset === preset.id;
+                        const isSelected = selectedRejectionPresets.includes(preset.id);
                         return (
-                          <label
+                          <div
                             key={preset.id}
+                            onClick={() => handleToggleRejectionPreset(preset.id)}
                             className={`flex items-start gap-3 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
                               isSelected
                                 ? isLight
-                                  ? 'border-rose-400 bg-rose-50/70 shadow-xs ring-1 ring-rose-400/40'
-                                  : 'border-rose-500/60 bg-rose-500/[0.08] shadow-xs ring-1 ring-rose-500/40'
+                                  ? 'border-gray-900 bg-gray-50 shadow-xs ring-1 ring-gray-900/10'
+                                  : 'border-white/40 bg-white/[0.07] shadow-xs ring-1 ring-white/15'
                                 : isLight
-                                  ? 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                                  : 'border-white/10 hover:border-white/18 hover:bg-white/[0.03]'
+                                  ? 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'
+                                  : 'border-white/10 hover:border-white/20 hover:bg-white/[0.02]'
                             }`}
                           >
-                            <input
-                              type="radio"
-                              name="rejectionReasonPreset"
-                              checked={isSelected}
-                              onChange={() => {
-                                setRejectionReasonPreset(preset.id);
-                                if (preset.id !== 'custom') {
-                                  setCustomRejectionText(preset.text);
-                                  setRejectionClauseInput(preset.clause);
-                                }
-                              }}
-                              className="mt-0.5 accent-rose-500"
-                            />
+                            <div className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center shrink-0 transition-all ${
+                              isSelected
+                                ? isLight
+                                  ? 'bg-gray-900 text-white'
+                                  : 'bg-[#00c685] text-black font-bold'
+                                : 'border border-gray-300 dark:border-white/20 bg-transparent'
+                            }`}>
+                              {isSelected && <Check size={11} strokeWidth={3} />}
+                            </div>
+
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between gap-2">
-                                <p className={`font-semibold ${isSelected ? (isLight ? 'text-rose-800' : 'text-rose-200') : TEXT_MAIN}`}>
+                                <p className={`font-semibold ${isSelected ? (isLight ? 'text-gray-950 font-bold' : 'text-white font-bold') : TEXT_MAIN}`}>
                                   {preset.label}
                                 </p>
-                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 ${isLight ? 'bg-rose-100 text-rose-700' : 'bg-rose-500/20 text-rose-300'}`}>
+                                <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-md shrink-0 border ${
+                                  isLight
+                                    ? 'bg-gray-100 text-gray-700 border-gray-200'
+                                    : 'bg-white/10 text-gray-300 border-white/10'
+                                }`}>
                                   {preset.badge}
                                 </span>
                               </div>
                               {preset.clause && (
-                                <p className={`text-[10px] mt-0.5 font-mono font-medium ${isLight ? 'text-rose-600' : 'text-rose-400/90'}`}>
+                                <p className={`text-[10px] mt-0.5 font-mono font-medium ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
                                   {preset.clause}
                                 </p>
                               )}
@@ -1803,7 +1916,7 @@ export default function ClaimDetailPage({ params }: Props) {
                                 </p>
                               )}
                             </div>
-                          </label>
+                          </div>
                         );
                       })}
                     </div>
@@ -1814,16 +1927,19 @@ export default function ClaimDetailPage({ params }: Props) {
                     <div>
                       <div className="flex items-center justify-between mb-1">
                         <label className={`text-xs font-bold uppercase tracking-wider ${TEXT_MUTED}`}>
-                          2. Applicable Policy Clause Reference:
+                          2. Applicable Policy Clause Reference(s):
                         </label>
                         <span className={`text-[11px] ${TEXT_MUTED}`}>Cited in formal notice</span>
                       </div>
                       <input
                         type="text"
                         value={rejectionClauseInput}
-                        onChange={e => setRejectionClauseInput(e.target.value)}
-                        placeholder="e.g. Clause 4.2 — Certificate Excess & Deductibles"
-                        className={`w-full px-3.5 py-2 rounded-xl text-xs border font-mono outline-none transition-all focus:ring-2 focus:ring-rose-400/40 focus:border-rose-400/60 ${
+                        onChange={e => {
+                          setRejectionClauseInput(e.target.value);
+                          setIsClauseCustomized(true);
+                        }}
+                        placeholder="e.g. Clause 4.2 — Certificate Excess & Deductibles ; Clause 5.1 — Wear & Tear"
+                        className={`w-full px-3.5 py-2 rounded-xl text-xs border font-mono outline-none transition-all focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50 ${
                           isLight
                             ? 'border-gray-200 text-gray-800 bg-white placeholder:text-gray-400'
                             : 'border-white/10 text-gray-100 bg-white/[0.03] placeholder:text-gray-500'
@@ -1833,23 +1949,37 @@ export default function ClaimDetailPage({ params }: Props) {
 
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className={`text-xs font-bold uppercase tracking-wider ${TEXT_MUTED}`}>
-                          3. Written Justification to {claim.participantName}:
-                        </label>
+                        <div className="flex items-center gap-2">
+                          <label className={`text-xs font-bold uppercase tracking-wider ${TEXT_MUTED}`}>
+                            3. Written Justification to {claim.participantName}:
+                          </label>
+                          {(isTextCustomized || isClauseCustomized) && (
+                            <button
+                              type="button"
+                              onClick={handleResetRejectionAuto}
+                              className="text-[10px] text-gray-500 dark:text-gray-400 hover:text-emerald-500 flex items-center gap-1 font-medium"
+                            >
+                              <RefreshCw size={10} /> Reset to Auto-Generated
+                            </button>
+                          )}
+                        </div>
                         <button
                           type="button"
                           onClick={() => setRejectionActiveTab('preview')}
-                          className="text-[11px] text-rose-500 hover:underline flex items-center gap-1 font-semibold"
+                          className="text-[11px] text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-semibold"
                         >
                           <Eye size={12} /> Preview in Official Letterhead
                         </button>
                       </div>
                       <textarea
-                        rows={3}
-                        value={customRejectionText || REJECTION_PRESETS.find(p => p.id === rejectionReasonPreset)?.text || ''}
-                        onChange={e => setCustomRejectionText(e.target.value)}
-                        placeholder="Specify exact excess calculations, surveyor citations, and policy schedule disclaimers..."
-                        className={`w-full px-3.5 py-2.5 rounded-xl text-xs border resize-none leading-relaxed outline-none transition-all focus:ring-2 focus:ring-rose-400/40 focus:border-rose-400/60 ${
+                        rows={4}
+                        value={customRejectionText}
+                        onChange={e => {
+                          setCustomRejectionText(e.target.value);
+                          setIsTextCustomized(true);
+                        }}
+                        placeholder="Detail the applicable contractual grounds, surveyor citations, and policy excess calculations..."
+                        className={`w-full px-3.5 py-2.5 rounded-xl text-xs border resize-none leading-relaxed outline-none transition-all focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50 ${
                           isLight
                             ? 'border-gray-200 text-gray-800 bg-white placeholder:text-gray-400'
                             : 'border-white/10 text-gray-100 bg-white/[0.03] placeholder:text-gray-500'
@@ -1866,7 +1996,7 @@ export default function ClaimDetailPage({ params }: Props) {
                           type="checkbox"
                           checked={includeAppealSchedule}
                           onChange={e => setIncludeAppealSchedule(e.target.checked)}
-                          className="rounded accent-rose-500"
+                          className="rounded accent-[#00c685]"
                         />
                         <span className={TEXT_SUB}>Include 14-day statutory participant appeal schedule</span>
                       </label>
@@ -1875,20 +2005,20 @@ export default function ClaimDetailPage({ params }: Props) {
                           type="checkbox"
                           checked={notifyParticipantRejection}
                           onChange={e => setNotifyParticipantRejection(e.target.checked)}
-                          className="rounded accent-rose-500"
+                          className="rounded accent-[#00c685]"
                         />
                         <span className={TEXT_SUB}>Generate PDF Notice in documents & send email/SMS</span>
                       </label>
                     </div>
 
-                    {/* Sign-off Card */}
+                    {/* Sign-off Card (Clean Neutral Enterprise Styling) */}
                     <label
                       className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer text-xs select-none transition-all ${
                         rejectionSubmitAttempted && !complianceConfirmed
-                          ? 'border-rose-500 bg-rose-500/10 ring-2 ring-rose-500/30'
+                          ? 'border-red-500 bg-red-500/10 ring-2 ring-red-500/30'
                           : isLight
-                            ? 'border-rose-200 bg-rose-50/60'
-                            : 'border-rose-500/20 bg-rose-500/[0.05]'
+                            ? 'border-gray-200 bg-gray-50 hover:bg-gray-100/70'
+                            : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.05]'
                       }`}
                     >
                       <input
@@ -1898,17 +2028,17 @@ export default function ClaimDetailPage({ params }: Props) {
                           setComplianceConfirmed(e.target.checked);
                           if (e.target.checked) setRejectionSubmitAttempted(false);
                         }}
-                        className="mt-0.5 rounded accent-rose-500"
+                        className="mt-0.5 rounded accent-[#00c685]"
                       />
                       <div className="space-y-0.5">
-                        <p className={`text-[11px] leading-relaxed font-semibold ${isLight ? 'text-rose-900' : 'text-rose-200'}`}>
+                        <p className={`text-[11px] leading-relaxed font-semibold ${TEXT_MAIN}`}>
                           Mandatory Adjudication Declaration:
                         </p>
-                        <p className={`text-[11px] leading-relaxed ${isLight ? 'text-rose-700' : 'text-rose-300/80'}`}>
+                        <p className={`text-[11px] leading-relaxed ${TEXT_MUTED}`}>
                           I confirm this rejection has been substantiated against Certificate Terms, Policy Excess parameters, and Shariah Mutual Pool Governance rules.
                         </p>
                         {rejectionSubmitAttempted && !complianceConfirmed && (
-                          <p className="text-[11px] font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1 pt-1">
+                          <p className="text-[11px] font-bold text-red-600 dark:text-red-400 flex items-center gap-1 pt-1">
                             <AlertCircle size={12} /> Please tick this box to authorise rejection.
                           </p>
                         )}
@@ -1948,9 +2078,9 @@ export default function ClaimDetailPage({ params }: Props) {
                       </button>
                       <button
                         type="submit"
-                        className="px-5 py-2 rounded-xl text-xs font-bold text-white transition-all shadow-sm flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 active:scale-[0.98]"
+                        className="px-5 py-2 rounded-xl text-xs font-bold text-white transition-all shadow-sm flex items-center gap-1.5 active:scale-[0.98] bg-red-600 hover:bg-red-700 shadow-red-600/20"
                       >
-                        <AlertOctagon size={13} /> Confirm Rejection & Issue Notice
+                        <AlertOctagon size={13} /> Authorise Rejection ({selectedRejectionPresets.length} Grounds)
                       </button>
                     </div>
                   </div>
@@ -2006,7 +2136,7 @@ export default function ClaimDetailPage({ params }: Props) {
                     </div>
 
                     {/* Subject */}
-                    <div className="font-sans font-bold text-sm text-red-600 dark:text-red-400 border-l-4 border-red-500 pl-3 py-0.5">
+                    <div className="font-sans font-bold text-sm text-gray-900 dark:text-gray-100 border-l-4 border-slate-700 dark:border-slate-300 pl-3 py-0.5">
                       FORMAL NOTICE OF CLAIM DISALLOWANCE — CLAIM {claim.id}
                     </div>
 
@@ -2032,21 +2162,21 @@ export default function ClaimDetailPage({ params }: Props) {
                           <span className="text-gray-500">Mandatory Certificate Policy Excess:</span>
                           <span className="font-bold">£300.00</span>
                         </div>
-                        <div className="flex justify-between border-t pt-1 font-bold text-red-600 dark:text-red-400" style={{ borderColor: isLight ? '#e5e7eb' : 'rgba(255,255,255,0.08)' }}>
+                        <div className="flex justify-between border-t pt-1 font-bold text-gray-900 dark:text-gray-100" style={{ borderColor: isLight ? '#e5e7eb' : 'rgba(255,255,255,0.08)' }}>
                           <span>Assessed Pool Disbursement:</span>
-                          <span>£0.00</span>
+                          <span>£0.00 (Zero Disbursement)</span>
                         </div>
                       </div>
 
-                      {/* Reason & Clause citations */}
-                      <div className="space-y-1.5 p-3 rounded-xl bg-red-500/[0.04] border border-red-500/20">
-                        <p className="font-bold text-red-600 dark:text-red-400">Grounds for Disallowance & Applicable Policy Clause:</p>
+                      {/* Reason & Clause citations (Clean Neutral Card) */}
+                      <div className="space-y-2 p-3.5 rounded-xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02]">
+                        <p className="font-bold text-gray-900 dark:text-gray-100">Contractual Grounds for Disallowance & Cited Clauses:</p>
                         <p className="font-mono text-[11px] font-semibold text-gray-700 dark:text-gray-300">
                           {rejectionClauseInput || 'Clause 4.2 — Certificate Excess & Deductibles'}
                         </p>
-                        <p className="text-gray-600 dark:text-gray-400 text-xs">
-                          {customRejectionText || REJECTION_PRESETS.find(p => p.id === rejectionReasonPreset)?.text || 'Claim falls below certificate excess threshold.'}
-                        </p>
+                        <div className="text-gray-600 dark:text-gray-400 text-xs whitespace-pre-line leading-relaxed">
+                          {customRejectionText || 'Claim falls below certificate excess threshold.'}
+                        </div>
                       </div>
 
                       {includeAppealSchedule && (
@@ -2092,7 +2222,7 @@ export default function ClaimDetailPage({ params }: Props) {
                       <button
                         type="button"
                         onClick={handleConfirmRejection}
-                        className="px-5 py-2 rounded-xl text-xs font-bold text-white transition-all shadow-sm flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 active:scale-[0.98]"
+                        className="px-5 py-2 rounded-xl text-xs font-bold text-white transition-all shadow-sm flex items-center gap-1.5 active:scale-[0.98] bg-red-600 hover:bg-red-700 shadow-red-600/20"
                       >
                         <AlertOctagon size={13} /> Confirm Rejection & Issue Notice
                       </button>
@@ -2130,8 +2260,8 @@ export default function ClaimDetailPage({ params }: Props) {
             >
               <div className="flex items-start justify-between pb-3 border-b" style={{ borderColor: BORDER }}>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-500/15 text-red-500 flex items-center justify-center border border-red-500/30">
-                    <FileText size={22} />
+                  <div className="w-10 h-10 rounded-xl bg-slate-500/10 text-slate-700 dark:text-slate-200 flex items-center justify-center border border-slate-500/20">
+                    <FileText size={20} />
                   </div>
                   <div>
                     <h3 className={`text-base font-bold ${TEXT_MAIN}`}>Formal Notice of Claim Disallowance</h3>
@@ -2184,7 +2314,7 @@ export default function ClaimDetailPage({ params }: Props) {
                 </div>
 
                 {/* Subject */}
-                <div className="font-sans font-bold text-sm text-red-600 dark:text-red-400 border-l-4 border-red-500 pl-3 py-0.5">
+                <div className="font-sans font-bold text-sm text-gray-900 dark:text-gray-100 border-l-4 border-slate-700 dark:border-slate-300 pl-3 py-0.5">
                   FORMAL NOTICE OF CLAIM DISALLOWANCE — CLAIM {claim.id}
                 </div>
 
@@ -2212,21 +2342,21 @@ export default function ClaimDetailPage({ params }: Props) {
                     </div>
                     <div className="flex justify-between border-t pt-1.5" style={{ borderColor: isLight ? '#e5e7eb' : 'rgba(255,255,255,0.08)' }}>
                       <span className="text-gray-500">Payable Settlement:</span>
-                      <span className="font-bold text-red-500">£0.00 (Disallowed)</span>
+                      <span className="font-bold text-gray-900 dark:text-gray-100">£0.00 (Disallowed)</span>
                     </div>
                   </div>
 
-                  {/* Adjudication Clause & Grounds */}
-                  <div className="p-3.5 rounded-xl border border-red-500/20 bg-red-500/[0.03] space-y-1.5 font-sans">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-red-500">
-                      Governing Policy Schedule Reference:
+                  {/* Adjudication Clause & Grounds (Clean Neutral Styling) */}
+                  <div className="p-3.5 rounded-xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] space-y-2 font-sans">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                      Governing Policy Schedule Reference(s):
                     </p>
-                    <p className="font-mono text-xs font-semibold text-red-600 dark:text-red-300">
+                    <p className="font-mono text-xs font-semibold text-gray-900 dark:text-gray-100">
                       {claim.rejectionClause || 'Clause 4.2 — Certificate Excess & Deductibles (£300 Minimum)'}
                     </p>
-                    <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300">
+                    <div className="text-xs leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-line">
                       {claim.rejectionReason || 'Total assessed repair costs fall below the mandatory Certificate Policy Excess threshold of £300.00.'}
-                    </p>
+                    </div>
                   </div>
 
                   {/* Statutory Appeal Notice */}
