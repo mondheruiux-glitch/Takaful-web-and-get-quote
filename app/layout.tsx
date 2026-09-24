@@ -40,7 +40,7 @@ const instrumentSerif = Instrument_Serif({
 
 export const viewport: Viewport = {
   themeColor: '#00c685',
-  colorScheme: 'dark',
+  colorScheme: 'light dark',
   width: 'device-width',
   initialScale: 1,
 };
@@ -83,8 +83,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${barlow.variable} ${instrumentSerif.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${barlow.variable} ${instrumentSerif.variable}`}>
       <head>
+        {/* Theme: apply .dark class before paint to prevent flash */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('takaful_dashboard_theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})();` }} />
+
         {/* Preload critical LCP background images */}
         <link rel="preload" href="/home-hero/hero-bg.webp" as="image" type="image/webp" />
         <link rel="preload" href="/home-hero/bg-image-2.webp" as="image" type="image/webp" />

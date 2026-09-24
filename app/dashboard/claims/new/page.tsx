@@ -635,14 +635,23 @@ function Step4({ d, setD, errors, isLight }: { d: ClaimDraft; setD: (u: Partial<
                   <div>
                     <LightFieldLabel isLight={isLight}>Category</LightFieldLabel>
                     <Select value={item.category} onValueChange={v => updateItem(item.id, { category: v })}>
-                      <SelectTrigger className={`w-full rounded-xl text-sm h-10 ${isLight ? 'border-black/[0.08] bg-white text-black' : 'border-white/[0.08] bg-white/[0.04] text-white'}`}>
+                      <SelectTrigger className={`w-full rounded-xl text-sm h-10 transition-colors ${
+                        isLight
+                          ? 'border-black/[0.12] bg-white text-gray-900 placeholder:text-gray-400 shadow-sm hover:border-black/25'
+                          : 'border-white/[0.08] bg-white/[0.04] text-white placeholder:text-white/40 hover:border-white/20'
+                      }`}>
                         <SelectValue placeholder="Select category…" />
                       </SelectTrigger>
-                      <SelectContent className={isLight ? 'bg-white border-black/10' : 'bg-[#061812] border-white/10 text-white'}>
+                      <SelectContent className={isLight ? 'bg-white border-black/10 text-gray-900 shadow-2xl rounded-xl p-1.5' : 'bg-[#061812] border-white/10 text-white shadow-2xl rounded-xl p-1.5'}>
                         {ITEM_CATS.map(c => {
                           const Icon = ITEM_CAT_ICONS[c] || Package;
                           return (
-                            <SelectItem key={c} value={c} icon={<Icon className="w-3.5 h-3.5 text-[#00c685]" />}>
+                            <SelectItem
+                              key={c}
+                              value={c}
+                              icon={<Icon className="w-4 h-4 text-[#00c685]" />}
+                              className={isLight ? 'text-gray-800 hover:text-black hover:bg-black/[0.05] data-[highlighted]:text-black data-[highlighted]:bg-black/[0.05]' : 'text-gray-200 hover:text-white hover:bg-white/[0.08] data-[highlighted]:text-white data-[highlighted]:bg-white/[0.08]'}
+                            >
                               {c}
                             </SelectItem>
                           );

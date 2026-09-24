@@ -4,20 +4,39 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Boxes } from "@/components/ui/background-boxes";
 import { PillBadge } from "@/components/ui/pill-badge";
-import DotCard from "@/components/ui/moving-dot-card";
+import StatsBento from "@/components/ui/stats-bento";
 
 // ── Stats data ────────────────────────────────────────────────────────────────
-const stats = [
-  { target: 19, suffix: " Billion", label: "Muslims Worldwide" },
-  { target: 2, prefix: "$", suffix: "+ Trillion", label: "Islamic Finance Market" },
-  { textValue: "Millions", label: "Seeking Ethical Alternatives" },
-  { target: 24, prefix: "$", suffix: "M", label: "Shared Surplus" },
-];
+const homePrimaryStat = {
+  tag: "Muslims Worldwide",
+  value: "1.9 Billion",
+  description:
+    "A rapidly growing global community seeking ethical, interest-free alternatives to conventional insurance.",
+};
+
+const homeSecondaryStat = {
+  header: "Islamic Finance Market",
+  sub: "$2+ Trillion",
+  chartHeights: [20, 32, 45, 38, 62, 54, 76, 68, 88, 98, 110],
+};
+
+// Switched: Left box is Shared Surplus
+const homeLeftStat = {
+  header: "Shared Surplus",
+  sub: "$2.4M",
+  icon: "$",
+};
+
+// Switched: Right box is Seeking Ethical Alternatives
+const homeRightStat = {
+  header: "Seeking Ethical Alternatives",
+  sub: "Millions",
+};
 
 // ── Main section ──────────────────────────────────────────────────────────────
 export default function FeaturedSectionStats() {
   return (
-    <section className="w-full bg-[#0a1a14] text-white py-24 relative overflow-hidden">
+    <section className="dark w-full bg-[#0a1a14] text-white py-24 relative overflow-hidden">
       {/* Radial fade mask — pointer-events-none so boxes underneath still get hover */}
       <div className="absolute inset-0 w-full h-full bg-[#0a1a14] z-20 [mask-image:radial-gradient(transparent,white)] pointer-events-none" />
 
@@ -53,27 +72,21 @@ export default function FeaturedSectionStats() {
           </span>
         </motion.h3>
 
-        {/* Stats grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-16 pointer-events-auto">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              <DotCard
-                target={stat.target}
-                prefix={stat.prefix}
-                suffix={stat.suffix}
-                textValue={stat.textValue}
-                label={stat.label}
-                duration={3500}
-              />
-            </motion.div>
-          ))}
-        </div>
+        {/* Stats Bento Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true, margin: "-50px" }}
+          className="mt-16 pointer-events-auto"
+        >
+          <StatsBento
+            primaryStat={homePrimaryStat}
+            secondaryStat={homeSecondaryStat}
+            leftStat={homeLeftStat}
+            rightStat={homeRightStat}
+          />
+        </motion.div>
       </div>
     </section>
   );

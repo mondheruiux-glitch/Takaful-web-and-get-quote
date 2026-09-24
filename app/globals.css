@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* ─── Tailwind v4: Use .dark class for dark mode (not OS preference) ─────── */
+@variant dark (&:where(.dark, .dark *));
+
 /* ─── Dashboard card shadow — lighter than Tailwind default shadow-sm ─────── */
 @layer utilities {
   .shadow-sm {

@@ -24,7 +24,7 @@ const HoverFooter = dynamic(
   () => import('@/components/ui/hover-footer-demo').then(m => ({ default: m.HoverFooter })),
   { ssr: false }
 );
-import DotCard from '@/components/ui/moving-dot-card';
+import StatsBento from '@/components/ui/stats-bento';
 
 /* ─── Design tokens ─────────────────────────────────────────────────────── */
 const GREEN = '#00c685';
@@ -592,16 +592,33 @@ function MissionVision() {
 }
 
 /* ─── Impact Numbers ────────────────────────────────────────────────────── */
-const impactStats = [
-  { target: 50, suffix: 'K+', label: 'Homes Protected' },
-  { prefix: '£', target: 24, suffix: 'M', label: 'Surplus Returned' },
-  { textValue: '4.9 ★', label: 'Member Rating' },
-  { target: 48, suffix: 'hr', label: 'Avg. Claims Payout' },
-];
+const aboutPrimaryStat = {
+  tag: "Homes Protected",
+  value: "50K+",
+  description:
+    "Families across the UK secured by mutual solidarity and transparent community protection.",
+};
+
+const aboutSecondaryStat = {
+  header: "Surplus Returned",
+  sub: "£2.4M",
+  chartHeights: [15, 25, 35, 30, 50, 60, 75, 70, 85, 95, 110],
+};
+
+const aboutLeftStat = {
+  header: "Member Rating",
+  sub: "4.9 ★",
+  icon: "★",
+};
+
+const aboutRightStat = {
+  header: "Avg. Claims Payout",
+  sub: "48hr",
+};
 
 function ImpactNumbers() {
   return (
-    <section data-dark="true" className="w-full bg-[#0a1a14] text-white py-24 relative overflow-hidden">
+    <section data-dark="true" className="dark w-full bg-[#0a1a14] text-white py-24 relative overflow-hidden">
       <div className="absolute inset-0 w-full h-full bg-[#0a1a14] z-20 [mask-image:radial-gradient(transparent,white)] pointer-events-none" />
       <Boxes />
       <div className="max-w-6xl mx-auto px-6 md:px-10 relative z-30 pointer-events-none">
@@ -622,24 +639,20 @@ function ImpactNumbers() {
             Every figure represents a family who chose community over corporations.
           </span>
         </motion.h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-16 pointer-events-auto">
-          {impactStats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.1 }} viewport={{ once: true }}
-            >
-              <DotCard
-                target={stat.target}
-                prefix={stat.prefix}
-                suffix={stat.suffix}
-                textValue={stat.textValue}
-                label={stat.label}
-                duration={3000}
-              />
-            </motion.div>
-          ))}
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="mt-16 pointer-events-auto"
+        >
+          <StatsBento
+            primaryStat={aboutPrimaryStat}
+            secondaryStat={aboutSecondaryStat}
+            leftStat={aboutLeftStat}
+            rightStat={aboutRightStat}
+          />
+        </motion.div>
       </div>
     </section>
   );

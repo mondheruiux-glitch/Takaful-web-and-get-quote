@@ -415,6 +415,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       const savedTheme = localStorage.getItem('takaful_dashboard_theme') as ThemeMode;
       if (savedTheme && ['light', 'dark'].includes(savedTheme)) {
         setThemeState(savedTheme);
+        // Apply .dark class to <html> so Tailwind dark: variants & Radix portals work
+        document.documentElement.classList.toggle('dark', savedTheme === 'dark');
       }
     } catch {}
   }, []);
@@ -426,6 +428,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const setTheme = (t: ThemeMode) => {
     setThemeState(t);
+    // Apply .dark class to <html> so Tailwind dark: variants & Radix portals work
+    document.documentElement.classList.toggle('dark', t === 'dark');
     try { localStorage.setItem('takaful_dashboard_theme', t); } catch {}
   };
 

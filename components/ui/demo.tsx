@@ -47,3 +47,12 @@ export function MeteorsDemo() {
     </div>
   );
 }
+
+import StatsBento from "@/components/ui/stats-bento";
+
+export function StatsBentoDemo() {
+  return <StatsBento standalone />;
+}
+
+export default StatsBentoDemo;
+
