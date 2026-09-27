@@ -23,6 +23,7 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import { DashboardAlert } from '@/components/ui/dashboard-alert';
+import { OrderStatusCard } from '@/components/ui/order-status-card';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface UploadedFile {
@@ -1061,87 +1062,67 @@ function Step8({ d, setD, isLight }: { d: ClaimDraft; setD: (u: Partial<ClaimDra
   );
 }
 
-// ─── Claim Success ────────────────────────────────────────────────────────────
-function ClaimSuccess({ draft, claimId, isLight }: { draft: ClaimDraft; claimId: string; isLight: boolean }) {
+// ─── Claim Confirmation Pop-up Modal (OrderStatusCard) ─────────────────────────
+function ClaimSuccess({ draft, claimId }: { draft: ClaimDraft; claimId: string }) {
   const router = useRouter();
-  const now = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-
-  const TIMELINE = [
-    { label: 'Claim submitted', done: true },
-    { label: 'Initial review', done: false, note: 'Within 1 business day' },
-    { label: 'Assessment', done: false, note: 'Our team will assess your claim' },
-    { label: 'Decision', done: false, note: 'We will notify you of our decision' },
-    { label: 'Payment', done: false, note: 'If approved, payment within 5 business days' },
-  ];
+  const grossAmount = parseFloat(draft.estimatedAmount || '0');
+  const amountFormatted = isNaN(grossAmount) || grossAmount <= 0
+    ? 'To be assessed'
+    : `£${grossAmount.toLocaleString('en-GB', { minimumFractionDigits: 2 })}`;
 
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, ease }} className="space-y-8 py-4">
-      {/* Success header */}
-      <div className="text-center space-y-4">
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.15, type: 'spring', stiffness: 200, damping: 14 }}
-          className="w-20 h-20 rounded-full border-2 flex items-center justify-center mx-auto" style={{ background: `${GREEN}15`, borderColor: `${GREEN}40` }}>
-          <CheckCircle2 size={36} style={{ color: GREEN }} />
-        </motion.div>
-        <div>
-          <h2 className={`text-2xl font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>Your claim has been submitted</h2>
-          <p className={`text-sm mt-1.5 ${isLight ? 'text-black/50' : 'text-white/45'}`}>We've received your claim and our team will begin reviewing it shortly.</p>
-        </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-[#0a1a14]/80 backdrop-blur-sm">
+      {/* Matching portal ambient radial glow */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div className="absolute top-0 left-0 h-[80rem] w-[35rem] -translate-y-[21rem] -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,rgba(255,255,255,0.02)_0,rgba(255,255,255,0.01)_50%,transparent_80%)]" />
+        <div className="absolute top-0 left-0 h-[80rem] w-[15rem] [translate:5%_-50%] -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,198,133,0.04)_0,rgba(0,198,133,0.01)_80%,transparent_100%)]" />
+        <div className="bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,198,133,0.03)_0,transparent_100%)] absolute bottom-0 right-0 h-[60rem] w-[30rem] translate-y-[20%] rounded-full" />
       </div>
-
-      {/* Claim reference */}
-      <div className="rounded-2xl border p-5 text-center" style={{ background: isLight ? '#f0faf5' : '#061510', borderColor: `${GREEN}30` }}>
-        <p className={`text-[10px] font-bold tracking-widest uppercase mb-1.5 ${isLight ? 'text-black/40' : 'text-white/35'}`}>Claim Reference</p>
-        <p className="text-2xl font-bold font-mono" style={{ color: GREEN }}>{claimId}</p>
-        <p className={`text-xs mt-2 ${isLight ? 'text-black/45' : 'text-white/40'}`}>Submitted {now}</p>
-      </div>
-
-      <div className={`rounded-xl border divide-y ${isLight ? 'divide-black/05' : 'divide-white/05'}`} style={{ background: isLight ? '#fff' : '#0d2117', borderColor: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)' }}>
-        {[
-          ['Claim type', draft.claimType === 'Other' ? draft.customType : draft.claimType],
-          ['Estimated amount', draft.estimatedAmount ? `£${parseFloat(draft.estimatedAmount).toLocaleString()}` : '—'],
-          ['Status', 'Submitted'],
-        ].map(([k, v]) => (
-          <div key={k} className="flex justify-between px-4 py-3">
-            <span className={`text-xs ${isLight ? 'text-black/45' : 'text-white/40'}`}>{k}</span>
-            <span className={`text-xs font-semibold ${k === 'Status' ? 'text-blue-400' : isLight ? 'text-black/80' : 'text-white/80'}`}>{v}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Timeline */}
-      <div>
-        <p className={`text-xs font-bold uppercase tracking-wider mb-4 ${isLight ? 'text-black/40' : 'text-white/35'}`}>What happens next</p>
-        <div className="space-y-0">
-          {TIMELINE.map((step, i) => (
-            <div key={step.label} className="flex items-start gap-3">
-              <div className="flex flex-col items-center">
-                <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 ${step.done ? '' : ''}`}
-                  style={{ background: step.done ? GREEN : 'transparent', borderColor: step.done ? GREEN : isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.12)' }}>
-                  {step.done ? <Check size={13} className="text-white" /> : <div className="w-2 h-2 rounded-full" style={{ background: isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.15)' }} />}
-                </div>
-                {i < TIMELINE.length - 1 && <div className="w-px h-8 mt-1" style={{ background: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }} />}
-              </div>
-              <div className="pb-4">
-                <p className={`text-sm font-semibold ${step.done ? '' : isLight ? 'text-black/55' : 'text-white/45'}`} style={step.done ? { color: GREEN } : undefined}>{step.label}</p>
-                {step.note && <p className={`text-xs mt-0.5 ${isLight ? 'text-black/35' : 'text-white/30'}`}>{step.note}</p>}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="space-y-2.5">
-        <Link href={`/dashboard/claims/CLM-2024-0891`}
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors" style={{ background: GREEN }}>
-          <Eye size={15} /> View Claim
-        </Link>
-        <Link href="/dashboard/claims"
-          className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold border transition-colors ${isLight ? 'border-black/[0.06] text-black/70 hover:bg-black/[0.04]' : 'border-white/[0.05] text-white/70 hover:bg-white/[0.04]'}`}>
-          <FileText size={15} /> Go to My Claims
-        </Link>
-      </div>
-    </motion.div>
+      <OrderStatusCard
+        title="Claim Registered"
+        description="Your claim has been submitted to the mutual protection pool."
+        onClose={() => router.push('/dashboard/claims')}
+        onContinue={() => router.push('/dashboard/claims')}
+        continueText="Continue to My Claims"
+        timelineItems={[
+          {
+            icon: <CheckCircle2 className="h-4 w-4 text-[#00c685]" />,
+            title: "Claim Submitted to Mutual Pool",
+            details: `Allocated to Triage · Ref: ${claimId}`,
+            statusChange: {
+              from: "Draft",
+              to: "Under Review",
+            },
+            subItems: [
+              {
+                icon: <ShieldCheck className="h-3.5 w-3.5 text-[#00c685]" />,
+                text: "Protected under Takaful mutual fund",
+              },
+              {
+                icon: <FileText className="h-3.5 w-3.5 text-white/50" />,
+                text: `${draft.claimType || "Incident"} · Est. ${amountFormatted}`,
+              },
+            ],
+          },
+          {
+            icon: <Clock className="h-4 w-4 text-amber-400" />,
+            title: "Initial Handler Review",
+            details: "Claims triage specialist assigned within 1 business day.",
+            subItems: [
+              {
+                icon: <Phone className="h-3.5 w-3.5 text-white/50" />,
+                text: "SMS and email confirmation sent to your registered contact",
+              },
+            ],
+          },
+          {
+            icon: <Zap className="h-4 w-4 text-[#00c685]" />,
+            title: "Settlement & Direct Payout",
+            details: "Approved funds disbursed via BACS directly into your account.",
+          },
+        ]}
+      />
+    </div>
   );
 }
 
@@ -1220,10 +1201,8 @@ export default function NewClaimPage() {
 
   if (submitted) {
     return (
-      <div style={{ background: BG_PAGE }} className="min-h-screen transition-colors duration-200">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-          <ClaimSuccess draft={draft} claimId={claimId} isLight={isLight} />
-        </div>
+      <div style={{ background: BG_PAGE }} className="relative min-h-screen transition-colors duration-200 flex items-center justify-center p-4">
+        <ClaimSuccess draft={draft} claimId={claimId} />
       </div>
     );
   }
