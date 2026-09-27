@@ -313,22 +313,15 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
         )}
       </AnimatePresence>
 
-      {/* ── 1. Editorial Header ── */}
+      {/* ── 1. Header ── */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="space-y-4">
-        <div className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-[11px] font-semibold tracking-wide ${
-          isLight ? 'bg-gray-50 border-gray-200 text-gray-600' : 'bg-white/[0.04] border-white/[0.08] text-white/70'
-        }`}>
-          <span className="w-1.5 h-1.5 rounded-full bg-[#00c685]" />
-          Mutual Pool Funding
-        </div>
-
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5">
           <div>
             <h1 className="font-heading text-4xl sm:text-5xl font-normal tracking-[-0.02em] leading-[1.08]" style={{ color: TEXT_MAIN }}>
-              My Contributions
+              My Payments
             </h1>
             <p className="mt-2 text-base sm:text-lg leading-relaxed max-w-xl" style={{ color: TEXT_SUB }}>
-              Your regular monthly donations to the shared community pool under Islamic mutual solidarity.
+              You pay £38.50 a month to protect your home. Here's your full history.
             </p>
           </div>
 
@@ -339,7 +332,7 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
             }`}
           >
             <CreditCard size={15} />
-            Update Bank Mandate
+            Change Bank Account
           </button>
         </div>
       </motion.div>
@@ -359,7 +352,7 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
         )}
       </AnimatePresence>
 
-      {/* ── 2. Next Payment Highlight Card ── */}
+      {/* ── 2. Next Payment Card ── */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={1}>
         <div
           className="relative overflow-hidden rounded-3xl border transition-all duration-300"
@@ -368,11 +361,12 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
           <div className="p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
+                {/* Was: "Next Scheduled Contribution" + "Auto-Collection" */}
                 <span className="text-[11px] font-bold tracking-wider uppercase" style={{ color: TEXT_MUTED }}>
-                  Next Scheduled Contribution
+                  Next Payment
                 </span>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-[#00c685]">
-                  Auto-Collection
+                  Automatic
                 </span>
               </div>
               <div className="flex items-baseline gap-3">
@@ -380,11 +374,11 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
                   £38.50
                 </span>
                 <span className="text-sm font-medium" style={{ color: TEXT_SUB }}>
-                  due 1 August 2026
+                  on 1 August 2026
                 </span>
               </div>
               <p className="text-xs sm:text-sm leading-relaxed" style={{ color: TEXT_SUB }}>
-                Collected via Direct Debit from <span className="font-semibold" style={{ color: TEXT_MAIN }}>{mandate.bankName}</span> (•••• {mandate.last4}).
+                Taken automatically from <span className="font-semibold" style={{ color: TEXT_MAIN }}>{mandate.bankName}</span> (•••• {mandate.last4}).
               </p>
             </div>
 
@@ -402,43 +396,37 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
             </div>
           </div>
 
-          {/* Quick Metrics Bar */}
+          {/* Simplified Metrics Bar — was: "Total Contributed (YTD)" + "Successful Collections" */}
           <div className="px-6 sm:px-8 py-4 border-t flex flex-wrap items-center justify-between gap-4" style={{ borderColor: BORDER, background: BG_SUBTLE }}>
             <div className="flex items-center gap-6 text-xs">
               <div>
-                <span style={{ color: TEXT_MUTED }}>Total Contributed (YTD): </span>
+                <span style={{ color: TEXT_MUTED }}>You&apos;ve paid this year: </span>
                 <strong style={{ color: TEXT_MAIN }}>£231.00</strong>
               </div>
-              <div>
-                <span style={{ color: TEXT_MUTED }}>Successful Collections: </span>
-                <strong style={{ color: TEXT_MAIN }}>6 of 6</strong>
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00c685]" />
+                <span style={{ color: TEXT_MUTED }}>All payments received</span>
               </div>
-            </div>
-            <div className="text-[11px] font-medium" style={{ color: TEXT_MUTED }}>
-              Protected by UK Direct Debit Guarantee
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* ── 3. Contribution History (Simplified Timeline Cards) ── */}
+      {/* ── 3. Payment History — simplified: date, amount, status only ── */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2} className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold tracking-tight" style={{ color: TEXT_MAIN }}>
-              Contribution History
+              Payment History
             </h2>
             <p className="text-sm mt-0.5" style={{ color: TEXT_SUB }}>
-              Record of all past collections credited directly to the participant fund.
+              All your past payments, most recent first.
             </p>
           </div>
-          <span className="text-xs font-medium" style={{ color: TEXT_MUTED }}>
-            {PARTICIPANT_CONTRIBUTIONS.length} records
-          </span>
         </div>
 
         <div className="space-y-2.5">
-          {PARTICIPANT_CONTRIBUTIONS.map((c, i) => (
+          {PARTICIPANT_CONTRIBUTIONS.map((c) => (
             <div
               key={c.id}
               className={`flex items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl border transition-all ${
@@ -451,25 +439,21 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
                 }`}>
                   <CheckCircle2 size={18} />
                 </div>
+                {/* Show: month + year only. No ref IDs. */}
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-semibold truncate" style={{ color: TEXT_MAIN }}>
-                      {c.dueDate.replace(/^\d+\s/, '')} Contribution
-                    </p>
-                    <StatusBadge status={c.status} />
-                  </div>
-                  <p className="text-xs mt-0.5 truncate" style={{ color: TEXT_MUTED }}>
-                    Ref: <span className="font-mono">{c.id}</span> · Collected {c.collectedDate} via {c.method}
+                  <p className="text-sm font-semibold" style={{ color: TEXT_MAIN }}>
+                    {c.dueDate}
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: TEXT_MUTED }}>
+                    Direct Debit
                   </p>
                 </div>
               </div>
 
-              <div className="text-right shrink-0">
+              <div className="flex items-center gap-3 shrink-0">
+                <StatusBadge status={c.status} />
                 <p className="text-base font-bold" style={{ color: TEXT_MAIN }}>
                   £{c.amount.toFixed(2)}
-                </p>
-                <p className="text-[10px]" style={{ color: TEXT_MUTED }}>
-                  Credited to Pool
                 </p>
               </div>
             </div>
@@ -477,7 +461,7 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
         </div>
       </motion.div>
 
-      {/* ── 4. Shariah Tabarru' Principle Card ── */}
+      {/* ── 4. Simple explainer — replaces Tabarru wall of text ── */}
       <motion.div
         variants={fadeUp}
         initial="hidden"
@@ -491,11 +475,11 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
           <div className="flex items-center gap-2">
             <ShieldCheck size={16} className="text-[#00c685]" />
             <h4 className="text-sm font-bold tracking-tight" style={{ color: TEXT_MAIN }}>
-              The Tabarru&apos; (Mutual Donation) Commitment
+              Your money goes to people, not shareholders
             </h4>
           </div>
           <p className="text-xs sm:text-sm leading-relaxed" style={{ color: TEXT_SUB }}>
-            In traditional insurance, premiums become corporate revenue. Under Takaful, your £38.50 monthly contribution is a mutual gift into the participant fund. If fellow members suffer damage or loss, your donation helps rebuild their homes. Any year-end surplus belongs to you and other members—never retained as company profit.
+            When a member&apos;s home is damaged, the community pool pays to fix it. If money is left over at year end, it comes back to members — it&apos;s never kept as profit.
           </p>
         </div>
       </motion.div>
