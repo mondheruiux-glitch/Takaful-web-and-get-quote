@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { DashboardAlert } from '@/components/ui/dashboard-alert';
 import { OrderStatusCard } from '@/components/ui/order-status-card';
+import { Particles } from '@/components/ui/particles';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface UploadedFile {
@@ -1071,12 +1072,15 @@ function ClaimSuccess({ draft, claimId }: { draft: ClaimDraft; claimId: string }
     : `£${grossAmount.toLocaleString('en-GB', { minimumFractionDigits: 2 })}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-[#0a1a14]/80 backdrop-blur-sm">
-      {/* Matching portal ambient radial glow */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" style={{ background: '#0a1a14' }}>
+      {/* Portal background replicated inside modal */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute top-0 left-0 h-[80rem] w-[35rem] -translate-y-[21rem] -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,rgba(255,255,255,0.02)_0,rgba(255,255,255,0.01)_50%,transparent_80%)]" />
-        <div className="absolute top-0 left-0 h-[80rem] w-[15rem] [translate:5%_-50%] -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,198,133,0.04)_0,rgba(0,198,133,0.01)_80%,transparent_100%)]" />
-        <div className="bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,198,133,0.03)_0,transparent_100%)] absolute bottom-0 right-0 h-[60rem] w-[30rem] translate-y-[20%] rounded-full" />
+        <Particles color="#00c685" quantity={120} ease={20} className="absolute inset-0" />
+        <div className="absolute inset-0 isolate -z-10 contain-strict">
+          <div className="absolute top-0 left-0 h-[80rem] w-[35rem] -translate-y-[21rem] -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,rgba(255,255,255,0.02)_0,rgba(255,255,255,0.01)_50%,transparent_80%)]" />
+          <div className="absolute top-0 left-0 h-[80rem] w-[15rem] [translate:5%_-50%] -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,198,133,0.04)_0,rgba(0,198,133,0.01)_80%,transparent_100%)]" />
+          <div className="bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,198,133,0.03)_0,transparent_100%)] absolute bottom-0 right-0 h-[60rem] w-[30rem] translate-y-[20%] rounded-full" />
+        </div>
       </div>
       <OrderStatusCard
         title="Claim Registered"

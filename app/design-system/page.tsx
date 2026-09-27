@@ -3,10 +3,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { OrderStatusCard } from '@/components/ui/order-status-card';
+import { FeedbackWidget } from '@/components/ui/feedback-widget';
 import {
   Home, Building, Layers, Trees, Building2, Gem, Grid, Minus, Flame,
   Zap, Droplets, Wrench, CircleSlash, Clock, Lock, Key, Shield, Laptop,
-  Plus, Check, ChevronDown, Scale, ShieldCheck, CreditCard, FileText,
+  Plus, Check, CheckCircle2, ChevronDown, Scale, ShieldCheck, CreditCard, FileText,
   TrendingUp, TrendingDown, Bell, AlertTriangle, Activity,
   Sparkles, Package, ArrowLeft, Tv, MapPin, Calendar, Users,
   LayoutGrid, Percent, Expand, User, Briefcase, PoundSterling,
@@ -659,6 +661,7 @@ const NAV = [
   { id:'divider', label:'Divider' }, { id:'labels', label:'Labels' },
   { id:'notifications', label:'Notifications' }, { id:'table', label:'Table' },
   { id:'buttons', label:'Buttons' }, { id:'alerts', label:'Alerts' },
+  { id:'claim-modal', label:'Claim Modal' }, { id:'feedback-widget', label:'Feedback Widget' }, { id:'claim-dropdowns', label:'Claim Dropdowns' },
 ];
 
 export default function DesignSystemPage() {
@@ -1696,6 +1699,98 @@ export default function DesignSystemPage() {
                 <p className="text-xs mt-0.5" style={{ color: isLight ? '#B91C1C' : 'rgba(255,255,255,0.5)' }}>Your August contribution of £38.50 could not be collected. Please update your payment method.</p>
               </div>
             </div>
+          </div>
+        </DSSection>
+
+        {/* CLAIM CONFIRMATION MODAL */}
+        <DSSection id="claim-modal" title="Claim Confirmation Modal" desc="OrderStatusCard — shown after a successful claim submission. Displays a timeline of next steps." isLight={isLight}>
+          <div className="flex justify-center">
+            <OrderStatusCard
+              title="Claim Registered"
+              description="Your claim has been submitted to the mutual protection pool."
+              continueText="Continue to My Claims"
+              onContinue={() => {}}
+              onClose={() => {}}
+              timelineItems={[
+                {
+                  icon: <CheckCircle2 size={16} className="text-[#00c685]" />,
+                  title: "Claim Submitted to Mutual Pool",
+                  details: "Allocated to Triage · Ref: TK-CLM-0091",
+                  statusChange: { from: "Draft", to: "Under Review" },
+                  subItems: [
+                    { icon: <ShieldCheck size={14} className="text-[#00c685]" />, text: "Protected under Takaful mutual fund" },
+                    { icon: <FileText size={14} className="text-white/50" />, text: "Escape of Water · Est. £3,200.00" },
+                  ],
+                },
+                {
+                  icon: <Clock size={16} className="text-amber-400" />,
+                  title: "Initial Handler Review",
+                  details: "Claims triage specialist assigned within 1 business day.",
+                  subItems: [
+                    { icon: <Phone size={14} className="text-white/50" />, text: "SMS and email confirmation sent to your registered contact" },
+                  ],
+                },
+                {
+                  icon: <Zap size={16} className="text-[#00c685]" />,
+                  title: "Settlement & Direct Payout",
+                  details: "Approved funds disbursed via BACS directly into your account.",
+                },
+              ]}
+            />
+          </div>
+        </DSSection>
+
+        {/* FEEDBACK WIDGET */}
+        <DSSection id="feedback-widget" title="Feedback Widget" desc="Floating post-claim feedback collector. Emoji rating + markdown textarea. Auto-dismisses after submission with a success state." isLight={isLight}>
+          <div className="space-y-8">
+            {/* Collapsed state */}
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: isLight ? '#9CA3AF' : 'rgba(255,255,255,0.35)' }}>Default (collapsed)</p>
+              <FeedbackWidget
+                label="How was your claim experience?"
+                placeholder="Share your feedback to help improve the mutual pool..."
+                onSubmit={async () => {}}
+              />
+            </div>
+            {/* Success state preview */}
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: isLight ? '#9CA3AF' : 'rgba(255,255,255,0.35)' }}>Success state — after submission</p>
+              <div className="flex items-center justify-center p-2">
+                <div className="overflow-hidden border border-white/10 bg-[#061510]/95 text-white shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_24px_rgba(0,198,133,0.08)] backdrop-blur-xl rounded-full px-5 py-2.5">
+                  <div className="flex items-center gap-2.5 text-[#00c685]">
+                    <div className="w-5 h-5 rounded-full bg-[#00c685]/20 flex items-center justify-center">
+                      <Check size={13} className="text-[#00c685]" strokeWidth={3} />
+                    </div>
+                    <span className="text-xs font-semibold">Thank you for your feedback!</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DSSection>
+
+        {/* CLAIM DROPDOWNS */}
+        <DSSection id="claim-dropdowns" title="Claim Form Dropdowns" desc="Portal-select components used across the new claim wizard. All rendered via ReactDOM.createPortal for z-index safety." isLight={isLight}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { label: 'Claim Type', placeholder: 'Select type of claim', options: ['Escape of Water','Storm Damage','Fire Damage','Theft','Subsidence','Accidental Damage','Flood'] },
+              { label: 'Incident Room', placeholder: 'Where did it happen?', options: ['Kitchen','Living Room','Bathroom','Bedroom','Garage','Garden / Exterior','Roof'] },
+              { label: 'Number of Items', placeholder: 'How many items affected?', options: ['1 item','2–3 items','4–6 items','7–10 items','More than 10'] },
+              { label: 'Preferred Contact', placeholder: 'How should we reach you?', options: ['Email','Phone call','SMS','Post'] },
+            ].map((dd) => {
+              const [val, setVal] = useState('');
+              return (
+                <div key={dd.label} className="space-y-1.5">
+                  <p className="text-xs font-semibold" style={{ color: isLight ? '#6B7280' : 'rgba(255,255,255,0.45)' }}>{dd.label}</p>
+                  <Select value={val} onValueChange={setVal}>
+                    <SelectTrigger placeholder={dd.placeholder} />
+                    <SelectContent>
+                      {dd.options.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              );
+            })}
           </div>
         </DSSection>
 

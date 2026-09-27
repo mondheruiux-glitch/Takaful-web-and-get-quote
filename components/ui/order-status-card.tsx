@@ -56,7 +56,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({
     )}
 
     {/* Icon */}
-    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#061510] ring-4 ring-[#061510] shrink-0 z-10">
+    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0a1a14] ring-4 ring-[#0a1a14] shrink-0 z-10">
       {icon}
     </div>
 
@@ -125,7 +125,7 @@ export const OrderStatusCard: React.FC<OrderStatusCardProps> = ({
       initial="hidden"
       animate="visible"
       className={cn(
-        "w-full max-w-md overflow-hidden rounded-3xl border border-white/[0.08] bg-[#061510]/95 text-white shadow-[0_25px_60px_rgba(0,0,0,0.7),0_0_35px_rgba(0,198,133,0.06)] backdrop-blur-2xl relative z-10",
+        "w-full max-w-md overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0a1a14] text-white shadow-[0_25px_60px_rgba(0,0,0,0.7),0_0_35px_rgba(0,198,133,0.06)] relative z-10",
         className
       )}
     >
