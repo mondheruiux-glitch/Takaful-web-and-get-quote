@@ -1,14 +1,16 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShieldCheck, CreditCard, FileText, Clock, ArrowRight,
   CheckCircle2, AlertCircle, TrendingUp, TrendingDown,
   Users, PieChart, Banknote, BarChart3, Activity,
   CircleDot, ChevronRight, Bell, RefreshCw, XCircle,
   Building2, Package, AlertTriangle, Flame, MessageSquare,
-  HelpCircle, MessageCircle,
+  HelpCircle, MessageCircle, UserCog, UserPlus, Shield,
+  HeartHandshake, Check, Droplets, Wind, Sparkles, MapPin,
+  PhoneCall, ArrowUpRight, Copy, CheckCheck, Home, Lock,
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line,
@@ -19,7 +21,24 @@ import Link from 'next/link';
 import { useRole } from './ThemeRoleContext';
 import { useTheme } from './ThemeRoleContext';
 import { TakafulPoolBarChart } from '@/components/ui/takaful-pool-bar-chart';
-import { Vo2MaxCard } from '@/components/ui/progress';
+import { Vo2MaxCard, Progress } from '@/components/ui/progress';
+import { PillBadge } from '@/components/ui/pill-badge';
+import { DashboardAlert } from '@/components/ui/dashboard-alert';
+import { GlowingEffect } from '@/components/ui/glowing-effect';
+import Stepper03 from '@/components/ui/stepper-03';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from '@/components/ui/item';
 import {
   CLAIMS, CONTRIBUTIONS, POOL, PARTICIPANT_GROWTH,
   CLAIMS_TREND, CONTRIBUTION_TREND, POOL_HISTORY,
@@ -177,204 +196,744 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
-/* PARTICIPANT OVERVIEW                                                         */
+/* PARTICIPANT OVERVIEW (Consumer-Grade Experience)                           */
 /* ═══════════════════════════════════════════════════════════════════════════ */
+
+interface TrackerStep {
+  key: string;
+  label: string;
+  desc: string;
+  icon: React.ElementType;
+}
+
+const CLAIM_TRACKER_STEPS: TrackerStep[] = [
+  { key: 'Submitted', label: 'Submitted', desc: '18 Jul · Received', icon: FileText },
+  { key: 'Under Review', label: 'Under Review', desc: 'Assessor inspecting', icon: Clock },
+  { key: 'Awaiting Information', label: 'Evidence', desc: 'Report pending', icon: AlertCircle },
+  { key: 'Approved', label: 'Approved', desc: 'Settlement agreed', icon: ShieldCheck },
+  { key: 'Paid', label: 'Disbursed', desc: 'Funds transferred', icon: Banknote },
+];
+
+function getClaimStepIndex(status: string): number {
+  switch (status) {
+    case 'Submitted': return 0;
+    case 'Under Review': return 1;
+    case 'Awaiting Information': return 2;
+    case 'Approved': return 3;
+    case 'Paid': return 4;
+    default: return 1;
+  }
+}
+
 function ParticipantOverview({ theme }: { theme: string }) {
   const isLight = theme === 'light';
-  const myCert = { id: 'TK-2024-0042', propertyAddress: '14 Elm Street, Birmingham, B1 2PQ', coverType: 'Buildings', buildingsLimit: 350000, monthlyContribution: 38.50, renewalDate: '15 Jan 2027', status: 'Active' };
+  const [copiedCert, setCopiedCert] = React.useState(false);
+  const [weatherAlerts, setWeatherAlerts] = React.useState(true);
+  const [autoRenew, setAutoRenew] = React.useState(true);
+
+  /* ─ Colors: neutral-first, green only as accent ─ */
+  const ACCENT = '#00c685';
+  const BG_SURFACE = isLight ? '#FFFFFF' : '#141A17';
+  const BORDER = isLight ? '#E8E8E5' : 'rgba(255,255,255,0.06)';
+  const TEXT_PRIMARY = isLight ? '#1A1A1A' : '#F5F5F4';
+  const TEXT_SECONDARY = isLight ? '#6B6B67' : '#A3A3A0';
+  const TEXT_MUTED = isLight ? '#9C9C97' : '#6B6B67';
+
+  const myCert = {
+    id: 'TK-2024-0042',
+    propertyAddress: '14 Elm Street, Birmingham, B1 2PQ',
+    coverType: 'Buildings',
+    buildingsLimit: 350000,
+    monthlyContribution: 38.50,
+    renewalDate: '15 Jan 2027',
+    startDate: '15 Jan 2024',
+    status: 'Active',
+    compulsoryExcess: 300,
+    voluntaryExcess: 0,
+  };
+
   const myClaims = CLAIMS.filter(c => c.participantId === 'P-0042');
-  const myContribs = CONTRIBUTIONS.filter(c => c.participantId === 'P-0042');
+  const activeClaim = myClaims.find(c => !['Paid', 'Rejected'].includes(c.status));
+  const pastClaims = myClaims.filter(c => ['Paid', 'Rejected'].includes(c.status));
+  const activeStepIndex = activeClaim ? getClaimStepIndex(activeClaim.status) : 0;
+
+  const handleCopyCert = () => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(myCert.id);
+      setCopiedCert(true);
+      setTimeout(() => setCopiedCert(false), 2000);
+    }
+  };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
-      {/* Welcome */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className={`text-xl font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>As-salamu alaykum, Fatima 👋</h1>
-          <p className={`text-sm mt-0.5 ${isLight ? 'text-black/50' : 'text-white/45'}`}>Here's your Takaful summary for today.</p>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 space-y-10 sm:space-y-14 font-body">
+
+      {/* ── 1. Editorial Welcome ── */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="space-y-4"
+      >
+
+
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <h1 className="font-heading text-4xl sm:text-5xl font-normal tracking-[-0.02em] leading-[1.08]" style={{ color: TEXT_PRIMARY }}>
+              Salaam, Fatima.
+            </h1>
+            <p className="mt-2 text-base sm:text-lg leading-relaxed max-w-xl" style={{ color: TEXT_SECONDARY }}>
+              Your home is protected. Everything is in order.
+            </p>
+          </div>
+
+          {/* Status pill — compact, not a card */}
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border self-start sm:self-auto shrink-0 ${
+            isLight ? 'bg-emerald-50/60 border-emerald-200/80' : 'bg-emerald-500/8 border-emerald-500/20'
+          }`}>
+            <ShieldCheck size={15} className="text-[#00c685]" />
+            <span className={`text-xs font-semibold ${isLight ? 'text-emerald-800' : 'text-emerald-300'}`}>
+              Active · Shariah Certified
+            </span>
+          </div>
         </div>
-        <Link href="/dashboard/claims" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90" style={{ background: GREEN }}>
-          <FileText size={15} />
-          Make a Claim
-        </Link>
-      </motion.div>
 
-      {/* KPI row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard label="Certificate" value={myCert.id} sub={`Active · Expires ${myCert.renewalDate}`} icon={ShieldCheck} delay={0} theme={theme} />
-        <KPICard label="Buildings Cover" value="£350,000" sub="Limit" icon={Building2} delay={1} theme={theme} />
-        <KPICard label="Monthly Contribution" value="£38.50" sub="Due 1 Aug 2026" icon={CreditCard} delay={2} theme={theme} />
-        <KPICard label="Open Claims" value={`${myClaims.filter(c => !['Paid','Rejected'].includes(c.status)).length}`} sub="Currently active" icon={FileText} delay={3} theme={theme} color="#f59e0b" />
-      </div>
-
-      {/* Cover card + open claims */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <SectionCard title="My Current Cover" theme={theme} action={<Link href="/dashboard/my-cover" className="text-xs font-medium text-[#00c685] flex items-center gap-1">View full details <ChevronRight size={12} /></Link>}>
-          <div className="p-5 space-y-4">
-            <div className={`flex items-center gap-3 p-3.5 rounded-xl border ${isLight ? 'bg-gray-50 border-gray-200' : 'bg-white/5 border-white/10'}`}>
-              <ShieldCheck size={26} className={isLight ? 'text-gray-700' : 'text-white/80'} />
-              <div>
-                <p className={`font-bold text-sm ${isLight ? 'text-black/90' : 'text-white'}`}>Certificate {myCert.id}</p>
-                <p className={`text-xs ${isLight ? 'text-black/50' : 'text-white/45'}`}>{myCert.propertyAddress}</p>
-              </div>
-              <span className="ml-auto"><StatusBadge status="Active" /></span>
+        {/* Contribution notification — subtle */}
+        <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border ${
+          isLight ? 'bg-gray-50/80 border-gray-200/80' : 'bg-white/[0.02] border-white/[0.06]'
+        }`}>
+          <div className="flex items-center gap-2.5">
+            <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+              isLight ? 'bg-emerald-100/80 text-emerald-600' : 'bg-emerald-500/10 text-emerald-400'
+            }`}>
+              <Check size={14} strokeWidth={2.5} />
             </div>
-            {[
-              { label: 'Cover Type', value: 'Buildings' },
-              { label: 'Buildings Limit', value: '£350,000' },
-              { label: 'Cover Risks', value: 'Storm, Fire, Flood, Subsidence, Escape of Water' },
-              { label: 'Renewal Date', value: '15 Jan 2027' },
-            ].map(row => (
-              <div key={row.label} className={`flex justify-between text-xs py-2 ${isLight ? 'border-b border-black/5' : 'border-b border-white/5'}`}>
-                <span className={isLight ? 'text-black/50' : 'text-white/45'}>{row.label}</span>
-                <span className={`font-medium ${isLight ? 'text-black/80' : 'text-white/80'}`}>{row.value}</span>
-              </div>
-            ))}
+            <p className="text-xs sm:text-sm" style={{ color: TEXT_SECONDARY }}>
+              July contribution collected — <strong style={{ color: TEXT_PRIMARY }}>£38.50</strong>
+            </p>
           </div>
-        </SectionCard>
+          <Link
+            href="/dashboard/contributions"
+            className="text-xs font-semibold shrink-0 flex items-center gap-1 transition-colors hover:opacity-80"
+            style={{ color: TEXT_MUTED }}
+          >
+            View <ChevronRight size={13} />
+          </Link>
+        </div>
+      </motion.section>
 
-        <SectionCard title="My Claims" theme={theme} action={<Link href="/dashboard/claims" className="text-xs font-medium text-[#00c685] flex items-center gap-1">View all <ChevronRight size={12} /></Link>}>
-          <div className="divide-y" style={{ borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.04)' }}>
-            {myClaims.length === 0 ? (
-              <p className={`p-5 text-sm ${isLight ? 'text-black/40' : 'text-white/35'}`}>No claims on record.</p>
-            ) : myClaims.map(claim => (
-              <Link key={claim.id} href={`/dashboard/claims/${claim.id}`} className={`flex items-start gap-3 p-4 transition-colors ${isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]'}`}>
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: claim.status === 'Rejected' ? 'rgba(239, 68, 68, 0.12)' : `${GREEN}15` }}>
-                  <FileText size={15} style={{ color: claim.status === 'Rejected' ? '#ef4444' : GREEN }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className={`text-xs font-semibold ${isLight ? 'text-black/80' : 'text-white'}`}>{claim.id}</p>
-                    <StatusBadge status={claim.status} />
-                  </div>
-                  <p className={`text-xs ${isLight ? 'text-black/50' : 'text-white/45'} truncate`}>{claim.type} · {claim.incidentDate}</p>
-                  {claim.status === 'Rejected' && claim.rejectionReason ? (
-                    <p className="text-[11px] mt-1 text-red-500 font-medium line-clamp-1">
-                      Reason: {claim.rejectionReason}
-                    </p>
-                  ) : (
-                    <p className={`text-xs mt-0.5 ${isLight ? 'text-black/45' : 'text-white/40'}`}>{claim.lastActivityNote}</p>
-                  )}
-                </div>
-                <span className={`text-xs font-semibold ${isLight ? 'text-black/60' : 'text-white/60'}`}>£{claim.amountClaimed.toLocaleString()}</span>
-              </Link>
-            ))}
-          </div>
-        </SectionCard>
-      </div>
-
-      {/* Messages & Support + Recent Contributions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Dedicated Messages & Support Section for Participant */}
-        <SectionCard
-          title="Messages & Handler Support"
-          theme={theme}
-          action={
-            <Link href="/dashboard/support" className="text-xs font-medium text-[#00c685] flex items-center gap-1">
-              Support Desk <ChevronRight size={12} />
-            </Link>
-          }
+      {/* ── 2. Policy Snapshot Card ── */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div
+          className="relative overflow-hidden rounded-2xl border transition-all duration-300 group"
+          style={{ background: BG_SURFACE, borderColor: BORDER }}
         >
-          <div className="p-5 space-y-4">
-            <div className={`flex items-center justify-between p-3.5 rounded-xl border ${isLight ? 'bg-gray-50/80 border-gray-200' : 'bg-white/5 border-white/10'}`}>
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <img
-                    src={getDicebearAvatar('Omar Hassan', 'male')}
-                    alt="Omar Hassan"
-                    className="w-10 h-10 rounded-full object-cover border-2 border-blue-500/30 bg-blue-500/10 shadow-sm"
-                  />
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-[#0d2117]" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <p className={`text-xs font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>Omar Hassan</p>
-                    <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-blue-500/15 text-blue-500">Assigned Handler</span>
-                  </div>
-                  <p className={`text-[11px] ${isLight ? 'text-black/50' : 'text-white/45'}`}>Online now · Responds within 2 business hours</p>
-                </div>
-              </div>
-              <Link
-                href="/dashboard/claims/CLM-2024-0891"
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-opacity hover:opacity-90 shadow-sm"
-                style={{ background: GREEN }}
+          <GlowingEffect
+            spread={40}
+            glow={true}
+            disabled={false}
+            proximity={70}
+            inactiveZone={0.01}
+            borderWidth={1}
+          />
+
+          {/* Card Header */}
+          <div className="flex flex-wrap items-center justify-between gap-3 px-5 sm:px-7 pt-5 sm:pt-7 pb-0">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <button
+                type="button"
+                onClick={handleCopyCert}
+                className={`inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-lg border transition-all ${
+                  isLight
+                    ? 'bg-gray-50 hover:bg-gray-100 border-gray-200 text-gray-600'
+                    : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-white/70'
+                }`}
+                title="Copy Certificate ID"
               >
-                Chat
-              </Link>
+                <span>{myCert.id}</span>
+                {copiedCert ? <CheckCheck size={12} className="text-[#00c685]" /> : <Copy size={12} className="opacity-40" />}
+              </button>
+            </div>
+            <Link
+              href="/dashboard/my-cover"
+              className="text-xs font-semibold flex items-center gap-1 transition-colors"
+              style={{ color: TEXT_MUTED }}
+            >
+              Full Schedule <ArrowUpRight size={13} />
+            </Link>
+          </div>
+
+          {/* Card Body */}
+          <div className="px-5 sm:px-7 py-5 sm:py-6 space-y-5">
+            {/* Property Title */}
+            <div>
+              <div className="flex items-center gap-2.5 mb-1">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${ACCENT}12`, color: ACCENT }}>
+                  <Home size={17} />
+                </div>
+                <h2 className="font-heading text-3xl sm:text-4xl font-normal tracking-[-0.02em] leading-[1.1]" style={{ color: TEXT_PRIMARY }}>
+                  Buildings Protection
+                </h2>
+              </div>
+              <p className="flex items-center gap-1.5 text-xs sm:text-sm mt-1.5 ml-[42px]" style={{ color: TEXT_SECONDARY }}>
+                <MapPin size={13} className="text-[#00c685] shrink-0" />
+                {myCert.propertyAddress}
+              </p>
             </div>
 
-            <div className="space-y-2.5">
-              <p className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-black/40' : 'text-white/35'}`}>Recent Claim Communications</p>
-              {[
-                {
-                  sender: 'Omar Hassan (Handler)',
-                  msg: 'Assessor Dave Miller has been booked for Friday 25 July at 10:00 AM for your roof storm claim.',
-                  time: '20 Jul, 09:30',
-                  claimId: 'CLM-2024-0891',
-                  unread: true,
-                },
-                {
-                  sender: 'Omar Hassan (Handler)',
-                  msg: 'Settlement of £1,600 for fire damage claim has been transferred to your registered account.',
-                  time: '12 Jul, 10:15',
-                  claimId: 'CLM-2024-0884',
-                  unread: false,
-                },
-              ].map((item, i) => (
-                <Link
-                  key={i}
-                  href={`/dashboard/claims/${item.claimId}`}
-                  className={`block p-3 rounded-xl border transition-colors ${
-                    item.unread
-                      ? isLight ? 'bg-emerald-50/50 border-emerald-200/80 hover:bg-emerald-50' : 'bg-emerald-500/[0.04] border-emerald-500/20 hover:bg-emerald-500/[0.08]'
-                      : isLight ? 'bg-white border-gray-100 hover:bg-gray-50' : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-semibold text-[#00c685]">{item.claimId}</span>
-                    <span className={`text-[10px] ${isLight ? 'text-black/40' : 'text-white/35'}`}>{item.time}</span>
+            {/* Tabbed Card Section */}
+            <Tabs defaultValue="overview" className="w-full">
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b" style={{ borderColor: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)' }}>
+                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: TEXT_MUTED }}>
+                  Policy Controls & Breakdown
+                </p>
+                <TabsList className={`grid h-9 w-full grid-cols-3 rounded-lg sm:w-64 ${isLight ? 'bg-gray-100/80 text-gray-600' : 'bg-white/[0.06] text-white/70'}`}>
+                  <TabsTrigger
+                    value="overview"
+                    className="truncate rounded-md px-1 text-[11px] font-semibold sm:text-xs data-[state=active]:bg-[#00c685] data-[state=active]:text-[#0d2117] data-[state=active]:shadow-sm transition-all"
+                  >
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="analytics"
+                    className="truncate rounded-md px-1 text-[11px] font-semibold sm:text-xs data-[state=active]:bg-[#00c685] data-[state=active]:text-[#0d2117] data-[state=active]:shadow-sm transition-all"
+                  >
+                    Analytics
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="settings"
+                    className="truncate rounded-md px-1 text-[11px] font-semibold sm:text-xs data-[state=active]:bg-[#00c685] data-[state=active]:text-[#0d2117] data-[state=active]:shadow-sm transition-all"
+                  >
+                    Settings
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              {/* OVERVIEW TAB */}
+              <TabsContent value="overview" className="mt-4 space-y-4">
+                {/* System / Policy Status banner */}
+                <div className={`flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3.5 ${
+                  isLight ? 'bg-gray-50/80 border-gray-200' : 'bg-white/[0.03] border-white/[0.08]'
+                }`}>
+                  <div className="flex flex-1 items-center gap-3">
+                    <Avatar className="size-9 shrink-0 rounded-lg after:rounded-lg after:border-none">
+                      <AvatarFallback className="rounded-lg bg-[#00c685]/15 text-[#00c685]">
+                        <Activity className="size-4.5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold" style={{ color: TEXT_PRIMARY }}>Policy Active & Protected</p>
+                      <p className="text-xs" style={{ color: TEXT_MUTED }}>
+                        Verified Shariah-compliant mutual risk pool
+                      </p>
+                    </div>
                   </div>
-                  <p className={`text-xs leading-relaxed line-clamp-2 ${isLight ? 'text-black/75' : 'text-white/75'}`}>{item.msg}</p>
-                </Link>
-              ))}
-            </div>
+                  <Badge
+                    variant="outline"
+                    className="shrink-0 border-[#00c685] bg-[#00c685]/10 text-[#00c685] font-semibold"
+                  >
+                    100% Shariah Compliant
+                  </Badge>
+                </div>
 
-            <div className="pt-1 flex items-center justify-between text-xs">
-              <Link href="/dashboard/support" className="text-xs font-semibold text-[#00c685] hover:underline flex items-center gap-1">
-                <HelpCircle size={12} /> Open General Support Ticket
+                {/* Renewal Timeline Progress Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-medium">
+                    <span className="flex items-center gap-1.5" style={{ color: TEXT_MUTED }}>
+                      <Clock size={12} className="text-[#00c685]" />
+                      Renewal Timeline · {myCert.renewalDate}
+                    </span>
+                    <span className="font-bold" style={{ color: ACCENT }}>145 days left (60%)</span>
+                  </div>
+                  <Progress
+                    value={60}
+                    className={`w-full h-2 ${isLight ? 'bg-gray-100' : 'bg-white/10'}`}
+                  />
+                  <p className="text-[11px]" style={{ color: TEXT_MUTED }}>
+                    Direct Debit active · Auto-renews with verified Shariah certificate
+                  </p>
+                </div>
+
+                {/* Metric Cards - Rebuild Limit, Monthly, Excess */}
+                <div className="grid grid-cols-1 gap-2 pt-1 sm:grid-cols-3 sm:gap-3">
+                  <Card className={`mb-0 overflow-hidden shadow-none border ${isLight ? 'bg-gray-50/50 border-gray-200' : 'bg-white/[0.02] border-white/[0.08]'}`}>
+                    <CardContent className="p-3">
+                      <p className="text-xs" style={{ color: TEXT_MUTED }}>Rebuild Limit</p>
+                      <div className="mt-1 flex flex-wrap items-baseline gap-1.5">
+                        <span className="text-xl font-bold" style={{ color: ACCENT }}>
+                          £{myCert.buildingsLimit.toLocaleString()}
+                        </span>
+                        <span className="flex shrink-0 items-center text-[11px] font-medium text-emerald-500">
+                          Guaranteed <ArrowUpRight className="size-3" />
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className={`mb-0 overflow-hidden shadow-none border ${isLight ? 'bg-gray-50/50 border-gray-200' : 'bg-white/[0.02] border-white/[0.08]'}`}>
+                    <CardContent className="p-3">
+                      <p className="text-xs" style={{ color: TEXT_MUTED }}>Monthly Contribution</p>
+                      <div className="mt-1 flex flex-wrap items-baseline gap-1.5">
+                        <span className="text-xl font-bold" style={{ color: TEXT_PRIMARY }}>
+                          £{myCert.monthlyContribution.toFixed(2)}
+                        </span>
+                        <span className="shrink-0 text-[11px] font-medium text-emerald-500">
+                          Tabarru' Pool
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className={`mb-0 overflow-hidden shadow-none border ${isLight ? 'bg-gray-50/50 border-gray-200' : 'bg-white/[0.02] border-white/[0.08]'}`}>
+                    <CardContent className="p-3">
+                      <p className="text-xs" style={{ color: TEXT_MUTED }}>Compulsory Excess</p>
+                      <div className="mt-1 flex flex-wrap items-baseline gap-1.5">
+                        <span className="text-xl font-bold" style={{ color: TEXT_PRIMARY }}>
+                          £{myCert.compulsoryExcess}
+                        </span>
+                        <span className="shrink-0 text-[11px] font-medium" style={{ color: TEXT_MUTED }}>
+                          Per Claim
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Covered Perils Chips */}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {[
+                    { label: 'Storm', icon: Wind },
+                    { label: 'Fire', icon: Flame },
+                    { label: 'Flood', icon: Droplets },
+                    { label: 'Subsidence', icon: Building2 },
+                    { label: 'Water Escape', icon: ShieldCheck },
+                  ].map((risk) => {
+                    const RiskIcon = risk.icon;
+                    return (
+                      <span
+                        key={risk.label}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium border ${
+                          isLight
+                            ? 'bg-gray-50 border-gray-200 text-gray-600'
+                            : 'bg-white/[0.03] border-white/[0.06] text-white/60'
+                        }`}
+                      >
+                        <RiskIcon size={11} style={{ color: TEXT_MUTED }} />
+                        {risk.label}
+                      </span>
+                    );
+                  })}
+                </div>
+              </TabsContent>
+
+              {/* ANALYTICS TAB */}
+              <TabsContent value="analytics" className="mt-4 space-y-4">
+                <Card className={`overflow-hidden rounded-lg border shadow-none ${
+                  isLight ? 'border-[#00c685]/30 bg-[#00c685]/5' : 'border-emerald-500/20 bg-emerald-500/5'
+                }`}>
+                  <CardContent className="flex flex-wrap items-center justify-between gap-2 p-4">
+                    <div className="flex flex-1 items-center gap-3">
+                      <Avatar className="size-10 shrink-0 rounded-lg after:rounded-lg">
+                        <AvatarFallback className="rounded-lg bg-[#00c685] text-[#0d2117] font-bold shadow-sm">
+                          <TrendingUp className="size-5" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-xs" style={{ color: TEXT_MUTED }}>
+                          Community Surplus Pool
+                        </p>
+                        <h3 className="text-xl font-black sm:text-2xl" style={{ color: TEXT_PRIMARY }}>
+                          £{POOL.balance.toLocaleString()}
+                        </h3>
+                      </div>
+                    </div>
+                    <div className="shrink-0 sm:text-right">
+                      <Badge className="shrink-0 bg-green-500/10 text-green-500 border-none font-semibold">
+                        +{POOL.participantFundPct}%
+                      </Badge>
+                      <p className="mt-1 text-[11px]" style={{ color: TEXT_MUTED }}>
+                        Participant fund ratio
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <ul className="divide-y" style={{ borderColor: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)' }}>
+                  <li className="flex items-center justify-between py-2.5 text-sm">
+                    <div className="flex items-center gap-2" style={{ color: TEXT_MUTED }}>
+                      <Users className="size-4" />
+                      <span>Active Mutual Participants</span>
+                    </div>
+                    <span className="font-semibold" style={{ color: TEXT_PRIMARY }}>1,248 members</span>
+                  </li>
+                  <li className="flex items-center justify-between py-2.5 text-sm">
+                    <div className="flex items-center gap-2" style={{ color: TEXT_MUTED }}>
+                      <CheckCircle2 className="size-4" />
+                      <span>Claims Reserve Allocation</span>
+                    </div>
+                    <span className="font-semibold text-emerald-500">{POOL.claimsReservePct}% Reserved</span>
+                  </li>
+                  <li className="flex items-center justify-between py-2.5 text-sm">
+                    <div className="flex items-center gap-2" style={{ color: TEXT_MUTED }}>
+                      <Activity className="size-4" />
+                      <span>Wakala Management Fee</span>
+                    </div>
+                    <span className="font-semibold" style={{ color: TEXT_PRIMARY }}>{POOL.wakalaFeePct}% (Shariah Compliant)</span>
+                  </li>
+                </ul>
+              </TabsContent>
+
+              {/* SETTINGS TAB */}
+              <TabsContent value="settings" className="mt-4 space-y-3">
+                <Item variant="outline" className={`rounded-lg p-3.5 border ${
+                  isLight ? 'bg-gray-50/60 border-gray-200' : 'bg-white/[0.02] border-white/[0.08]'
+                }`}>
+                  <ItemMedia variant="icon">
+                    <Bell className="size-4 text-muted-foreground" />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle className="text-sm font-medium" style={{ color: TEXT_PRIMARY }}>
+                      Severe Weather & Claims Alerts
+                    </ItemTitle>
+                    <ItemDescription className="text-xs" style={{ color: TEXT_MUTED }}>
+                      Receive SMS and push warnings for flood & storm in your postal area
+                    </ItemDescription>
+                  </ItemContent>
+                  <ItemActions>
+                    <Switch
+                      checked={weatherAlerts}
+                      onCheckedChange={setWeatherAlerts}
+                    />
+                  </ItemActions>
+                </Item>
+
+                <Item variant="outline" className={`rounded-lg p-3.5 border ${
+                  isLight ? 'bg-gray-50/60 border-gray-200' : 'bg-white/[0.02] border-white/[0.08]'
+                }`}>
+                  <ItemMedia variant="icon">
+                    <Lock className="size-4 text-muted-foreground" />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle className="text-sm font-medium" style={{ color: TEXT_PRIMARY }}>
+                      Direct Debit Auto-Renewal
+                    </ItemTitle>
+                    <ItemDescription className="text-xs" style={{ color: TEXT_MUTED }}>
+                      Maintain uninterrupted Shariah certificate coverage annually
+                    </ItemDescription>
+                  </ItemContent>
+                  <ItemActions>
+                    <Switch
+                      checked={autoRenew}
+                      onCheckedChange={setAutoRenew}
+                    />
+                  </ItemActions>
+                </Item>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Card Actions */}
+          <div className="px-5 sm:px-7 py-4 border-t flex flex-col sm:flex-row items-center justify-between gap-3" style={{ borderColor: BORDER }}>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <Link
+                href="/dashboard/claims"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                style={{ background: '#1A1A1A' }}
+              >
+                <FileText size={15} />
+                Make a Claim
               </Link>
-              <span className={`text-[10px] ${isLight ? 'text-black/40' : 'text-white/35'}`}>24/7 Takaful Care</span>
+              <Link
+                href="/dashboard/support"
+                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border transition-all ${
+                  isLight
+                    ? 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                    : 'bg-white/[0.04] border-white/[0.08] text-white/80 hover:bg-white/[0.07]'
+                }`}
+              >
+                <MessageCircle size={14} />
+                Talk to Handler
+              </Link>
+            </div>
+            <div className="flex items-center gap-2 text-xs" style={{ color: TEXT_MUTED }}>
+              <PhoneCall size={13} className="text-[#00c685]" />
+              <span>Emergency: <strong style={{ color: TEXT_PRIMARY }}>0800 123 4567</strong></span>
             </div>
           </div>
-        </SectionCard>
+        </div>
+      </motion.section>
 
-        {/* Recent Contributions Card */}
-        <SectionCard title="Recent Contributions" theme={theme} action={<Link href="/dashboard/contributions" className="text-xs font-medium text-[#00c685] flex items-center gap-1">Manage <ChevronRight size={12} /></Link>}>
-          <div className="divide-y" style={{ borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.04)' }}>
-            {myContribs.map(c => (
-              <div key={c.id} className="flex items-center gap-3 px-5 py-3">
-                <div className={`w-2 h-2 rounded-full ${c.status === 'Collected' ? 'bg-emerald-400' : 'bg-red-400'}`} />
-                <div className="flex-1">
-                  <p className={`text-xs font-medium ${isLight ? 'text-black/75' : 'text-white/75'}`}>Due {c.dueDate}</p>
-                  <p className={`text-[11px] ${isLight ? 'text-black/40' : 'text-white/35'}`}>{c.method}</p>
+      {/* ── 3. Active Claim Tracker ── */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
+        className="space-y-4"
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="font-heading text-2xl sm:text-3xl font-normal tracking-[-0.02em] leading-[1.1]" style={{ color: TEXT_PRIMARY }}>
+            Claims
+          </h3>
+          <Link
+            href="/dashboard/claims"
+            className="text-xs font-semibold flex items-center gap-1"
+            style={{ color: TEXT_MUTED }}
+          >
+            All ({myClaims.length}) <ChevronRight size={13} />
+          </Link>
+        </div>
+
+        {activeClaim ? (
+          <div className="rounded-2xl border overflow-hidden" style={{ background: BG_SURFACE, borderColor: BORDER }}>
+            {/* Claim Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 sm:px-7 py-5 border-b" style={{ borderColor: BORDER }}>
+              <div>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <span className="text-xs font-mono font-bold" style={{ color: ACCENT }}>{activeClaim.id}</span>
+                  <StatusBadge status={activeClaim.status} />
                 </div>
-                <div className="text-right">
-                  <p className={`text-xs font-semibold ${isLight ? 'text-black/80' : 'text-white'}`}>£{c.amount.toFixed(2)}</p>
-                  <StatusBadge status={c.status} />
+                <h4 className="text-base sm:text-lg font-bold mt-1" style={{ color: TEXT_PRIMARY }}>
+                  {activeClaim.type} Damage
+                </h4>
+                <p className="text-xs mt-0.5" style={{ color: TEXT_MUTED }}>
+                  Incident: {activeClaim.incidentDate} · {activeClaim.description}
+                </p>
+              </div>
+              <div className="text-left sm:text-right shrink-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: TEXT_MUTED }}>Claimed</p>
+                <p className="text-xl font-bold" style={{ color: TEXT_PRIMARY }}>£{activeClaim.amountClaimed.toLocaleString()}</p>
+              </div>
+            </div>
+
+            {/* Claim Timeline — full width, no handler card */}
+            <div className="px-5 sm:px-7 py-6 sm:py-8">
+              <div className="relative">
+                {/* Vertical connector line */}
+                <div
+                  className="absolute left-[13px] top-3 bottom-3 w-px"
+                  style={{ background: isLight ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.06)' }}
+                />
+                <div className="space-y-5">
+                  {CLAIM_TRACKER_STEPS.map((step, idx) => {
+                    const isDone = idx < activeStepIndex;
+                    const isActive = idx === activeStepIndex;
+                    const StepIcon = step.icon;
+                    return (
+                      <div key={step.key} className="flex items-start gap-4 relative">
+                        {/* Stepper node matching uploaded screenshot */}
+                        <div className="relative shrink-0 flex items-center justify-center z-10 w-7 h-7 mt-0.5">
+                          {isDone ? (
+                            <div className={`w-7 h-7 rounded-full flex items-center justify-center shadow-sm ${
+                              isLight ? 'bg-gray-900 text-white' : 'bg-white text-black'
+                            }`}>
+                              <Check size={13} strokeWidth={3} />
+                            </div>
+                          ) : isActive ? (
+                            <div className="relative flex items-center justify-center">
+                              <div className={`absolute -inset-1 rounded-full animate-pulse ${
+                                isLight ? 'bg-gray-900/10' : 'bg-white/20'
+                              }`} />
+                              <div className={`w-7 h-7 rounded-full flex items-center justify-center relative z-10 shadow-sm ${
+                                isLight ? 'bg-gray-900 text-white' : 'bg-white text-black'
+                              }`}>
+                                <Clock size={13} strokeWidth={2.5} />
+                              </div>
+                            </div>
+                          ) : (
+                            <div className={`w-7 h-7 rounded-full flex items-center justify-center border transition-colors ${
+                              isLight
+                                ? 'bg-black/[0.04] border-black/10 text-black/40'
+                                : 'bg-white/10 border-white/15 text-white/50'
+                            }`}>
+                              <StepIcon size={13} strokeWidth={2} />
+                            </div>
+                          )}
+                        </div>
+                        {/* Step label */}
+                        <div className="pt-0.5 flex-1">
+                          <p
+                            className="text-sm font-semibold leading-tight"
+                            style={{ color: isDone || isActive ? TEXT_PRIMARY : TEXT_MUTED }}
+                          >
+                            {step.label}
+                          </p>
+                          <p className="text-[11px] mt-0.5" style={{ color: TEXT_MUTED }}>
+                            {step.desc}
+                          </p>
+                        </div>
+                        {/* Active pill */}
+                        {isActive && (
+                          <span
+                            className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold mt-0.5"
+                            style={{ background: `${ACCENT}18`, color: ACCENT }}
+                          >
+                            In Progress
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
+
+              {/* View full claim link */}
+              <div className="mt-5 pt-4 flex justify-end" style={{ borderTop: `1px solid ${BORDER}` }}>
+                <Link
+                  href={`/dashboard/claims/${activeClaim.id}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold transition-opacity hover:opacity-80"
+                  style={{ color: ACCENT }}
+                >
+                  View Full Claim <ArrowRight size={12} />
+                </Link>
+              </div>
+            </div>
+
+          </div>
+          
+        ) : (
+          <div className="rounded-2xl border p-8 text-center" style={{ background: BG_SURFACE, borderColor: BORDER }}>
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: `${ACCENT}10`, color: ACCENT }}>
+              <ShieldCheck size={24} />
+            </div>
+            <h4 className="font-heading text-2xl font-normal" style={{ color: TEXT_PRIMARY }}>No Active Claims</h4>
+            <p className="text-xs sm:text-sm mt-1.5 max-w-md mx-auto" style={{ color: TEXT_SECONDARY }}>
+              Your property is safe and protected. If you experience damage, our UK team is on standby 24/7.
+            </p>
+            <Link
+              href="/dashboard/claims"
+              className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-full text-xs font-semibold text-white transition-all hover:scale-[1.02]"
+              style={{ background: '#1A1A1A' }}
+            >
+              <FileText size={13} /> Start a Claim
+            </Link>
+          </div>
+        )}
+
+        {/* Past Claims — Resolved */}
+        {pastClaims.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: TEXT_MUTED }}>
+              Resolved
+            </p>
+            {pastClaims.map((claim) => (
+              <Link
+                key={claim.id}
+                href={`/dashboard/claims/${claim.id}`}
+                className="flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all group"
+                style={{ background: BG_SURFACE, borderColor: BORDER }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                    claim.status === 'Rejected' ? 'bg-red-50 text-red-400' : isLight ? 'bg-gray-100 text-gray-500' : 'bg-white/[0.04] text-white/40'
+                  }`}>
+                    <FileText size={14} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold" style={{ color: TEXT_PRIMARY }}>{claim.id} · {claim.type}</span>
+                      <StatusBadge status={claim.status} />
+                    </div>
+                    <p className="text-[11px] mt-0.5" style={{ color: TEXT_MUTED }}>{claim.lastActivityNote}</p>
+                  </div>
+                </div>
+                <ChevronRight size={14} className="opacity-30 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all" style={{ color: TEXT_MUTED }} />
+              </Link>
             ))}
           </div>
-        </SectionCard>
+        )}
+      </motion.section>
+
+      {/* ── 4. Community Pool — editorial callout ── */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="rounded-2xl border px-5 sm:px-7 py-6 sm:py-7" style={{ background: BG_SURFACE, borderColor: BORDER }}>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div className="flex items-start gap-4">
+              <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 mt-0.5" style={{ background: `${ACCENT}10`, color: ACCENT }}>
+                <HeartHandshake size={20} />
+              </div>
+              <div>
+                <h4 className="font-heading text-2xl sm:text-3xl font-normal tracking-[-0.02em] leading-[1.1]" style={{ color: TEXT_PRIMARY }}>
+                  Your Takaful Community
+                </h4>
+                <p className="text-xs sm:text-sm mt-2 leading-relaxed max-w-xl" style={{ color: TEXT_SECONDARY }}>
+                  Your £38.50 monthly contribution pools with <strong style={{ color: TEXT_PRIMARY }}>2,847 UK households</strong> for mutual protection. 100% surplus after claims is returned to members.
+                </p>
+                <div className="flex items-center gap-4 mt-3">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: TEXT_MUTED }}>Community Solvency</p>
+                    <p className="text-base font-bold" style={{ color: ACCENT }}>98.4%</p>
+                  </div>
+                  <div className={`w-px h-8 ${isLight ? 'bg-gray-200' : 'bg-white/[0.06]'}`} />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: TEXT_MUTED }}>Members</p>
+                    <p className="text-base font-bold" style={{ color: TEXT_PRIMARY }}>2,847</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <Link
+              href="/dashboard/pool"
+              className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-semibold border transition-all shrink-0 self-start md:self-center ${
+                isLight ? 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50' : 'bg-white/[0.04] border-white/[0.08] text-white/80 hover:bg-white/[0.07]'
+              }`}
+            >
+              View Pool <ChevronRight size={13} />
+            </Link>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* ── 5. Quick Actions ── */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
+        className="grid grid-cols-1 sm:grid-cols-3 gap-3"
+      >
+        {[
+          { href: '/dashboard/documents', icon: FileText, label: 'Policy Documents', desc: 'Download schedule & terms', color: '#3B82F6' },
+          { href: '/dashboard/support',   icon: HelpCircle, label: 'Support Desk', desc: 'Open a query or call handler', color: '#F59E0B' },
+          { href: '/dashboard/settings',  icon: CreditCard, label: 'Payment Details', desc: 'Manage Direct Debit mandate', color: '#8B5CF6' },
+        ].map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex items-center gap-3.5 px-4 py-4 rounded-2xl border transition-all group hover:-translate-y-0.5"
+              style={{ background: BG_SURFACE, borderColor: BORDER }}
+            >
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform"
+                style={{ background: `${item.color}10`, color: item.color }}>
+                <Icon size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold truncate" style={{ color: TEXT_PRIMARY }}>{item.label}</p>
+                <p className="text-xs truncate mt-0.5" style={{ color: TEXT_MUTED }}>{item.desc}</p>
+              </div>
+              <ChevronRight size={14} className="opacity-30 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all" style={{ color: TEXT_MUTED }} />
+            </Link>
+          );
+        })}
+      </motion.section>
+
+      {/* ── Footer note ── */}
+      <div className="text-center text-[11px] pb-4" style={{ color: TEXT_MUTED }}>
+        24/7 Home Emergency Line: <strong style={{ color: TEXT_PRIMARY }}>0800 123 4567</strong> · Takaful UK © 2024
       </div>
 
-      {/* Takaful Pool — Your Share */}
-      <div>
-        <TakafulPoolBarChart theme={theme} />
-      </div>
     </div>
   );
 }
+
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
 /* CLAIM HANDLER OVERVIEW                                                       */
@@ -985,6 +1544,237 @@ function ManagementOverview({ theme }: { theme: string }) {
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* SUPER ADMIN OVERVIEW                                                         */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+function SuperAdminOverview({ theme }: { theme: string }) {
+  const isLight = theme === 'light';
+  const totalParticipants = PARTICIPANTS.length;
+  const claimsMTD = CLAIMS_TREND[CLAIMS_TREND.length - 1].count;
+  const overdueClaims = CLAIMS.filter(c => c.daysOpen > 10 && !['Paid', 'Rejected'].includes(c.status));
+
+  return (
+    <div className="p-4 sm:p-6 space-y-6">
+      {/* Header */}
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <div>
+          <div className="flex items-center gap-2.5">
+            <h1 className={`text-xl font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>
+              Executive Command & Platform Oversight
+            </h1>
+            <span
+              className="px-2.5 py-0.5 rounded-full text-xs font-bold"
+              style={{ background: `${GREEN}15`, color: GREEN, border: `1px solid ${GREEN}30` }}
+            >
+              Super Admin Active
+            </span>
+          </div>
+          <p className={`text-xs mt-1 ${isLight ? 'text-black/50' : 'text-white/45'}`}>
+            Zayd Al-Mansoor · Executive Director · Platform Master Control & Multi-Role Governance
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Link
+            href="/dashboard/staff"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:opacity-95 shadow-xs"
+            style={{ background: GREEN }}
+          >
+            <UserPlus size={14} /> Provision Staff
+          </Link>
+        </div>
+      </motion.div>
+
+      {/* Primary KPI Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <KPICard
+          label="Active Community"
+          value={totalParticipants.toLocaleString()}
+          sub="+14.2% MoM Expansion"
+          icon={Users}
+          delay={0}
+          theme={theme}
+          trend={{ dir: 'up', text: '+38 new policies' }}
+        />
+        <KPICard
+          label="Tabarru Pool Solvency"
+          value={`£${(POOL.balance / 1000).toFixed(0)}k`}
+          sub="3.4x Claims Reserve Ratio"
+          icon={PieChart}
+          delay={1}
+          theme={theme}
+          trend={{ dir: 'up', text: '100% Shariah Compliant' }}
+        />
+        <KPICard
+          label="Team SLA Rate"
+          value="96.8%"
+          sub="Across Handlers & Finance"
+          icon={Activity}
+          delay={2}
+          theme={theme}
+          trend={{ dir: 'up', text: '+1.4% vs benchmark' }}
+        />
+        <KPICard
+          label="Loss Ratio"
+          value="41.2%"
+          sub="Target: <55.0%"
+          icon={ShieldCheck}
+          delay={3}
+          theme={theme}
+          color={GREEN}
+          trend={{ dir: 'up', text: 'Optimal Surplus Health' }}
+        />
+      </div>
+
+      {/* Staff Operations & Quick Clearance Card */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <SectionCard
+          title="Team Clearance & Operations"
+          theme={theme}
+          action={
+            <Link
+              href="/dashboard/staff"
+              className="text-xs font-medium text-[#00c685] hover:underline flex items-center gap-1"
+            >
+              Manage All Staff <ChevronRight size={12} />
+            </Link>
+          }
+          className="lg:col-span-2"
+        >
+          <div className="p-4 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div
+                className="p-3.5 rounded-xl border flex flex-col justify-between"
+                style={{
+                  background: isLight ? '#f9fafb' : 'rgba(255,255,255,0.02)',
+                  borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.06)',
+                }}
+              >
+                <div className="flex items-center justify-between text-xs text-black/50 dark:text-white/45 mb-1">
+                  <span>Claims Specialists</span>
+                  <Shield size={14} className="text-[#00c685]" />
+                </div>
+                <div className="text-xl font-bold text-black/90 dark:text-white">3 Handlers</div>
+                <div className="text-[11px] text-[#00c685] mt-1 font-medium">96.2% Avg SLA Resolution</div>
+              </div>
+
+              <div
+                className="p-3.5 rounded-xl border flex flex-col justify-between"
+                style={{
+                  background: isLight ? '#f9fafb' : 'rgba(255,255,255,0.02)',
+                  borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.06)',
+                }}
+              >
+                <div className="flex items-center justify-between text-xs text-black/50 dark:text-white/45 mb-1">
+                  <span>Finance & Pool Officers</span>
+                  <Banknote size={14} className="text-blue-400" />
+                </div>
+                <div className="text-xl font-bold text-black/90 dark:text-white">2 Officers</div>
+                <div className="text-[11px] text-blue-400 mt-1 font-medium">99.6% Payout Accuracy</div>
+              </div>
+
+              <div
+                className="p-3.5 rounded-xl border flex flex-col justify-between"
+                style={{
+                  background: isLight ? '#f9fafb' : 'rgba(255,255,255,0.02)',
+                  borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.06)',
+                }}
+              >
+                <div className="flex items-center justify-between text-xs text-black/50 dark:text-white/45 mb-1">
+                  <span>Fraud & Irregularities</span>
+                  <AlertTriangle size={14} className="text-amber-400" />
+                </div>
+                <div className="text-xl font-bold text-black/90 dark:text-white">£59,500</div>
+                <div className="text-[11px] text-amber-400 mt-1 font-medium">Protected from leakage</div>
+              </div>
+            </div>
+
+            <div
+              className="p-3.5 rounded-xl border flex items-center justify-between text-xs"
+              style={{
+                background: `${GREEN}08`,
+                borderColor: `${GREEN}25`,
+              }}
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-[#00c685]/15 text-[#00c685]">
+                  <UserCog size={15} />
+                </div>
+                <div>
+                  <span className="font-semibold text-black/90 dark:text-white">
+                    Need to expand the claims triage team?
+                  </span>
+                  <p className="text-[11px] text-black/50 dark:text-white/50">
+                    Add junior/senior claim assessors with bespoke daily signoff limits.
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/dashboard/staff"
+                className="px-3 py-1.5 rounded-lg font-semibold text-xs text-white shrink-0 shadow-2xs hover:opacity-90 transition-opacity"
+                style={{ background: GREEN }}
+              >
+                Add Handler
+              </Link>
+            </div>
+          </div>
+        </SectionCard>
+
+        {/* Governance & Solvency Card */}
+        <SectionCard title="Governance & Shariah Controls" theme={theme}>
+          <div className="p-4 space-y-3">
+            <div className="flex items-start gap-2.5">
+              <CheckCircle2 size={16} className="text-[#00c685] shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-semibold text-black/85 dark:text-white/85">
+                  100% Non-Interest Segregation
+                </p>
+                <p className="text-[11px] text-black/50 dark:text-white/45">
+                  Wakalah fee capped at 15.0%. Surplus distribution active.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2.5">
+              <CheckCircle2 size={16} className="text-[#00c685] shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-semibold text-black/85 dark:text-white/85">
+                  Dual-Signoff Security
+                </p>
+                <p className="text-[11px] text-black/50 dark:text-white/45">
+                  Payouts &gt;£10,000 require Super Admin or Management concurrence.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2.5">
+              <CheckCircle2 size={16} className="text-[#00c685] shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-semibold text-black/85 dark:text-white/85">
+                  Audit Trail Immutable
+                </p>
+                <p className="text-[11px] text-black/50 dark:text-white/45">
+                  All disciplinary freezes and staff creations logged to transactions ledger.
+                </p>
+              </div>
+            </div>
+          </div>
+        </SectionCard>
+      </div>
+
+      {/* Pool History & Bar Chart */}
+      <div>
+        <TakafulPoolBarChart theme={theme} />
+      </div>
+    </div>
+  );
+}
+
 /* ─── Missing icon import fix ─── */
 const ClipboardList = Activity;
 
@@ -996,10 +1786,10 @@ export default function DashboardPage() {
   const { theme } = useTheme();
 
   switch (role) {
-    case 'participant':   return <ParticipantOverview theme={theme} />;
     case 'claim_handler': return <ClaimHandlerOverview theme={theme} />;
     case 'finance':       return <FinanceOverview theme={theme} />;
     case 'management':    return <ManagementOverview theme={theme} />;
-    default:              return <ManagementOverview theme={theme} />;
+    case 'super_admin':   return <SuperAdminOverview theme={theme} />;
+    default:              return <SuperAdminOverview theme={theme} />;
   }
 }

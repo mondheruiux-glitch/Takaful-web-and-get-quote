@@ -25,7 +25,15 @@ export type Permission =
   | 'view_financial_reports'
   | 'view_management_analytics'
   | 'view_risk_analytics'
-  | 'manage_users';
+  | 'manage_users'
+  | 'add_participant'
+  | 'flag_participant'
+  | 'manage_participant_account'
+  | 'view_participant_reports'
+  | 'manage_staff'
+  | 'view_team_performance'
+  | 'view_audit_logs'
+  | 'system_override';
 
 /* ─── Role → Permission Map (single source of truth) ─────────────────────── */
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
@@ -47,6 +55,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'view_internal_notes',
     'create_internal_notes',
     'send_participant_message',
+    'flag_participant',
+    'view_participant_reports',
   ],
   finance: [
     'view_all_certificates',
@@ -69,6 +79,43 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'view_risk_analytics',
     'view_internal_notes',
     'manage_users',
+    'add_participant',
+    'flag_participant',
+    'manage_participant_account',
+    'view_participant_reports',
+    'view_team_performance',
+  ],
+  super_admin: [
+    'view_own_certificate',
+    'view_all_certificates',
+    'create_claim',
+    'view_own_claims',
+    'view_all_claims',
+    'manage_claim',
+    'approve_claim',
+    'escalate_claim',
+    'view_internal_notes',
+    'create_internal_notes',
+    'send_participant_message',
+    'view_own_contributions',
+    'view_all_contributions',
+    'reconcile_contributions',
+    'release_claim_payment',
+    'view_pool_simplified',
+    'view_pool_full',
+    'view_transactions',
+    'view_financial_reports',
+    'view_management_analytics',
+    'view_risk_analytics',
+    'manage_users',
+    'add_participant',
+    'flag_participant',
+    'manage_participant_account',
+    'view_participant_reports',
+    'manage_staff',
+    'view_team_performance',
+    'view_audit_logs',
+    'system_override',
   ],
 };
 

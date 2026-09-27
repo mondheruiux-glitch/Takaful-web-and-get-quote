@@ -161,12 +161,13 @@ function ProfileTab({ theme, role }: { theme: string; role: DashboardRole }) {
     setTimeout(() => setSavedSuccess(false), 3500);
   };
 
-  const roleBadgeLabel = {
+  const roleBadgeLabel: Record<string, string> = {
     participant: 'Takaful Participant (Policyholder)',
     claim_handler: 'Claims Assessment & Operations',
     finance: 'Finance & Treasury Management',
     management: 'Executive Leadership & Board',
-  }[role];
+    super_admin: 'Super Admin (Platform & Operations Director)',
+  };
 
   return (
     <form onSubmit={handleSave} className="space-y-6">
@@ -204,7 +205,7 @@ function ProfileTab({ theme, role }: { theme: string; role: DashboardRole }) {
             <p className={`text-xs mt-0.5 ${TEXT_SUB}`}>{user.email}</p>
             <p className="text-[11px] text-[#00c685] font-medium mt-1 flex items-center gap-1.5">
               <Shield size={12} />
-              {roleBadgeLabel}
+              {roleBadgeLabel[role] ?? 'Platform User'}
             </p>
           </div>
         </div>

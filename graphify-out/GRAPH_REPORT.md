@@ -1,16 +1,16 @@
-# Graph Report - TAKAFULL + DASHboard  (2026-09-24)
+# Graph Report - TAKAFULL + DASHboard  (2026-09-27)
 
 ## Corpus Check
-- 9822 files · ~6,643,305 words
+- 9838 files · ~6,665,267 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 72222 nodes · 108764 edges · 6344 communities (6072 shown, 272 thin omitted)
+- 72298 nodes · 109065 edges · 6364 communities (6089 shown, 275 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 160 edges (avg confidence: 0.77)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2c5a91d2`
+- Built from commit: `d733d8dd`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -6162,76 +6162,93 @@
 - [[_COMMUNITY_Community 6340|Community 6340]]
 - [[_COMMUNITY_Community 6342|Community 6342]]
 - [[_COMMUNITY_Community 6343|Community 6343]]
+- [[_COMMUNITY_Community 6344|Community 6344]]
+- [[_COMMUNITY_Community 6345|Community 6345]]
+- [[_COMMUNITY_Community 6346|Community 6346]]
+- [[_COMMUNITY_Community 6347|Community 6347]]
+- [[_COMMUNITY_Community 6348|Community 6348]]
+- [[_COMMUNITY_Community 6349|Community 6349]]
+- [[_COMMUNITY_Community 6350|Community 6350]]
+- [[_COMMUNITY_Community 6351|Community 6351]]
+- [[_COMMUNITY_Community 6352|Community 6352]]
+- [[_COMMUNITY_Community 6353|Community 6353]]
+- [[_COMMUNITY_Community 6354|Community 6354]]
+- [[_COMMUNITY_Community 6355|Community 6355]]
+- [[_COMMUNITY_Community 6359|Community 6359]]
+- [[_COMMUNITY_Community 6360|Community 6360]]
+- [[_COMMUNITY_Community 6361|Community 6361]]
+- [[_COMMUNITY_Community 6362|Community 6362]]
+- [[_COMMUNITY_Community 6363|Community 6363]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `cn()` - 1388 edges
-2. `lucide-react` - 1015 edges
-3. `Button()` - 955 edges
-4. `Card()` - 468 edges
-5. `CardContent()` - 452 edges
-6. `CardHeader()` - 366 edges
-7. `Field()` - 351 edges
-8. `class-variance-authority` - 351 edges
-9. `CardTitle()` - 338 edges
+1. `cn()` - 1393 edges
+2. `lucide-react` - 1024 edges
+3. `Button()` - 957 edges
+4. `Card()` - 470 edges
+5. `CardContent()` - 454 edges
+6. `CardHeader()` - 367 edges
+7. `class-variance-authority` - 352 edges
+8. `Field()` - 351 edges
+9. `CardTitle()` - 339 edges
 10. `CardDescription()` - 331 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Avatar()` --calls--> `getDicebearAvatar()`  [EXTRACTED]
-  app/dashboard/participants/page.tsx → lib/dashboard/avatars.ts
-- `TestTokenizer` --uses--> `DesignSystemGenerator`  [INFERRED]
-  agent/skills/ui-ux-pro-max/scripts/tests/test_core.py → .reference/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/design_system.py
-- `TestSearchDomains` --uses--> `DesignSystemGenerator`  [INFERRED]
-  agent/skills/ui-ux-pro-max/scripts/tests/test_core.py → .reference/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/design_system.py
-- `TestDomainDetection` --uses--> `DesignSystemGenerator`  [INFERRED]
-  agent/skills/ui-ux-pro-max/scripts/tests/test_core.py → .reference/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/design_system.py
-- `TestPersistence` --uses--> `DesignSystemGenerator`  [INFERRED]
-  agent/skills/ui-ux-pro-max/scripts/tests/test_core.py → .reference/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/design_system.py
+- `TestTokenizer` --uses--> `BM25`  [INFERRED]
+  agent/skills/ui-ux-pro-max/scripts/tests/test_core.py → .reference/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/core.py
+- `TestSearchDomains` --uses--> `BM25`  [INFERRED]
+  agent/skills/ui-ux-pro-max/scripts/tests/test_core.py → .reference/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/core.py
+- `TestDomainDetection` --uses--> `BM25`  [INFERRED]
+  agent/skills/ui-ux-pro-max/scripts/tests/test_core.py → .reference/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/core.py
+- `TestPersistence` --uses--> `BM25`  [INFERRED]
+  agent/skills/ui-ux-pro-max/scripts/tests/test_core.py → .reference/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/core.py
+- `TestReasoningMatch` --uses--> `BM25`  [INFERRED]
+  agent/skills/ui-ux-pro-max/scripts/tests/test_core.py → .reference/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/core.py
 
-## Communities (6344 total, 272 thin omitted)
+## Communities (6364 total, 275 thin omitted)
 
 ### Community 0 - "cn"
-Cohesion: 0.03
-Nodes (50): PROPERTY_TYPES, STEP_DESCS, STEP_TITLES, Globe(), GLOBE_CONFIG, Alert, AlertContent, AlertDescription (+42 more)
+Cohesion: 0.07
+Nodes (15): PROPERTY_TYPES, STEP_DESCS, STEP_TITLES, Input, InputProps, Label, Meteors(), SelectContent (+7 more)
 
 ### Community 1 - "dependencies"
 Cohesion: 0.03
-Nodes (75): cobe, StickyScroll(), @hookform/resolvers, motion, dependencies, class-variance-authority, cobe, framer-motion (+67 more)
+Nodes (78): cobe, @hookform/resolvers, motion, dependencies, class-variance-authority, cobe, framer-motion, @hookform/resolvers (+70 more)
 
 ### Community 2 - "page.tsx"
-Cohesion: 0.04
-Nodes (38): BackgroundBeams, Boxes, claimsSteps, compRows, containerVariants, coverageItems, Dot, ease (+30 more)
+Cohesion: 0.07
+Nodes (16): BackgroundBeams, Boxes, claimsSteps, compRows, containerVariants, coverageItems, Dot, ease (+8 more)
 
 ### Community 3 - "page.tsx"
 Cohesion: 0.01
-Nodes (103): metadata, DatePickerInput(), formatDate(), DatePickerNaturalLanguage(), formatDate(), plans, LoginForm(), TOP_LEVEL_SECTIONS (+95 more)
+Nodes (155): metadata, CURRENCIES, deliveryTimes, months, years, items, items, items (+147 more)
 
 ### Community 4 - "page.tsx"
-Cohesion: 0.07
-Nodes (28): tooltipPeople, Comparison(), containerVariants, FAQ(), FeaturedSectionStats, Features8, HeroSection(), HoverFooter (+20 more)
+Cohesion: 0.10
+Nodes (13): Callout(), AlertExample(), AlertExample1(), AlertExample2(), AlertExample3(), AlertExample4(), Alert(), AlertAction() (+5 more)
 
 ### Community 5 - "compilerOptions"
 Cohesion: 0.12
 Nodes (16): compilerOptions, allowJs, baseUrl, esModuleInterop, incremental, isolatedModules, jsx, module (+8 more)
 
 ### Community 6 - "hero-section-nexus.tsx"
-Cohesion: 0.08
-Nodes (10): cn(), Dot, DropdownItemProps, DropdownMenuProps, NavLink(), NavLinkProps, RotatingText, RotatingTextProps (+2 more)
+Cohesion: 0.03
+Nodes (55): tooltipPeople, Comparison(), containerVariants, FAQ(), FeaturedSectionStats, Features8, HeroSection(), HoverFooter (+47 more)
 
 ### Community 7 - "devDependencies"
-Cohesion: 0.02
-Nodes (145): eslint-config-next, firebase-tools, eslintConfig, devDependencies, tailwindcss, @tailwindcss/postcss, tw-animate-css, @types/node (+137 more)
+Cohesion: 0.01
+Nodes (177): eslint, eslint-config-next, firebase-tools, eslintConfig, devDependencies, tailwindcss, @tailwindcss/postcss, tw-animate-css (+169 more)
 
 ### Community 8 - "pill-badge.tsx"
 Cohesion: 0.03
-Nodes (20): fetchProjects(), NavProjects(), projects, NavItem, SPEC_NAV, LoginPage(), LoginPage(), lucide-react (+12 more)
+Nodes (48): DatePickerInput(), formatDate(), DatePickerNaturalLanguage(), formatDate(), DATE_OPTIONS, FILE_TYPES, TAGS, CalendarBookedDates() (+40 more)
 
 ### Community 9 - "particles.tsx"
-Cohesion: 0.02
-Nodes (97): frameworks, frameworks, frameworks, countries, frameworks, frameworks, timezones, timezones (+89 more)
+Cohesion: 0.11
+Nodes (38): frameworks, frameworks, frameworks, frameworks, frameworks, timezones, timezones, frameworks (+30 more)
 
 ### Community 10 - "package.json"
 Cohesion: 0.01
-Nodes (47): vazirmatn, HOVER_CARD_SIDES, GLOBE_CONFIG, class-variance-authority, Callout(), IconProps, Icons, MaxLengthSelectorProps (+39 more)
+Nodes (55): HOVER_CARD_SIDES, GLOBE_CONFIG, class-variance-authority, MaxLengthSelector(), MaxLengthSelectorProps, PresetShare(), TemperatureSelector(), TemperatureSelectorProps (+47 more)
 
 ### Community 11 - "layout.tsx"
 Cohesion: 0.13
@@ -6239,131 +6256,131 @@ Nodes (9): pages, title, extends, pages, nextConfig, next, pages, title (+1 more
 
 ### Community 12 - "react"
 Cohesion: 0.04
-Nodes (73): projects, projects, projects, items, projects, items, SidebarNav(), data (+65 more)
+Nodes (75): projects, projects, projects, items, projects, items, SidebarNav(), data (+67 more)
 
 ### Community 18 - "Community 18"
-Cohesion: 0.03
-Nodes (96): chat, getTrimmedMessageText(), messages, userMessages, chat, history, chat, initialMessages (+88 more)
+Cohesion: 0.01
+Nodes (190): vazirmatn, AnchorRole, ChatMessage, scriptedMessages, chat, initialMessages, transport, getTrimmedMessageText() (+182 more)
 
 ### Community 19 - "Community 19"
-Cohesion: 0.03
-Nodes (55): columns, data, Payment, people, columns, data, Payment, DataTableColumnHeaderProps (+47 more)
+Cohesion: 0.15
+Nodes (11): CommandMenuItem(), Query, ModelItem(), ModelItemProps, ModelSelector(), ModelSelectorProps, Model, models (+3 more)
 
 ### Community 20 - "Community 20"
-Cohesion: 0.03
-Nodes (103): people, models, music, AccountAccess(), ActivateAgentDialog(), agentFeatures, AnalyticsCard(), AnomalyAlert() (+95 more)
+Cohesion: 0.05
+Nodes (47): countries, people, models, music, AccountAccess(), KitchenIsland(), SCENES, HOLDINGS (+39 more)
 
 ### Community 21 - "Community 21"
-Cohesion: 0.08
-Nodes (21): FileTreeItem, BILLING_QUESTIONS, Faq(), GENERAL_QUESTIONS, GOALS_QUESTIONS, QuestionList(), DirectoryList(), CollapsibleExample() (+13 more)
+Cohesion: 0.03
+Nodes (70): FileTreeItem, useThemeConfig(), CodeBlockCommand(), CodeCollapsibleWrapper(), CodeTabs(), ComponentPreview(), ComponentCode(), ComponentSource() (+62 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.04
-Nodes (79): diffComponent(), INVALID_GITHUB_REPO_NAMES, isGitHubItemAddress(), isGitHubOwner(), isGitHubRegistrySource(), isGitHubRepo(), isValidGitHubRef(), resolveGitHubItemAddress() (+71 more)
+Cohesion: 0.02
+Nodes (131): promptForConfig(), INVALID_GITHUB_REPO_NAMES, isGitHubItemAddress(), isGitHubOwner(), isGitHubRegistrySource(), isGitHubRepo(), isValidGitHubRef(), resolveGitHubItemAddress() (+123 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.02
-Nodes (149): Example(), ExampleWrapper(), AccordionBasic(), AccordionExample(), AccordionInCard(), AccordionMultiple(), AccordionWithBorders(), AccordionWithDisabled() (+141 more)
+Nodes (164): Example(), ExampleWrapper(), AspectRatio16x9(), AspectRatio1x1(), AspectRatio21x9(), AspectRatio9x16(), AspectRatioExample(), BadgeAsLink() (+156 more)
 
 ### Community 24 - "Community 24"
 Cohesion: 0.02
-Nodes (145): createTempSourceFile(), project, transform(), Transformer, TransformOpts, ELEMENTS_REQUIRING_NATIVE_BUTTON_FALSE, testConfig, transformAsChild() (+137 more)
+Nodes (153): diffComponent(), updateOptionsSchema, getRegistryBaseColor(), createTempSourceFile(), project, transform(), Transformer, TransformOpts (+145 more)
 
 ### Community 25 - "Community 25"
-Cohesion: 0.04
-Nodes (54): AnchorRole, ChatMessage, scriptedMessages, chat, initialMessages, transport, chat, initialMessages (+46 more)
+Cohesion: 0.03
+Nodes (19): CatalogToolbar(), User, users, FormSchema, demoFormAction(), formSchema, FormState, formSchema (+11 more)
 
 ### Community 26 - "Community 26"
-Cohesion: 0.19
-Nodes (28): MenubarBasic(), MenubarDestructive(), MenubarExample(), MenubarFormat(), MenubarInDialog(), MenubarInsert(), MenubarWithCheckboxes(), MenubarWithIcons() (+20 more)
+Cohesion: 0.05
+Nodes (50): columns, data, Payment, people, chat, messages, userMessages, columns (+42 more)
 
 ### Community 27 - "Community 27"
-Cohesion: 0.07
-Nodes (38): AppSidebar(), NavActions(), PreviewHeader(), data, SettingsDialog(), SidebarLeft(), SidebarRight(), SiteHeader() (+30 more)
+Cohesion: 0.05
+Nodes (47): Payments(), AppSidebar(), AssetTable(), ChartAreaInteractive(), DataTable(), EditorWorkspace(), FilterLibrary(), NavActions() (+39 more)
 
 ### Community 28 - "Community 28"
-Cohesion: 0.03
-Nodes (89): AlertRtl(), alerts, translations, AspectRatioRtl(), translations, ButtonGroupRtl(), CheckboxRtl(), DropdownMenuRtl() (+81 more)
+Cohesion: 0.02
+Nodes (130): AspectRatioRtl(), translations, BadgeRtl(), translations, ButtonGroupRtl(), ButtonRtl(), translations, CalendarRtl() (+122 more)
 
 ### Community 29 - "Community 29"
 Cohesion: 0.03
-Nodes (125): add, addOptionsSchema, apply, build, buildOptionsSchema, button, outputDir, registry (+117 more)
+Nodes (151): add, addOptionsSchema, promptForRegistryComponents(), apply, APPLY_ONLY_VALUES, ApplyOnlyError, ApplyOnlyValue, applyOptionsSchema (+143 more)
 
 ### Community 30 - "Community 30"
 Cohesion: 0.11
-Nodes (26): User, users, roles, teamMembers, DataTableFacetedFilterProps, PresetSelectorProps, frameworks, Status (+18 more)
+Nodes (26): DataTableFacetedFilterProps, PresetSelector(), PresetSelectorProps, Preset, presets, frameworks, Status, statuses (+18 more)
 
 ### Community 31 - "Community 31"
 Cohesion: 0.01
 Nodes (135): @8bitcn, @8starlabs-ui, @97cn, @abstract, @abui, @aceternity, @aevr, @agents-ui (+127 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.05
-Nodes (30): containerVariants, FeaturedSectionStats, Features8, HoverFooter, itemVariants, StickyFeatureSection, Testimonial1, tooltipPeople (+22 more)
+Cohesion: 0.08
+Nodes (23): items, items, items, items, BILLING_QUESTIONS, Faq(), GENERAL_QUESTIONS, GOALS_QUESTIONS (+15 more)
 
 ### Community 33 - "Community 33"
-Cohesion: 0.03
-Nodes (73): ClaimsPage(), ease, fadeUp, ClaimsPaymentsPage(), ease, fadeUp, CERTIFICATES, CLAIM_DOCUMENTS (+65 more)
+Cohesion: 0.02
+Nodes (93): ClaimsPage(), ease, fadeUp, StatusBadge(), ClaimsPaymentsPage(), ease, fadeUp, ease (+85 more)
 
 ### Community 34 - "Community 34"
-Cohesion: 0.07
-Nodes (58): tableData, invoices, invoices, formatCurrency(), Invoice(), INVOICE_ITEMS, subtotal, RecentTransactions() (+50 more)
+Cohesion: 0.06
+Nodes (59): tableData, invoices, invoices, formatCurrency(), Invoice(), INVOICE_ITEMS, subtotal, ARTICLE_ROWS (+51 more)
 
 ### Community 35 - "Community 35"
-Cohesion: 0.03
-Nodes (90): applyInitUrlOptions(), initOptionsSchema, postInit, projectInfo, projectPath, result, url, getThemeCode() (+82 more)
+Cohesion: 0.04
+Nodes (72): getThemeCode(), iconLibraries, IconLibrary, IconLibraryName, createTestConfig(), configWithDefaults(), resolveStyleFromConfig(), config (+64 more)
 
 ### Community 36 - "Community 36"
 Cohesion: 0.09
-Nodes (37): deliveryTimes, DrawerDialogDemo(), SNAP_POINTS, ChartCodeViewer(), ChartCopyButton(), Chart, ChartToolbar(), DirectoryAddButton() (+29 more)
+Nodes (40): DrawerDialogDemo(), SNAP_POINTS, ChartCodeViewer(), ChartCopyButton(), Chart, ChartToolbar(), OpenInV0Button(), BreadcrumbResponsive() (+32 more)
 
 ### Community 37 - "Community 37"
-Cohesion: 0.15
-Nodes (7): GroupChatItem, Message(), MessageAvatar(), MessageContent(), MessageFooter(), MessageGroup(), MessageHeader()
+Cohesion: 0.10
+Nodes (9): ResizableControlled(), ResizableExample(), ResizableHorizontal(), ResizableNested(), ResizableVertical(), ResizableWithHandle(), ResizableHandle(), ResizablePanel() (+1 more)
 
 ### Community 38 - "Community 38"
 Cohesion: 0.05
-Nodes (83): translations, months, translations, years, translations, translations, translations, SelectRtl() (+75 more)
+Nodes (89): translations, categories, translations, FieldRtl(), months, translations, years, translations (+81 more)
 
 ### Community 39 - "Community 39"
-Cohesion: 0.05
-Nodes (77): CollapsibleRtl(), translations, SheetRtl(), translations, translations, SkeletonRtl(), translations, LanguageProvider() (+69 more)
+Cohesion: 0.06
+Nodes (62): AvatarRtl(), translations, CollapsibleRtl(), translations, translations, logicalSides, physicalSides, TooltipRtl() (+54 more)
 
 ### Community 40 - "Community 40"
 Cohesion: 0.04
-Nodes (90): decodePreset(), DEFAULT_PRESET_CONFIG, encodePreset(), fromBase62(), generateRandomConfig(), generateRandomPreset(), isValidPreset(), PRESET_BASE_COLORS (+82 more)
+Nodes (92): collectInfo(), getRegistries(), decodePreset(), DEFAULT_PRESET_CONFIG, encodePreset(), fromBase62(), generateRandomConfig(), generateRandomPreset() (+84 more)
 
 ### Community 41 - "Community 41"
 Cohesion: 0.04
-Nodes (68): BlocksPage(), FEATURED_BLOCKS, BlocksPage(), charts, BlockDisplay(), getCachedFileTree, getCachedHighlightedFiles, getCachedRegistryItem (+60 more)
+Nodes (63): BlocksPage(), FEATURED_BLOCKS, BlocksPage(), charts, BlockDisplay(), getCachedFileTree, getCachedHighlightedFiles, getCachedRegistryItem (+55 more)
 
 ### Community 42 - "Community 42"
 Cohesion: 0.14
 Nodes (27): ContextMenuBasic(), ContextMenuExample(), ContextMenuInDialog(), ContextMenuWithCheckboxes(), ContextMenuWithDestructive(), ContextMenuWithGroups(), ContextMenuWithIcons(), ContextMenuWithInset() (+19 more)
 
 ### Community 43 - "Community 43"
-Cohesion: 0.03
-Nodes (57): config, config, config, config, config, tailwindcss, dependencies, @babel/core (+49 more)
+Cohesion: 0.02
+Nodes (68): config, config, config, devDependencies, tailwindcss, name, private, scripts (+60 more)
 
 ### Community 44 - "Community 44"
-Cohesion: 0.13
-Nodes (30): images, Item, items, images, getFilename(), PartFile(), AttachmentContentOnly(), AttachmentExample() (+22 more)
+Cohesion: 0.15
+Nodes (21): images, Item, items, images, getFilename(), PartFile(), images, Item (+13 more)
 
 ### Community 45 - "Community 45"
-Cohesion: 0.09
-Nodes (8): data, data, Avatar(), AvatarBadge(), AvatarFallback(), AvatarGroup(), AvatarGroupCount(), AvatarImage()
+Cohesion: 0.07
+Nodes (35): ChangelogPage(), generateMetadata(), CommandMenu(), ComponentsList(), DocsSidebar(), MainNav(), MobileNav(), TOP_LEVEL_SECTIONS (+27 more)
 
 ### Community 46 - "Community 46"
 Cohesion: 0.02
-Nodes (299): items, spacingOptions, chartData, chartData, chartData, chartData, chartData, chartData (+291 more)
+Nodes (310): spacingOptions, chartData, chartData, chartData, chartData, chartData, chartData, ActivateAgentDialog() (+302 more)
 
 ### Community 47 - "Community 47"
 Cohesion: 0.03
 Nodes (69): 01. DOCUMENT PURPOSE, 02. PRODUCT OVERVIEW, 03. PRODUCT VISION, 06. TARGET USERS, 10. GET QUOTE, 12. GET QUOTE — STEP 02, 13. GET QUOTE — STEP 03, 14. GET QUOTE — STEP 04 (+61 more)
 
 ### Community 48 - "Community 48"
-Cohesion: 0.13
-Nodes (22): dateFnsLocales, DatePickerRtl(), dayPickerLocales, translations, logicalSides, physicalSides, PopoverRtl(), translations (+14 more)
+Cohesion: 0.06
+Nodes (32): ActionMenuScript(), ActiveThemeProvider(), ThemeContext, ThemeContextType, Analytics(), GitHubLink(), DarkModeScript(), ModeSwitcher() (+24 more)
 
 ### Community 49 - "Community 49"
 Cohesion: 0.07
@@ -6386,8 +6403,8 @@ Cohesion: 0.05
 Nodes (76): cssVars, dark, light, cssVarsTemplate, cssVarsV4, dark, light, accent (+68 more)
 
 ### Community 54 - "Community 54"
-Cohesion: 0.04
-Nodes (53): clsx, dependencies, class-variance-authority, clsx, lucide-react, next, react, react-dom (+45 more)
+Cohesion: 0.03
+Nodes (68): clsx, dependencies, class-variance-authority, clsx, lucide-react, next, react, react-dom (+60 more)
 
 ### Community 55 - "Community 55"
 Cohesion: 0.07
@@ -6407,119 +6424,119 @@ Nodes (74): cssVars, dark, light, cssVarsTemplate, cssVarsV4, dark, light, accen
 
 ### Community 59 - "Community 59"
 Cohesion: 0.06
-Nodes (62): ResolvedGitHubRegistrySource, ResolvedItemAddress, RegistrySourceFileError, createGitHubRegistrySourceReader(), createGitHubValidationDiagnostic(), fetchGitHubRegistryCatalog(), fetchGitHubRegistryItem(), fetchGitHubSourceFile() (+54 more)
+Nodes (63): ResolvedGitHubRegistrySource, ResolvedItemAddress, RegistryError, RegistrySourceFileError, createGitHubRegistrySourceReader(), createGitHubValidationDiagnostic(), fetchGitHubRegistryCatalog(), fetchGitHubRegistryItem() (+55 more)
 
 ### Community 60 - "Community 60"
-Cohesion: 0.05
-Nodes (65): registryItemFileSchema, canDeduplicateFiles(), createTempSourceFile(), deduplicateFilesByTarget(), DEPENDENCY_SKIP_LIST, determineFileType(), FILE_EXTENSIONS_FOR_LOOKUP, FILE_PATH_SKIP_LIST (+57 more)
+Cohesion: 0.03
+Nodes (88): migrateRadix(), allPackages, expectedPackageJson, importLines, imports, mockConfig, mockFs, mockPackageJson (+80 more)
 
 ### Community 61 - "Community 61"
-Cohesion: 0.07
-Nodes (73): BreadcrumbRtl(), translations, translations, data, DataTableRtl(), Payment, translations, translations (+65 more)
+Cohesion: 0.09
+Nodes (54): BreadcrumbRtl(), translations, translations, data, Payment, translations, translations, invoices (+46 more)
 
 ### Community 62 - "Community 62"
 Cohesion: 0.14
 Nodes (17): CarouselBasic(), CarouselExample(), CarouselMultiple(), CarouselWithGap(), Carousel(), CarouselApi, CarouselContent(), CarouselContext (+9 more)
 
 ### Community 63 - "Community 63"
-Cohesion: 0.16
-Nodes (15): HOVER_CARD_SIDES, HoverCardExample(), HoverCardInDialog(), HoverCardSides(), parsePresetInput(), Dialog(), DialogClose(), DialogContent() (+7 more)
+Cohesion: 0.12
+Nodes (23): dateFnsLocales, DatePickerRtl(), dayPickerLocales, translations, logicalSides, physicalSides, PopoverRtl(), translations (+15 more)
 
 ### Community 64 - "Community 64"
-Cohesion: 0.19
-Nodes (19): AlertDialogBasic(), AlertDialogDestructive(), AlertDialogExample(), AlertDialogInDialog(), AlertDialogSmall(), AlertDialogSmallWithMedia(), AlertDialogWithMedia(), AlertDialog() (+11 more)
+Cohesion: 0.18
+Nodes (20): PresetActions(), AlertDialogBasic(), AlertDialogDestructive(), AlertDialogExample(), AlertDialogInDialog(), AlertDialogSmall(), AlertDialogSmallWithMedia(), AlertDialogWithMedia() (+12 more)
 
 ### Community 65 - "Community 65"
-Cohesion: 0.08
-Nodes (32): ChangelogPage(), generateMetadata(), ComponentsList(), DocsBaseSwitcher(), DocsCopyPage(), MainNav(), OpenInV0Cta(), ChangelogPage (+24 more)
+Cohesion: 0.19
+Nodes (28): MenubarBasic(), MenubarDestructive(), MenubarExample(), MenubarFormat(), MenubarInDialog(), MenubarInsert(), MenubarWithCheckboxes(), MenubarWithIcons() (+20 more)
 
 ### Community 66 - "Community 66"
 Cohesion: 0.06
 Nodes (43): exclude, include, exclude, include, exclude, include, exclude, include (+35 more)
 
 ### Community 67 - "Community 67"
-Cohesion: 0.05
-Nodes (24): containerVariants, itemVariants, CLAUSES_DATA, HoverFooter, PolicyClause, categories, ease, HoverFooter (+16 more)
+Cohesion: 0.17
+Nodes (16): CodeViewer(), PresetSave(), HOVER_CARD_SIDES, HoverCardExample(), HoverCardInDialog(), HoverCardSides(), Dialog(), DialogClose() (+8 more)
 
 ### Community 68 - "Community 68"
 Cohesion: 0.03
-Nodes (63): devDependencies, binode, cookie, cross-env, cypress, eslint-config-prettier, eslint-import-resolver-typescript, eslint-plugin-cypress (+55 more)
+Nodes (64): autoprefixer, devDependencies, autoprefixer, eslint, eslint-config-next, postcss, tailwindcss, autoprefixer (+56 more)
 
 ### Community 69 - "Community 69"
-Cohesion: 0.09
-Nodes (8): DEFAULT_PLUGINS, Markdown(), Bubble(), BubbleContent(), BubbleGroup(), BubbleReactions(), bubbleReactionsVariants, bubbleVariants
+Cohesion: 0.06
+Nodes (22): tags, Artwork, works, BlocksNav(), ChartsNav(), links, examples, ExamplesNav() (+14 more)
 
 ### Community 70 - "Community 70"
-Cohesion: 0.12
-Nodes (6): ComponentPreviewTabs(), DirectionProviderWrapper(), directionTranslations, PreviewWrapper(), RtlLanguageSelector(), DirectionProvider()
+Cohesion: 0.10
+Nodes (33): RegistryErrorCode, RegistryItemNotFoundError, createRegistryCatalog(), createRegistryItem(), formatIncludeCycle(), formatItemSource(), formatZodIssues(), getRegistryItemFileRootPath() (+25 more)
 
 ### Community 71 - "Community 71"
-Cohesion: 0.10
-Nodes (4): InputOTP(), InputOTPGroup(), InputOTPSeparator(), InputOTPSlot()
+Cohesion: 0.08
+Nodes (13): InputOTPAlphanumeric(), InputOTPDisabled(), InputOTPExample(), InputOTPForm(), InputOTPFourDigits(), InputOTPInvalid(), InputOTPPattern(), InputOTPSimple() (+5 more)
 
 ### Community 72 - "Community 72"
 Cohesion: 0.03
 Nodes (63): dependencies, ai, @ai-sdk/anthropic, @ai-sdk/openai, @ai-sdk/react, @base-ui/react, change-case, chrono-node (+55 more)
 
 ### Community 73 - "Community 73"
-Cohesion: 0.03
-Nodes (127): CURRENCIES, months, years, items, items, items, items, asia (+119 more)
+Cohesion: 0.25
+Nodes (6): BarCategoryItem, CategoryBarChartProps, Component(), DateRange, defaultMonthlyData, defaultWeeklyData
 
 ### Community 74 - "Community 74"
-Cohesion: 0.07
-Nodes (14): BubbleAlignment(), BubbleButtonLinks(), BubbleCollapsible(), BubbleExample(), BubbleGrouped(), BubbleReactionsButtons(), BubbleSizes(), BubbleVariants() (+6 more)
+Cohesion: 0.16
+Nodes (27): CommandRtl(), translations, DialogRtl(), translations, CommandRtl(), translations, DialogRtl(), translations (+19 more)
 
 ### Community 75 - "Community 75"
-Cohesion: 0.07
-Nodes (56): MenuAccentPicker(), ActionMenu(), BaseColorPicker(), BasePicker(), ChartColorPicker(), Customizer(), ProjectForm, FontPicker() (+48 more)
+Cohesion: 0.04
+Nodes (73): validatePreset(), GET(), buildAvailableComponentsSection(), buildComponentsJsonSection(), buildCssSection(), buildDependenciesSection(), buildFontSection(), buildInstructions() (+65 more)
 
 ### Community 76 - "Community 76"
 Cohesion: 0.06
 Nodes (48): dependencies, astro, @astrojs/react, isbot, next, next-themes, react, react-router (+40 more)
 
 ### Community 77 - "Community 77"
-Cohesion: 0.04
-Nodes (47): Components, Index, ActionMenuScript(), ActiveThemeProvider(), ThemeContext, ThemeContextType, Analytics(), GitHubLink() (+39 more)
+Cohesion: 0.02
+Nodes (101): CERTIFICATES, ease, fadeUp, STATUS_CONFIG, SUMMARY, TABS, TYPE_ICON, ContributionsPage() (+93 more)
 
 ### Community 78 - "Community 78"
-Cohesion: 0.07
-Nodes (38): args, formattedItems, inputSchema, itemNames, registries, skippedNote, unknownTypesMessage, findUnknownTypesMessage() (+30 more)
+Cohesion: 0.08
+Nodes (37): args, formattedItems, inputSchema, itemNames, registries, skippedNote, unknownTypesMessage, findUnknownTypesMessage() (+29 more)
 
 ### Community 79 - "Community 79"
-Cohesion: 0.10
-Nodes (37): CardRtl(), translations, CarouselRtl(), translations, TabsRtl(), translations, CardRtl(), translations (+29 more)
+Cohesion: 0.09
+Nodes (38): CardRtl(), translations, CarouselRtl(), translations, TabsRtl(), translations, CardRtl(), translations (+30 more)
 
 ### Community 80 - "Community 80"
-Cohesion: 0.19
+Cohesion: 0.15
 Nodes (16): components, components, components, ListItem(), NavigationMenuExample(), components, NavigationMenu(), NavigationMenuContent() (+8 more)
 
 ### Community 81 - "Community 81"
-Cohesion: 0.05
-Nodes (39): author, name, url, bugs, url, description, exports, ./message-scroller (+31 more)
+Cohesion: 0.04
+Nodes (50): author, name, url, bugs, url, description, devDependencies, jsdom (+42 more)
 
 ### Community 82 - "Community 82"
-Cohesion: 0.05
-Nodes (44): ContributionsPage(), getDicebearAvatar(), CLAIM_HANDLER_NAV, FINANCE_NAV, MANAGEMENT_NAV, NAV_BY_ROLE, NavItem, PARTICIPANT_NAV (+36 more)
+Cohesion: 0.10
+Nodes (9): DEFAULT_PLUGINS, Markdown(), PartTextVariant, Bubble(), BubbleContent(), BubbleGroup(), BubbleReactions(), bubbleReactionsVariants (+1 more)
 
 ### Community 83 - "Community 83"
-Cohesion: 0.12
-Nodes (21): InputGroupButtonExample(), BlockCopyCodeButton(), BlockViewerCode(), BlockViewerContext, BlockViewerFileTree(), BlockViewerIframe(), BlockViewerMobile(), BlockViewerProps (+13 more)
+Cohesion: 0.05
+Nodes (83): MenuAccentPicker(), BaseColorPicker(), BasePicker(), ChartColorPicker(), CopyPreset(), ProjectForm, FontPicker(), FontPickerOption (+75 more)
 
 ### Community 84 - "Community 84"
 Cohesion: 0.05
 Nodes (38): author, name, url, bin, description, engines, node, files (+30 more)
 
 ### Community 85 - "Community 85"
-Cohesion: 0.11
-Nodes (33): addDiagnostic(), addZodDiagnostics(), collectRegistryItems(), createValidationResult(), formatIncludeCycle(), formatItemSource(), formatPath(), formatZodIssue() (+25 more)
+Cohesion: 0.07
+Nodes (47): add, registry, addDiagnostic(), addZodDiagnostics(), collectRegistryItems(), createValidationResult(), fileExists(), formatCount() (+39 more)
 
 ### Community 86 - "Community 86"
-Cohesion: 0.10
-Nodes (6): Known query -> expected top-domain sanity checks (not exact-row pinning,     sin, TestDomainDetection, TestPersistence, TestReasoningMatch, TestSearchDomains, TestTokenizer
+Cohesion: 0.05
+Nodes (23): DesignSystemGenerator, Find matching reasoning rule for a category., Find matching reasoning rule for a category., Apply reasoning rules to search results., Apply reasoning rules to search results., Select best matching result based on priority keywords., Select best matching result based on priority keywords., Extract results list from search result dict. (+15 more)
 
 ### Community 87 - "Community 87"
-Cohesion: 0.10
-Nodes (16): items, items, items, MarkerAccordion(), MarkerBorder(), MarkerDrawer(), MarkerExample(), MarkerExamples() (+8 more)
+Cohesion: 0.09
+Nodes (36): EmptyRtl(), translations, AppearanceSettings(), ButtonGroupDemo(), ButtonGroupInputGroup(), ButtonGroupNested(), formatNumber(), translations (+28 more)
 
 ### Community 88 - "Community 88"
 Cohesion: 0.04
@@ -6534,8 +6551,8 @@ Cohesion: 0.04
 Nodes (48): author, name, url, peerDependencies, license, name, @types/react, @types/react-dom (+40 more)
 
 ### Community 91 - "Community 91"
-Cohesion: 0.16
-Nodes (28): SHEET_SIDES, SHEET_SIDES, SheetExample(), SheetNoCloseButton(), SheetWithForm(), SheetWithSides(), SHEET_SIDES, SheetSide (+20 more)
+Cohesion: 0.09
+Nodes (20): Components, Index, CreateDevtools(), Customizer(), PresetHandler(), Preview(), PREVIEW_ITEMS, PreviewSwitcher() (+12 more)
 
 ### Community 92 - "Community 92"
 Cohesion: 0.04
@@ -6562,8 +6579,8 @@ Cohesion: 0.05
 Nodes (21): Data, handler(), APP_URL, barlow, instrumentSerif, inter, metadata, RootLayout() (+13 more)
 
 ### Community 98 - "Community 98"
-Cohesion: 0.04
-Nodes (90): APPLY_ONLY_VALUES, ApplyOnlyError, ApplyOnlyValue, applyOptionsSchema, ApplyWorkspaceSyncError, getApplyWorkspaceConfigs(), getInitCommand(), getPresetUrlOnly() (+82 more)
+Cohesion: 0.10
+Nodes (23): metadata, metadata, metadata, Announcement(), ImagePreview(), ArticleDirectoryPreview, EditArticlePreview, EmptyStatePreview (+15 more)
 
 ### Community 99 - "Community 99"
 Cohesion: 0.04
@@ -6574,8 +6591,8 @@ Cohesion: 0.04
 Nodes (45): 1. Visual Theme & Atmosphere, 2. Color Palette & Roles, 3. Typography Rules, 4. Component Stylings, 5. Layout Principles, 6. Depth & Elevation, 7. Do's and Don'ts, 8. Responsive Behavior (+37 more)
 
 ### Community 101 - "Community 101"
-Cohesion: 0.07
-Nodes (40): dependencies, class-variance-authority, clsx, @fontsource-variable/outfit, next-themes, radix-ui, react, react-dom (+32 more)
+Cohesion: 0.08
+Nodes (39): dependencies, class-variance-authority, clsx, @fontsource-variable/outfit, next-themes, radix-ui, react, react-dom (+31 more)
 
 ### Community 102 - "Community 102"
 Cohesion: 0.04
@@ -6622,8 +6639,8 @@ Cohesion: 0.10
 Nodes (33): BM25, detect_domain(), _domain_keywords(), _get_bm25(), _load_csv(), _load_product_keywords(), _normalize(), BM25 ranking algorithm for text search (+25 more)
 
 ### Community 113 - "Community 113"
-Cohesion: 0.06
-Nodes (55): ansi_ljust(), DesignSystemGenerator, _detect_page_type(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system() (+47 more)
+Cohesion: 0.11
+Nodes (38): ansi_ljust(), _detect_page_type(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), _generate_intelligent_overrides() (+30 more)
 
 ### Community 114 - "Community 114"
 Cohesion: 0.14
@@ -6650,16 +6667,16 @@ Cohesion: 0.05
 Nodes (42): Add Rate Limiting, Advanced Authentication Patterns, API Key Authentication, code:json ({), code:json ({), code:bash (REGISTRY_TOKEN=your_secret_token_here), code:json ({), code:json ({) (+34 more)
 
 ### Community 120 - "Community 120"
-Cohesion: 0.05
-Nodes (37): resolveTree(), ConfigJson, configJsonSchema, configSchema, cssValueSchema, iconsSchema, Preset, presetSchema (+29 more)
+Cohesion: 0.22
+Nodes (10): getApplyWorkspaceConfigs(), syncApplyWorkspaceConfigs(), createFileBackup(), deleteFileBackup(), FileBackupError, restoreFileBackup(), renameSyncSpy, task (+2 more)
 
 ### Community 121 - "Community 121"
 Cohesion: 0.05
 Nodes (41): API Reference, Avatar, code:bash (npx shadcn@latest add item), code:tsx (<ItemContent>), code:tsx (<ItemTitle>Item Title</ItemTitle>), code:tsx (<ItemDescription>Item description</ItemDescription>), code:tsx (<ItemActions>), code:tsx (<Item>) (+33 more)
 
 ### Community 122 - "Community 122"
-Cohesion: 0.04
-Nodes (17): ease, fadeUp, MandateModalProps, PARTICIPANT_CONTRIBUTIONS, CONTRIBUTIONS, ClaimRecord, evaluateEligibility(), GetQuoteForm() (+9 more)
+Cohesion: 0.05
+Nodes (12): ClaimRecord, evaluateEligibility(), GetQuoteForm(), HighValueItem, InputProps, PROPERTY_TYPES, QuoteReadyCardProps, SelectContext (+4 more)
 
 ### Community 123 - "Community 123"
 Cohesion: 0.05
@@ -6763,7 +6780,7 @@ Nodes (41): 1. Visual Theme & Atmosphere, 2. Color Palette & Roles, 3. Typograph
 
 ### Community 148 - "Community 148"
 Cohesion: 0.09
-Nodes (11): NativeSelectBasic(), NativeSelectDisabled(), NativeSelectExample(), NativeSelectInvalid(), NativeSelectSizes(), NativeSelectWithField(), NativeSelectWithGroups(), NativeSelect() (+3 more)
+Nodes (17): CreateSkeleton(), buildCssRule(), buildThemeCssText(), DesignSystemProvider(), MANAGED_BODY_CLASS_PREFIXES, RegistryThemeCssVars, HistoryButtons(), HistoryScript() (+9 more)
 
 ### Community 149 - "Community 149"
 Cohesion: 0.05
@@ -7039,7 +7056,7 @@ Nodes (38): code:ts (import { getRegistryItems } from "shadcn/registry"), code:j
 
 ### Community 217 - "Community 217"
 Cohesion: 0.05
-Nodes (38): dependencies, react, react-dom, tailwindcss, @tailwindcss/vite, @tanstack/react-devtools, @tanstack/react-router, @tanstack/react-router-devtools (+30 more)
+Nodes (37): dependencies, react, react-dom, tailwindcss, @tailwindcss/vite, @tanstack/react-devtools, @tanstack/react-router, @tanstack/react-router-devtools (+29 more)
 
 ### Community 218 - "Community 218"
 Cohesion: 0.05
@@ -7098,8 +7115,8 @@ Cohesion: 0.05
 Nodes (36): 1. Visual Communication First, 2. Minimal Text Integration, 3. Expert Craftsmanship, 4. Systematic Patterns, Analog Meditation, Approach, Canvas Boundaries, Canvas Design System (+28 more)
 
 ### Community 232 - "Community 232"
-Cohesion: 0.06
-Nodes (50): ButtonRtl(), translations, ItemRtl(), translations, ScrollAreaRtl(), tags, translations, SeparatorRtl() (+42 more)
+Cohesion: 0.13
+Nodes (25): ItemRtl(), translations, SpinnerRtl(), translations, translations, translations, ButtonRtl(), translations (+17 more)
 
 ### Community 233 - "Community 233"
 Cohesion: 0.05
@@ -7114,8 +7131,8 @@ Cohesion: 0.05
 Nodes (36): ArrowUpDown, lucide, radix, BellRing, lucide, radix, Calendar, lucide (+28 more)
 
 ### Community 236 - "Community 236"
-Cohesion: 0.09
-Nodes (22): BackgroundBeams, containerVariants, Dot, FAQS, HomeType, HoverFooter, itemVariants, MATRIX_DATA (+14 more)
+Cohesion: 0.04
+Nodes (56): resolveTree(), ConfigJson, configJsonSchema, configSchema, cssValueSchema, iconsSchema, Preset, presetSchema (+48 more)
 
 ### Community 237 - "Community 237"
 Cohesion: 0.05
@@ -7234,24 +7251,24 @@ Cohesion: 0.12
 Nodes (28): createStyleMap(), StyleMap, styleMapSchema, result, ALLOWLIST, applyClassesToCnCall(), applyClassesToElement(), applyStyleToCvaString() (+20 more)
 
 ### Community 266 - "Community 266"
-Cohesion: 0.04
-Nodes (29): aboutLeftStat, aboutPrimaryStat, aboutRightStat, aboutSecondaryStat, BackgroundBeams, Boxes, containerVariants, Dot (+21 more)
+Cohesion: 0.02
+Nodes (52): aboutLeftStat, aboutPrimaryStat, aboutRightStat, aboutSecondaryStat, BackgroundBeams, Boxes, containerVariants, Dot (+44 more)
 
 ### Community 267 - "Community 267"
 Cohesion: 0.06
 Nodes (34): Accessibility Patterns, Alternative: Tailwind-Only Setup, Best Practices, code:bash (npx shadcn@latest init), code:tsx (<div className="min-h-screen bg-white dark:bg-gray-900">), code:bash (npx shadcn@latest add button card dialog form), code:tsx (import { Button } from "@/components/ui/button"), code:bash (npm install -D tailwindcss @tailwindcss/vite) (+26 more)
 
 ### Community 268 - "Community 268"
-Cohesion: 0.09
-Nodes (17): fontMono, fontSans, disableTransitionsTemporarily(), getSystemTheme(), isEditableTarget(), isTheme(), isTypingTarget(), ResolvedTheme (+9 more)
+Cohesion: 0.04
+Nodes (38): handleBotRequest(), handleBrowserRequest(), handleRequest(), fontMono, fontSans, disableTransitionsTemporarily(), getSystemTheme(), isEditableTarget() (+30 more)
 
 ### Community 269 - "Community 269"
 Cohesion: 0.06
 Nodes (34): Accessibility, API Reference, Attachment, AttachmentAction, AttachmentActions, AttachmentContent, AttachmentDescription, AttachmentGroup (+26 more)
 
 ### Community 270 - "Community 270"
-Cohesion: 0.07
-Nodes (53): CalendarRtl(), locales, translations, CommandRtl(), translations, DialogRtl(), translations, CalendarRtl() (+45 more)
+Cohesion: 0.13
+Nodes (26): ComboboxAutoHighlight(), ComboboxBasic(), ComboboxDisabled(), ComboboxDisabledItems(), ComboboxExample(), ComboboxInDialog(), ComboboxInPopup(), ComboboxInvalid() (+18 more)
 
 ### Community 271 - "Community 271"
 Cohesion: 0.06
@@ -7294,12 +7311,12 @@ Cohesion: 0.06
 Nodes (33): Accessibility, Accessibility Requirements, ARIA States, code:css (/* Standard transition for interactive elements */), code:css (/* Standard focus ring */), code:css (/* Container focus when child is focused */), code:css (.disabled {), code:css (.loading {) (+25 more)
 
 ### Community 281 - "Community 281"
-Cohesion: 0.04
-Nodes (75): componentData, config, config1, config2, config3, configFile, errorResponse, homeDir (+67 more)
+Cohesion: 0.18
+Nodes (6): Message(), MessageAvatar(), MessageContent(), MessageFooter(), MessageGroup(), MessageHeader()
 
 ### Community 282 - "Community 282"
-Cohesion: 0.11
-Nodes (26): initCommand(), uninstallCommand(), UninstallOptions, __dirname, getPackageVersion(), normalizeTagVersion(), updateCommand(), UpdateOptions (+18 more)
+Cohesion: 0.09
+Nodes (20): BackgroundBeams, containerVariants, Dot, FAQS, HomeType, HoverFooter, itemVariants, MATRIX_DATA (+12 more)
 
 ### Community 283 - "Community 283"
 Cohesion: 0.06
@@ -7327,11 +7344,11 @@ Nodes (33): name, prettier, endOfLine, importOrder, importOrderParserPlugins, pl
 
 ### Community 289 - "Community 289"
 Cohesion: 0.06
-Nodes (33): 0.1.1, 0.1.2, 2.1.4, 2.1.6, 2.1.8, 2.4.1, 3.1.0, 3.4.1 (+25 more)
+Nodes (33): 0.1.1, 0.1.2, 2.1.4, 2.1.6, 2.1.8, 2.6.1, 3.1.0, 3.4.1 (+25 more)
 
 ### Community 290 - "Community 290"
-Cohesion: 0.10
-Nodes (19): dependencies, isbot, react, react-dom, @remix-run/node, @remix-run/react, @remix-run/serve, engines (+11 more)
+Cohesion: 0.06
+Nodes (33): dependencies, isbot, react, react-dom, @remix-run/node, @remix-run/react, @remix-run/serve, devDependencies (+25 more)
 
 ### Community 291 - "Community 291"
 Cohesion: 0.06
@@ -7346,16 +7363,16 @@ Cohesion: 0.06
 Nodes (32): Brand & Accent, Buttons, Collapsing Strategy, Colors, Components, Date Picker, Elevation, Font Family (+24 more)
 
 ### Community 294 - "Community 294"
-Cohesion: 0.05
-Nodes (17): BLANK, CLAIM_TYPES, ClaimDraft, DAMAGE_CATS, ease, EmergencyService, fadeUp, ITEM_CAT_ICONS (+9 more)
+Cohesion: 0.08
+Nodes (30): BLANK, BLANK_DRAFT, CLAIM_TYPES, ClaimDraft, ClaimSuccess(), DAMAGE_CATS, ease, EmergencyService (+22 more)
 
 ### Community 295 - "Community 295"
-Cohesion: 0.14
-Nodes (19): AssetDetails(), AssetGrid(), AssetTable(), FilterLibrary(), PaginationBasic(), PaginationExample(), PaginationIconsOnly(), PaginationSimple() (+11 more)
+Cohesion: 0.15
+Nodes (18): AssetDetails(), TYPE_LABEL, AssetGrid(), PaginationBasic(), PaginationExample(), PaginationIconsOnly(), PaginationSimple(), Asset (+10 more)
 
 ### Community 296 - "Community 296"
-Cohesion: 0.10
-Nodes (9): ResizableControlled(), ResizableExample(), ResizableHorizontal(), ResizableNested(), ResizableVertical(), ResizableWithHandle(), ResizableHandle(), ResizablePanel() (+1 more)
+Cohesion: 0.22
+Nodes (6): SiteConfig(), Layout, LayoutContext, LayoutProviderProps, LayoutProviderState, useLayout()
 
 ### Community 297 - "Community 297"
 Cohesion: 0.06
@@ -7482,8 +7499,8 @@ Cohesion: 0.06
 Nodes (30): author, bin, uipro, dependencies, chalk, commander, ora, prompts (+22 more)
 
 ### Community 328 - "Community 328"
-Cohesion: 0.07
-Nodes (46): ASSISTANT_PART_ORDER, createMessageParts(), CreateMessagePartsOptions, DEFAULT_PART_ORDER, getMessagePartComponent(), getStructuralPartKey(), getStructuralPartKind(), getStructuralPartName() (+38 more)
+Cohesion: 0.10
+Nodes (30): ASSISTANT_PART_ORDER, createMessageParts(), CreateMessagePartsOptions, DEFAULT_PART_ORDER, getMessagePartComponent(), getStructuralPartKey(), getStructuralPartKind(), getStructuralPartName() (+22 more)
 
 ### Community 329 - "Community 329"
 Cohesion: 0.15
@@ -7506,16 +7523,16 @@ Cohesion: 0.06
 Nodes (29): Art Direction Styles (Reuse from Banner), code:block1 (output/social-photos/), code:html (<!DOCTYPE html>), code:bash (CHROME="/Applications/Google Chrome.app/Contents/MacOS/Googl), code:javascript (const { chromium } = require('playwright');), code:javascript (const puppeteer = require('puppeteer');), code:markdown (# Social Photos Design Report), Color & Contrast (+21 more)
 
 ### Community 334 - "Community 334"
-Cohesion: 0.07
-Nodes (34): promptForRegistryComponents(), getShadcnRegistryIndex(), testConfig, transformNext(), Framework, FRAMEWORKS, assertResolvedAliases(), getRawConfig() (+26 more)
+Cohesion: 0.13
+Nodes (17): ColorsPage(), Color(), ColorFormatSelector(), ColorPalette(), ColorsNav(), colorsAtom, Config, useColors() (+9 more)
 
 ### Community 335 - "Community 335"
 Cohesion: 0.07
 Nodes (29): About, API, API Reference, code:bash (npx shadcn@latest add carousel), code:tsx (<Carousel orientation="vertical | horizontal">), code:tsx (<Carousel), code:tsx (import { type CarouselApi } from "@/components/ui/carousel"), code:tsx (import { type CarouselApi } from "@/components/ui/carousel") (+21 more)
 
 ### Community 336 - "Community 336"
-Cohesion: 0.06
-Nodes (31): CodeBlockCommand(), CodeTabs(), CodeViewer(), CommandMenu(), CommandMenuItem(), Query, DirectoryAddProvider(), MaxLengthSelector() (+23 more)
+Cohesion: 0.13
+Nodes (19): exit, fixtureConfig, fixtureTsconfig, packageJson, getUpdateDependenciesPackageManager(), installWithDeno(), installWithExpo(), installWithNpm() (+11 more)
 
 ### Community 337 - "Community 337"
 Cohesion: 0.08
@@ -7530,8 +7547,8 @@ Cohesion: 0.07
 Nodes (28): API Reference, Avatar, Avatar Group, Background, code:bash (npx shadcn@latest add empty), code:tsx (<EmptyDescription>You do not have any notifications.</EmptyD), code:tsx (<EmptyContent>), code:tsx (import {) (+20 more)
 
 ### Community 340 - "Community 340"
-Cohesion: 0.17
-Nodes (22): ASSETS_CANDIDATES, __dirname, InitOptions, tryGitHubInstall(), cleanup(), copyFolders(), createTempDir(), EXCLUDED_FILES (+14 more)
+Cohesion: 0.11
+Nodes (32): ASSETS_CANDIDATES, __dirname, initCommand(), InitOptions, templateInstall(), tryGitHubInstall(), __dirname, getPackageVersion() (+24 more)
 
 ### Community 341 - "Community 341"
 Cohesion: 0.07
@@ -7558,8 +7575,8 @@ Cohesion: 0.07
 Nodes (27): Accessibility, Actions, API Reference, Attachment, Avatar, code:bash (npx shadcn@latest add message), code:tsx (import { Avatar, AvatarFallback, AvatarImage } from "@/compo), code:tsx (<Message>) (+19 more)
 
 ### Community 347 - "Community 347"
-Cohesion: 0.05
-Nodes (54): StyleOverview(), CreateDevtools(), buildCssRule(), buildThemeCssText(), DesignSystemProvider(), MANAGED_BODY_CLASS_PREFIXES, RegistryThemeCssVars, PREVIEW_ITEMS (+46 more)
+Cohesion: 0.13
+Nodes (25): DefaultItemGroup(), DefaultLinkItems(), DefaultVariantItems(), DefaultVariantItemsExtraSmall(), DefaultVariantItemsSmall(), DefaultVariantItemsWithImage(), ItemExample(), ItemFooterExamples() (+17 more)
 
 ### Community 348 - "Community 348"
 Cohesion: 0.07
@@ -7599,11 +7616,11 @@ Nodes (26): Banner Design Tasks, Brand Identity Tasks, code:block1 (1. brand →
 
 ### Community 357 - "Community 357"
 Cohesion: 0.07
-Nodes (28): description, type, type, description, type, description, type, description (+20 more)
+Nodes (28): description, type, description, type, type, description, type, description (+20 more)
 
 ### Community 358 - "Community 358"
-Cohesion: 0.09
-Nodes (28): CopyButton(), copyToClipboardWithMeta(), legacyCopyToClipboard(), CopyPreset(), APPLY_MODES, ApplyMode, ApplyModeGrid, BaseGrid (+20 more)
+Cohesion: 0.15
+Nodes (12): dependencies, next, react, react-dom, name, private, scripts, build (+4 more)
 
 ### Community 359 - "Community 359"
 Cohesion: 0.07
@@ -7614,8 +7631,8 @@ Cohesion: 0.07
 Nodes (26): Add Components, Add Components, Add Components, Build Your Preset, code:bash (npx shadcn@latest init --preset [CODE] --template astro), code:bash (npm create astro@latest astro-app -- --template with-tailwin), code:ts ({), code:bash (npx shadcn@latest init) (+18 more)
 
 ### Community 361 - "Community 361"
-Cohesion: 0.04
-Nodes (49): AiMessageFakerOptions, ChatAssistantOptions, ChatDataGetOptions, ChatDataPart, ChatGetOptions, ChatNextOptions, ChatTransportOptions, ChatTurn (+41 more)
+Cohesion: 0.07
+Nodes (25): createAiMessageFaker(), artifact, [, assistantMessage], chat, chunks, DataParts, faker, first (+17 more)
 
 ### Community 362 - "Community 362"
 Cohesion: 0.07
@@ -7639,7 +7656,7 @@ Nodes (25): Accessibility, Archival, Asset Approval Checklist, Automation Suppor
 
 ### Community 367 - "Community 367"
 Cohesion: 0.09
-Nodes (27): TailwindConfigGenerator.add_breakpoints, TailwindConfigGenerator.add_color_palette, TailwindConfigGenerator.add_colors, TailwindConfigGenerator._generate_javascript, TailwindConfigGenerator._generate_typescript, excluded_lines, functions, excluded_lines (+19 more)
+Nodes (27): TailwindConfigGenerator.add_breakpoints, TailwindConfigGenerator.add_color_palette, TailwindConfigGenerator._generate_javascript, TailwindConfigGenerator._generate_typescript, TailwindConfigGenerator._indent_json, excluded_lines, functions, excluded_lines (+19 more)
 
 ### Community 368 - "Community 368"
 Cohesion: 0.08
@@ -7650,20 +7667,20 @@ Cohesion: 0.08
 Nodes (25): code:bash (npx skills add shadcn/ui), code:bash (npx shadcn@latest docs combobox), code:json ({), code:bash (npx shadcn@latest add font-inter), code:bash (npx shadcn@latest init --preset a1Dg5eFl), code:bash (npx shadcn@latest init --preset ad3qkJ7), code:bash (npx shadcn@latest add button --dry-run), code:bash (npx shadcn@latest add button --diff) (+17 more)
 
 ### Community 370 - "Community 370"
-Cohesion: 0.16
-Nodes (23): AvatarRtl(), translations, EmptyRtl(), translations, translations, translations, AvatarRtl(), translations (+15 more)
+Cohesion: 0.10
+Nodes (40): AlertDialogRtl(), translations, SheetRtl(), translations, AlertDialogRtl(), translations, SheetRtl(), translations (+32 more)
 
 ### Community 371 - "Community 371"
-Cohesion: 0.14
-Nodes (19): MessageScroller(), MessageScrollerContent(), MessageScrollerContext, MessageScrollerItem(), MessageScrollerItemContext, MessageScrollerViewport(), useMessageScroller(), useMessageScrollerContext() (+11 more)
+Cohesion: 0.23
+Nodes (13): MessageScroller(), MessageScrollerContent(), MessageScrollerContext, MessageScrollerItem(), MessageScrollerItemContext, MessageScrollerProvider(), MessageScrollerViewport(), useMessageScroller() (+5 more)
 
 ### Community 372 - "Community 372"
 Cohesion: 0.08
 Nodes (25): API Reference, As Child, Button, Button Group, code:bash (npx shadcn@latest add button), code:bash (npm install radix-ui), code:tsx (import { Button } from "@/components/ui/button"), code:tsx (<Button variant="outline">Button</Button>) (+17 more)
 
 ### Community 373 - "Community 373"
-Cohesion: 0.15
-Nodes (24): runMcpInit(), deepmerge, addTailwindConfigProperty(), addTailwindConfigTheme(), buildTailwindThemeColorsFromCssVars(), _createSourceFile(), _getQuoteChar(), nestSpreadElements() (+16 more)
+Cohesion: 0.16
+Nodes (22): addTailwindConfigProperty(), addTailwindConfigTheme(), buildTailwindThemeColorsFromCssVars(), _createSourceFile(), _getQuoteChar(), nestSpreadElements(), nestSpreadProperties(), parseArrayLiteralExpression() (+14 more)
 
 ### Community 374 - "Community 374"
 Cohesion: 0.18
@@ -7674,12 +7691,12 @@ Cohesion: 0.18
 Nodes (19): aliases, components, hooks, lib, ui, utils, iconLibrary, menuAccent (+11 more)
 
 ### Community 376 - "Community 376"
-Cohesion: 0.04
-Nodes (42): SelCtx, SelCtxType, react-dom, react-dom, react-dom, devDependencies, jsdom, playwright (+34 more)
+Cohesion: 0.08
+Nodes (25): dependencies, react, react-dom, devDependencies, eslint, @eslint/js, eslint-plugin-react-hooks, eslint-plugin-react-refresh (+17 more)
 
 ### Community 377 - "Community 377"
-Cohesion: 0.07
-Nodes (33): dependencies, class-variance-authority, clsx, lucide-react, react, react-dom, tailwind-merge, tailwindcss (+25 more)
+Cohesion: 0.09
+Nodes (25): devDependencies, eslint, @eslint/js, eslint-plugin-react-hooks, eslint-plugin-react-refresh, globals, prettier, prettier-plugin-tailwindcss (+17 more)
 
 ### Community 378 - "Community 378"
 Cohesion: 0.08
@@ -7694,12 +7711,12 @@ Cohesion: 0.08
 Nodes (25): 🐛 Bug Fixes, 🔧 CLI Improvements, Code of Conduct, code:bash (# 1. Fork the repo on GitHub, then clone your fork), code:block2 (ui-ux-pro-max-skill/), code:bash (# 1. Create a feature branch from main), code:block4 (<type>: <short description>), code:block5 (feat: add Skeuomorphism 2.0 style to general styles) (+17 more)
 
 ### Community 381 - "Community 381"
-Cohesion: 0.09
-Nodes (24): AudienceAnalytics(), metadata, metadata, metadata, Announcement(), ImagePreview(), ArticleDirectoryPreview, EditArticlePreview (+16 more)
+Cohesion: 0.08
+Nodes (10): cn(), Dot, DropdownItemProps, DropdownMenuProps, NavLink(), NavLinkProps, RotatingText, RotatingTextProps (+2 more)
 
 ### Community 382 - "Community 382"
-Cohesion: 0.13
-Nodes (17): ColorsPage(), Color(), ColorFormatSelector(), ColorPalette(), ColorsNav(), colorsAtom, Config, useColors() (+9 more)
+Cohesion: 0.24
+Nodes (20): MenubarRtl(), translations, MenubarRtl(), translations, Menubar(), MenubarCheckboxItem(), MenubarContent(), MenubarGroup() (+12 more)
 
 ### Community 383 - "Community 383"
 Cohesion: 0.08
@@ -7738,8 +7755,8 @@ Cohesion: 0.08
 Nodes (24): 1. Visual Theme & Atmosphere, 2. Color Palette & Roles, 3. Typography Rules, 4. Component Stylings, 5. Layout Principles, 6. Depth & Elevation, 7. Do's and Don'ts, 8. Responsive Behavior (+16 more)
 
 ### Community 392 - "Community 392"
-Cohesion: 0.17
-Nodes (18): areScrollStatesEqual(), createExternalStore(), createMessageScrollerStore(), createMessageScrollerVisibilityStore(), EMPTY_MESSAGE_SCROLLER_SCROLLABLE, EMPTY_MESSAGE_SCROLLER_VISIBILITY_STATE, EMPTY_VISIBLE_MESSAGE_IDS, MessageScrollerButtonDirection (+10 more)
+Cohesion: 0.13
+Nodes (23): areScrollStatesEqual(), createExternalStore(), createMessageScrollerStore(), createMessageScrollerVisibilityStore(), EMPTY_MESSAGE_SCROLLER_SCROLLABLE, EMPTY_MESSAGE_SCROLLER_VISIBILITY_STATE, EMPTY_VISIBLE_MESSAGE_IDS, MessageScrollerButtonDirection (+15 more)
 
 ### Community 393 - "Community 393"
 Cohesion: 0.08
@@ -7766,8 +7783,8 @@ Cohesion: 0.08
 Nodes (25): light, accent, accent-foreground, background, border, card, card-foreground, chart-1 (+17 more)
 
 ### Community 399 - "Community 399"
-Cohesion: 0.08
-Nodes (24): 1. Follow the Tailwind v4 Upgrade Guide, 2. Update your CSS variables, 3. Update colors for charts, 4. Use new `size-*` utility, 5. Update your dependencies, 6. Remove forwardRef, After, Before (+16 more)
+Cohesion: 0.09
+Nodes (22): 1. Follow the Tailwind v4 Upgrade Guide, 2. Update your CSS variables, 3. Update colors for charts, 4. Use new `size-*` utility, 5. Update your dependencies, 6. Remove forwardRef, Before, Changelog (+14 more)
 
 ### Community 400 - "Community 400"
 Cohesion: 0.12
@@ -7814,8 +7831,8 @@ Cohesion: 0.08
 Nodes (25): light, accent, accent-foreground, background, border, card, card-foreground, chart-1 (+17 more)
 
 ### Community 411 - "Community 411"
-Cohesion: 0.14
-Nodes (20): Code(), CoverTypeCard(), Divider(), DSSection(), DSThemeCtx, FieldLabel(), KPICard(), NAV (+12 more)
+Cohesion: 0.16
+Nodes (18): uninstallCommand(), UninstallOptions, __dirname, __filename, pkg, program, AI_FOLDERS, AI_TYPES (+10 more)
 
 ### Community 412 - "Community 412"
 Cohesion: 0.08
@@ -7827,11 +7844,11 @@ Nodes (23): 1. Visual Theme & Atmosphere, 2. Color Palette & Roles, 3. Typograph
 
 ### Community 414 - "Community 414"
 Cohesion: 0.09
-Nodes (37): MessageScrollerProvider(), getBlockPadding(), getContentBlockPadding(), getContentBottom(), getElementScrollTop(), getElementTop(), getElementViewportTop(), getFirstVisibleMessageItem() (+29 more)
+Nodes (36): getBlockPadding(), getContentBlockPadding(), getContentBottom(), getElementScrollTop(), getElementTop(), getElementViewportTop(), getFirstVisibleMessageItem(), getFlexGap() (+28 more)
 
 ### Community 415 - "Community 415"
-Cohesion: 0.09
-Nodes (13): base, button, ids, initial, items, MemoMessageItem, offsetAfter, offsetBefore (+5 more)
+Cohesion: 0.08
+Nodes (14): MessageScroller, base, button, ids, initial, items, MemoMessageItem, offsetAfter (+6 more)
 
 ### Community 416 - "Community 416"
 Cohesion: 0.11
@@ -7874,8 +7891,8 @@ Cohesion: 0.15
 Nodes (17): BM25, detect_domain(), get_cip_brief(), _load_csv(), Load CSV and return list of dicts, Core search function using BM25, Auto-detect the most relevant domain from query, Main search function with auto-domain detection (+9 more)
 
 ### Community 426 - "Community 426"
-Cohesion: 0.14
-Nodes (17): columns, DataTableColumnHeader(), DataTableFacetedFilter(), DataTableRowActions(), DataTableToolbar(), DataTableToolbarProps, DataTableViewOptions(), UserNav() (+9 more)
+Cohesion: 0.15
+Nodes (18): InputGroupButtonExample(), BlockCopyCodeButton(), BlockViewerCode(), BlockViewerContext, BlockViewerFileTree(), BlockViewerIframe(), BlockViewerMobile(), BlockViewerProps (+10 more)
 
 ### Community 427 - "Community 427"
 Cohesion: 0.09
@@ -7938,12 +7955,12 @@ Cohesion: 0.09
 Nodes (21): code:json ({), code:txt (Unknown registry "@acme". Make sure it is defined in compone), code:txt (Registry "@private" requires the following environment varia), code:txt (Error:), code:diff (- import { registryItemSchema } from "shadcn/registry"), code:bash (npx shadcn add @acme/button @internal/auth-system), code:json ({), code:json ({) (+13 more)
 
 ### Community 442 - "Community 442"
-Cohesion: 0.13
-Nodes (20): resolve, assertInsideRepo(), assetRoot, checkAssets(), checkOnly, __dirname, dirsToSync, exists() (+12 more)
+Cohesion: 0.17
+Nodes (17): assertInsideRepo(), assetRoot, checkAssets(), checkOnly, __dirname, dirsToSync, exists(), fileHash() (+9 more)
 
 ### Community 443 - "Community 443"
-Cohesion: 0.05
-Nodes (65): GET(), buildAvailableComponentsSection(), buildComponentsJsonSection(), buildCssSection(), buildDependenciesSection(), buildFontSection(), buildInstructions(), buildRtlSection() (+57 more)
+Cohesion: 0.15
+Nodes (11): Globe(), GLOBE_CONFIG, Button, ButtonProps, buttonVariants, Globe(), GLOBE_CONFIG, MultiStepForm (+3 more)
 
 ### Community 444 - "Community 444"
 Cohesion: 0.09
@@ -8027,11 +8044,11 @@ Nodes (21): type, description, properties, type, additionalProperties, descripti
 
 ### Community 464 - "Community 464"
 Cohesion: 0.10
-Nodes (21): TestShadcnInstaller.test_add_components_already_installed, TestShadcnInstaller.test_check_shadcn_config_exists, TestShadcnInstaller.test_init_custom_project_root, TestShadcnInstaller.test_init_default_project_root, functions, excluded_lines, executed_lines, missing_lines (+13 more)
+Nodes (21): TestShadcnInstaller.test_add_components_already_installed, TestShadcnInstaller.test_add_components_no_components, TestShadcnInstaller.test_get_installed_components_no_config, TestShadcnInstaller.test_init_custom_project_root, functions, excluded_lines, executed_lines, missing_lines (+13 more)
 
 ### Community 465 - "Community 465"
 Cohesion: 0.13
-Nodes (25): buildFontOptions(), ensureCnImport(), findFontVariableDeclaration(), findInsertPosition(), findLayoutFile(), getDefaultFontSelector(), getFontVariableName(), hasHeadingFontDeclaration() (+17 more)
+Nodes (26): buildFontOptions(), ensureCnImport(), findFontVariableDeclaration(), findInsertPosition(), findLayoutFile(), getDefaultFontSelector(), getFontVariableName(), hasHeadingFontDeclaration() (+18 more)
 
 ### Community 466 - "Community 466"
 Cohesion: 0.10
@@ -8042,8 +8059,8 @@ Cohesion: 0.10
 Nodes (19): 2026-05-17 Default Spacing, API Reference, Changelog, code:bash (npx shadcn@latest add toggle-group), code:bash (npm install @base-ui/react), code:tsx (import { ToggleGroup, ToggleGroupItem } from "@/components/u), code:tsx (<ToggleGroup type="single">), code:text (ToggleGroup) (+11 more)
 
 ### Community 468 - "Community 468"
-Cohesion: 0.08
-Nodes (47): categories, ComboboxRtl(), translations, InputGroupRtl(), translations, logicalSides, physicalSides, TooltipRtl() (+39 more)
+Cohesion: 0.12
+Nodes (6): ComponentPreviewTabs(), DirectionProviderWrapper(), directionTranslations, PreviewWrapper(), RtlLanguageSelector(), DirectionProvider()
 
 ### Community 469 - "Community 469"
 Cohesion: 0.10
@@ -8054,8 +8071,8 @@ Cohesion: 0.10
 Nodes (19): API Reference, Basic, Checkboxes, code:bash (npx shadcn@latest add context-menu), code:bash (npm install radix-ui), code:tsx (import {), code:tsx (<ContextMenu>), code:text (ContextMenu) (+11 more)
 
 ### Community 471 - "Community 471"
-Cohesion: 0.11
-Nodes (25): BadgeRtl(), translations, deliveryTimes, DrawerRtl(), TranslationKey, BadgeRtl(), translations, data (+17 more)
+Cohesion: 0.15
+Nodes (21): deliveryTimes, DrawerRtl(), TranslationKey, data, DrawerRtl(), translations, Badge(), badgeVariants (+13 more)
 
 ### Community 472 - "Community 472"
 Cohesion: 0.10
@@ -8130,12 +8147,12 @@ Cohesion: 0.12
 Nodes (17): 10. Charts & Data (LOW), 1. Accessibility (CRITICAL), 2. Touch & Interaction (CRITICAL), 3. Performance (HIGH), 4. Style Selection (HIGH), 5. Layout & Responsive (HIGH), 6. Typography & Color (MEDIUM), 7. Animation (MEDIUM) (+9 more)
 
 ### Community 490 - "Community 490"
-Cohesion: 0.20
-Nodes (19): templateInstall(), removeSkillDir(), Join(), AI_TO_PLATFORM, ASSETS_CANDIDATES, copyDataAndScripts(), copySubSkills(), __dirname (+11 more)
+Cohesion: 0.22
+Nodes (17): removeSkillDir(), Join(), AI_TO_PLATFORM, ASSETS_CANDIDATES, copyDataAndScripts(), copySubSkills(), __dirname, ensureCleanDir() (+9 more)
 
 ### Community 491 - "Community 491"
-Cohesion: 0.26
-Nodes (16): AlertDialogRtl(), translations, AlertDialogRtl(), translations, AlertDialog(), AlertDialogAction(), AlertDialogCancel(), AlertDialogContent() (+8 more)
+Cohesion: 0.21
+Nodes (16): MessageActions(), MessageAttachment(), MessageAttachmentGroup(), MessageDefault(), MessageExample(), MessageGroupChat(), MessageGroupExample(), MessageHeaderFooter() (+8 more)
 
 ### Community 492 - "Community 492"
 Cohesion: 0.11
@@ -8190,12 +8207,12 @@ Cohesion: 0.11
 Nodes (19): compilerOptions, allowJs, baseUrl, checkJs, esModuleInterop, forceConsistentCasingInFileNames, incremental, isolatedModules (+11 more)
 
 ### Community 505 - "Community 505"
-Cohesion: 0.16
-Nodes (9): prisma, requireUserId(), singleton(), createNote(), deleteNote(), getNote(), action(), action() (+1 more)
+Cohesion: 0.23
+Nodes (10): HoverCardRtl(), logicalSides, physicalSides, translations, HoverCardRtl(), physicalSides, translations, HoverCard() (+2 more)
 
 ### Community 506 - "Community 506"
-Cohesion: 0.18
-Nodes (11): devDependencies, @antfu/ni, msw, rimraf, tsup, type-fest, @types/babel__core, @types/fs-extra (+3 more)
+Cohesion: 0.24
+Nodes (11): AlertRtl(), alerts, translations, AlertRtl(), alerts, translations, Alert(), AlertAction() (+3 more)
 
 ### Community 507 - "Community 507"
 Cohesion: 0.11
@@ -8222,8 +8239,8 @@ Cohesion: 0.11
 Nodes (17): Align Item With Trigger, API Reference, code:bash (npx shadcn@latest add select), code:bash (npm install @base-ui/react), code:tsx (import {), code:tsx (const items = [), code:text (Select), code:tsx (<Field data-invalid>) (+9 more)
 
 ### Community 513 - "Community 513"
-Cohesion: 0.06
-Nodes (21): tags, Artwork, works, BlocksNav(), ChartsNav(), links, examples, ExamplesNav() (+13 more)
+Cohesion: 0.23
+Nodes (14): TabsBasic(), TabsDisabled(), TabsExample(), TabsIconOnly(), TabsLine(), TabsLineDisabled(), TabsLineWithContent(), TabsMultiple() (+6 more)
 
 ### Community 514 - "Community 514"
 Cohesion: 0.11
@@ -8462,8 +8479,8 @@ Cohesion: 0.12
 Nodes (16): @apply border-border outline-ring/50, @apply bg-background text-foreground, css, @import \"shadcn/tailwind.css\, @import \"tw-animate-css\, @layer base, cssVars, dependencies (+8 more)
 
 ### Community 573 - "Community 573"
-Cohesion: 0.24
-Nodes (9): isUser(), useMatchesData(), useOptionalUser(), useUser(), getNoteListItems(), Index(), meta(), loader() (+1 more)
+Cohesion: 0.20
+Nodes (14): MessageScrollerButton(), composeEventHandlers(), composeRefs(), EventHandler, getStateAttributes(), isEventHandler(), mergeProps(), RenderFunction (+6 more)
 
 ### Community 574 - "Community 574"
 Cohesion: 0.12
@@ -8478,8 +8495,8 @@ Cohesion: 0.12
 Nodes (16): @apply border-border outline-ring/50, @apply bg-background text-foreground, css, @import \"shadcn/tailwind.css\, @import \"tw-animate-css\, @layer base, cssVars, dependencies (+8 more)
 
 ### Community 577 - "Community 577"
-Cohesion: 0.10
-Nodes (24): dependencies, class-variance-authority, clsx, lucide-react, next, react, react-dom, tailwind-merge (+16 more)
+Cohesion: 0.15
+Nodes (15): imports, #components/*, #components/ui/*, #hooks/*, #lib/*, #utils, name, private (+7 more)
 
 ### Community 578 - "Community 578"
 Cohesion: 0.12
@@ -8698,8 +8715,8 @@ Cohesion: 0.40
 Nodes (13): blend(), derive_row(), derive_ui_reasoning(), h2r(), is_dark(), lum(), on_color(), r2h() (+5 more)
 
 ### Community 632 - "Community 632"
-Cohesion: 0.10
-Nodes (12): coverLabel(), PayForm(), PayPageInner(), planMonthly(), SuccessScreen(), MinimalAuthPage(), MinimalAuthPageProps, ViewState (+4 more)
+Cohesion: 0.24
+Nodes (9): isUser(), useMatchesData(), useOptionalUser(), useUser(), getNoteListItems(), Index(), meta(), loader() (+1 more)
 
 ### Community 633 - "Community 633"
 Cohesion: 0.12
@@ -8754,8 +8771,8 @@ Cohesion: 0.12
 Nodes (16): compilerOptions, allowJs, baseUrl, esModuleInterop, forceConsistentCasingInFileNames, isolatedModules, jsx, module (+8 more)
 
 ### Community 646 - "Community 646"
-Cohesion: 0.11
-Nodes (18): cache, cache, outputs, outputs, globalEnv, cache, outputs, outputs (+10 more)
+Cohesion: 0.12
+Nodes (16): cache, cache, outputs, outputs, cache, outputs, outputs, dependsOn (+8 more)
 
 ### Community 647 - "Community 647"
 Cohesion: 0.13
@@ -8894,16 +8911,16 @@ Cohesion: 0.14
 Nodes (12): 10. Charts & Data (LOW), 1. Accessibility (CRITICAL), 2. Touch & Interaction (CRITICAL), 3. Performance (HIGH), 4. Style Selection (HIGH), 5. Layout & Responsive (HIGH), 6. Typography & Color (MEDIUM), 7. Animation (MEDIUM) (+4 more)
 
 ### Community 681 - "Community 681"
-Cohesion: 0.15
-Nodes (12): dependencies, next, react, react-dom, name, private, scripts, build (+4 more)
+Cohesion: 0.06
+Nodes (38): SHEET_SIDES, SHEET_SIDES, SheetSide, TooltipBasic(), TooltipDisabled(), TooltipExample(), TooltipFormatted(), TooltipLongContent() (+30 more)
 
 ### Community 682 - "Community 682"
 Cohesion: 0.14
 Nodes (13): Basic, code:tsx ("use client"), code:text (Popover), Composition, Date of Birth, Examples, Input, Installation (+5 more)
 
 ### Community 683 - "Community 683"
-Cohesion: 0.27
-Nodes (8): NativeSelectRtl(), translations, NativeSelectRtl(), translations, NativeSelect(), NativeSelectOptGroup(), NativeSelectOption(), NativeSelectProps
+Cohesion: 0.06
+Nodes (35): dependencies, bcryptjs, isbot, @prisma/client, react, react-dom, @remix-run/css-bundle, @remix-run/node (+27 more)
 
 ### Community 684 - "Community 684"
 Cohesion: 0.14
@@ -8950,8 +8967,8 @@ Cohesion: 0.14
 Nodes (13): A Claude skill for decks *and* websites that don't look like AI made them., Brand library — 72 pre-built systems, code:bash (git clone https://github.com/ItsssssJack/power-design ~/.cla), code:block2 (> use power-design — make me a deck for stripe.com about our), code:block3 (┌────────────────────────────────────────────────┐), Credits, How the skill works (under the hood), Install (+5 more)
 
 ### Community 695 - "Community 695"
-Cohesion: 0.14
-Nodes (14): properties, required, type, type, type, type, aliases, components (+6 more)
+Cohesion: 0.18
+Nodes (11): properties, type, type, type, components, hooks, lib, ui (+3 more)
 
 ### Community 696 - "Community 696"
 Cohesion: 0.14
@@ -9014,8 +9031,8 @@ Cohesion: 0.15
 Nodes (12): API Reference, AspectRatio, code:bash (npx shadcn@latest add aspect-ratio), code:bash (npm install @base-ui/react), code:tsx (import { AspectRatio } from "@/components/ui/aspect-ratio"), code:tsx (<AspectRatio ratio={16 / 9}>), Examples, Installation (+4 more)
 
 ### Community 711 - "Community 711"
-Cohesion: 0.15
-Nodes (12): Accessibility, Chart Config, code:tsx (import { Bar, BarChart } from "recharts"), code:tsx (import { Monitor } from "lucide-react"), code:bash (npx shadcn@latest add chart), code:bash (npm install recharts), code:tsx (<LineChart accessibilityLayer />), code:css (@layer base {) (+4 more)
+Cohesion: 0.22
+Nodes (8): Accessibility, Chart Config, code:tsx (import { Bar, BarChart } from "recharts"), code:tsx (import { Monitor } from "lucide-react"), code:tsx (<LineChart accessibilityLayer />), Component, RTL, Updating to Recharts v3
 
 ### Community 712 - "Community 712"
 Cohesion: 0.15
@@ -9282,8 +9299,8 @@ Cohesion: 0.15
 Nodes (12): author, categories, description, files, meta, container, iframeHeight, mobile (+4 more)
 
 ### Community 778 - "Community 778"
-Cohesion: 0.13
-Nodes (16): processAtRule(), processRule(), transformCss(), updateCssPlugin(), addCustomVariant(), cleanupDefaultNextStylesPlugin(), isColorValue(), isLocalHSLValue() (+8 more)
+Cohesion: 0.26
+Nodes (10): AccordionRtl(), items, translations, AccordionRtl(), items, translations, Accordion(), AccordionContent() (+2 more)
 
 ### Community 779 - "Community 779"
 Cohesion: 0.15
@@ -9414,8 +9431,8 @@ Cohesion: 0.15
 Nodes (12): categories, dependencies, description, files, meta, container, iframeHeight, mobile (+4 more)
 
 ### Community 811 - "Community 811"
-Cohesion: 0.03
-Nodes (83): autoprefixer, eslint, devDependencies, autoprefixer, eslint, eslint-config-next, postcss, tailwindcss (+75 more)
+Cohesion: 0.13
+Nodes (16): processAtRule(), processRule(), transformCss(), updateCssPlugin(), addCustomVariant(), cleanupDefaultNextStylesPlugin(), isColorValue(), isLocalHSLValue() (+8 more)
 
 ### Community 812 - "Community 812"
 Cohesion: 0.15
@@ -9591,7 +9608,7 @@ Nodes (13): Claude Marketplace 安装失败，提示 "Zip file contains a symbol
 
 ### Community 855 - "Community 855"
 Cohesion: 0.17
-Nodes (12): Add a Grid, Add an Axis, Add Tooltip, code:tsx (<ChartContainer config={chartConfig} className="h-[200px] w-), code:tsx (import { ChartTooltip, ChartTooltipContent } from "@/compone), code:tsx (<ChartContainer config={chartConfig} className="h-[200px] w-), code:tsx (const chartData = [), code:tsx (import { type ChartConfig } from "@/components/ui/chart") (+4 more)
+Nodes (12): Add a Grid, Add Legend, Add Tooltip, code:tsx (import { ChartTooltip, ChartTooltipContent } from "@/compone), code:tsx (<ChartContainer config={chartConfig} className="h-[200px] w-), code:tsx (import { ChartLegend, ChartLegendContent } from "@/component), code:tsx (<ChartContainer config={chartConfig} className="h-[200px] w-), code:tsx (const chartData = [) (+4 more)
 
 ### Community 856 - "Community 856"
 Cohesion: 0.17
@@ -10474,8 +10491,8 @@ Cohesion: 0.17
 Nodes (11): font, dependency, family, import, provider, subsets, variable, name (+3 more)
 
 ### Community 1076 - "Community 1076"
-Cohesion: 0.23
-Nodes (14): TabsBasic(), TabsDisabled(), TabsExample(), TabsIconOnly(), TabsLine(), TabsLineDisabled(), TabsLineWithContent(), TabsMultiple() (+6 more)
+Cohesion: 0.17
+Nodes (3): MinimalAuthPage(), MinimalAuthPageProps, ViewState
 
 ### Community 1077 - "Community 1077"
 Cohesion: 0.17
@@ -11370,8 +11387,8 @@ Cohesion: 0.17
 Nodes (12): compilerOptions, allowSyntheticDefaultImports, declaration, esModuleInterop, module, moduleResolution, outDir, resolveJsonModule (+4 more)
 
 ### Community 1300 - "Community 1300"
-Cohesion: 0.24
-Nodes (5): ProgressRtl(), translations, Progress(), ProgressLabel(), ProgressValue()
+Cohesion: 0.08
+Nodes (10): data, people, people, data, Avatar(), AvatarBadge(), AvatarFallback(), AvatarGroup() (+2 more)
 
 ### Community 1301 - "Community 1301"
 Cohesion: 0.17
@@ -11386,8 +11403,8 @@ Cohesion: 0.17
 Nodes (11): author, plugins, cssVars, dependencies, files, name, registryDependencies, $schema (+3 more)
 
 ### Community 1304 - "Community 1304"
-Cohesion: 0.26
-Nodes (10): AccordionRtl(), items, translations, AccordionRtl(), items, translations, Accordion(), AccordionContent() (+2 more)
+Cohesion: 0.16
+Nodes (9): prisma, requireUserId(), singleton(), createNote(), deleteNote(), getNote(), action(), action() (+1 more)
 
 ### Community 1305 - "Community 1305"
 Cohesion: 0.17
@@ -13718,8 +13735,8 @@ Cohesion: 0.18
 Nodes (10): code:bash (npx shadcn init -b radix), code:bash (npx skills add shadcn/ui), code:txt (migrate accordion to base-ui), code:md (# accordion), What a migration produces, What's Changed, What This Means for You, When You're Ready to Migrate (+2 more)
 
 ### Community 1887 - "Community 1887"
-Cohesion: 0.23
-Nodes (10): HoverCardRtl(), logicalSides, physicalSides, translations, HoverCardRtl(), physicalSides, translations, HoverCard() (+2 more)
+Cohesion: 0.43
+Nodes (6): Message(), MessageAvatar(), MessageContent(), MessageFooter(), MessageGroup(), MessageHeader()
 
 ### Community 1888 - "Community 1888"
 Cohesion: 0.18
@@ -13742,8 +13759,8 @@ Cohesion: 0.18
 Nodes (10): categories, dependencies, description, files, meta, iframeHeight, name, registryDependencies (+2 more)
 
 ### Community 1893 - "Community 1893"
-Cohesion: 0.50
-Nodes (6): Bubble(), BubbleContent(), BubbleGroup(), BubbleReactions(), bubbleReactionsVariants, bubbleVariants
+Cohesion: 0.31
+Nodes (11): Attachment(), AttachmentAction(), AttachmentActions(), AttachmentContent(), AttachmentDescription(), AttachmentGroup(), AttachmentMedia(), attachmentMediaVariants (+3 more)
 
 ### Community 1894 - "Community 1894"
 Cohesion: 0.18
@@ -14106,8 +14123,8 @@ Cohesion: 0.18
 Nodes (11): code:bash (npx shadcn@latest migrate [migration]), code:bash (Usage: shadcn migrate [options] [migration] [path]), code:bash (npx shadcn@latest migrate rtl), code:bash (# Migrate a specific file), code:bash (npx shadcn@latest migrate radix), code:tsx (import * as DialogPrimitive from "@radix-ui/react-dialog"), code:tsx (import { Dialog as DialogPrimitive, Select as SelectPrimitiv), code:bash (# Migrate a specific file.) (+3 more)
 
 ### Community 1984 - "Community 1984"
-Cohesion: 0.21
-Nodes (6): CreateSkeleton(), HistoryProvider(), LockableParam, LocksContext, LocksContextValue, LocksProvider()
+Cohesion: 0.18
+Nodes (10): AudienceAnalytics(), Demographics(), MetricsGrid(), EDITORIAL_ROWS, EditorialMetric, EditorialRow, METRIC_LABEL, TopEditorial() (+2 more)
 
 ### Community 1985 - "Community 1985"
 Cohesion: 0.18
@@ -14118,28 +14135,28 @@ Cohesion: 0.18
 Nodes (11): TailwindConfigGenerator, tailwind_config_gen.py, classes, excluded_lines, executed_lines, missing_lines, summary, excluded_lines (+3 more)
 
 ### Community 1987 - "Community 1987"
-Cohesion: 0.24
-Nodes (9): getMessageAnimatedTextParts(), MessageAnimatedMessage, MessageAnimatedPart, MessageAnimatedRow(), MessageAnimatedTextPart, MotionMessageScrollerItem, MESSAGE_ANIMATIONS, MessageAnimationId (+1 more)
+Cohesion: 0.33
+Nodes (4): bunResult, localBin(), tsc, tscResult
 
 ### Community 1988 - "Community 1988"
 Cohesion: 0.18
-Nodes (11): ShadcnInstaller.get_installed_components, TailwindConfigGenerator.generate_config_string, excluded_lines, executed_lines, missing_lines, summary, percent_covered, excluded_lines (+3 more)
+Nodes (11): ShadcnInstaller.get_installed_components, TestShadcnInstaller.test_check_shadcn_config_exists, excluded_lines, executed_lines, missing_lines, summary, percent_covered, excluded_lines (+3 more)
 
 ### Community 1989 - "Community 1989"
 Cohesion: 0.18
-Nodes (11): ShadcnInstaller.__init__, TailwindConfigGenerator.__init__, excluded_lines, executed_lines, missing_lines, summary, num_statements, excluded_lines (+3 more)
+Nodes (11): ShadcnInstaller.__init__, TailwindConfigGenerator._format_plugins, excluded_lines, executed_lines, missing_lines, summary, num_statements, excluded_lines (+3 more)
 
 ### Community 1990 - "Community 1990"
 Cohesion: 0.18
-Nodes (11): ShadcnInstaller.list_installed, TailwindConfigGenerator.add_plugins, excluded_lines, executed_lines, missing_lines, summary, missing_lines, excluded_lines (+3 more)
+Nodes (11): ShadcnInstaller.list_installed, TailwindConfigGenerator.add_fonts, excluded_lines, executed_lines, missing_lines, summary, missing_lines, excluded_lines (+3 more)
 
 ### Community 1991 - "Community 1991"
 Cohesion: 0.18
 Nodes (11): 10. Charts & Data (LOW), 1. Accessibility (CRITICAL), 2. Touch & Interaction (CRITICAL), 3. Performance (HIGH), 4. Style Selection (HIGH), 5. Layout & Responsive (HIGH), 6. Typography & Color (MEDIUM), 7. Animation (MEDIUM) (+3 more)
 
 ### Community 1992 - "Community 1992"
-Cohesion: 0.20
-Nodes (7): CERTIFICATES, ease, fadeUp, STATUS_CONFIG, SUMMARY, TABS, TYPE_ICON
+Cohesion: 0.30
+Nodes (10): BubbleAlignment(), BubbleButtonLinks(), BubbleCollapsible(), BubbleExample(), BubbleGrouped(), BubbleReactionsButtons(), BubbleSizes(), BubbleVariants() (+2 more)
 
 ### Community 1993 - "Community 1993"
 Cohesion: 0.20
@@ -15930,8 +15947,8 @@ Cohesion: 0.20
 Nodes (9): Add Components, Add DirectionProvider, Add Font, code:bash (npx shadcn@latest create --template next --rtl), code:json ({), code:tsx (import { DirectionProvider } from "@/components/ui/direction), code:tsx (import { Noto_Sans_Arabic } from "next/font/google"), code:bash (npx shadcn@latest add item) (+1 more)
 
 ### Community 2440 - "Community 2440"
-Cohesion: 0.18
-Nodes (10): dependencies, tailwindcss, name, private, scripts, build, dev, lint (+2 more)
+Cohesion: 0.09
+Nodes (18): containerVariants, itemVariants, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle (+10 more)
 
 ### Community 2441 - "Community 2441"
 Cohesion: 0.20
@@ -17278,8 +17295,8 @@ Cohesion: 0.22
 Nodes (8): author, name, description, keywords, license, name, skills, version
 
 ### Community 2777 - "Community 2777"
-Cohesion: 0.40
-Nodes (5): TailwindConfigGenerator._indent_json, excluded_lines, executed_lines, missing_lines, summary
+Cohesion: 0.13
+Nodes (14): CardsActivityGoal(), CardsCalendar(), start, CardsChat(), CardsCookieSettings(), CardsCreateAccount(), CardsExerciseMinutes(), CardsForms() (+6 more)
 
 ### Community 2778 - "Community 2778"
 Cohesion: 0.22
@@ -18906,8 +18923,8 @@ Cohesion: 0.25
 Nodes (3): format_output(), Format results for Claude consumption (token-optimized), Format results for Claude consumption (token-optimized)
 
 ### Community 3184 - "Community 3184"
-Cohesion: 0.40
-Nodes (5): TestShadcnInstaller.test_get_installed_components_empty, excluded_lines, executed_lines, missing_lines, summary
+Cohesion: 0.50
+Nodes (6): Bubble(), BubbleContent(), BubbleGroup(), BubbleReactions(), bubbleReactionsVariants, bubbleVariants
 
 ### Community 3186 - "Community 3186"
 Cohesion: 0.25
@@ -19290,8 +19307,8 @@ Cohesion: 0.25
 Nodes (7): author, dependencies, files, name, registryDependencies, $schema, type
 
 ### Community 3281 - "Community 3281"
-Cohesion: 0.60
-Nodes (5): formatValue(), getToolName(), getToolTitle(), PartTool(), ToolPart
+Cohesion: 0.20
+Nodes (8): ActionMenu(), ActionMenuGroup, ActionMenuItem, ActionMenuSourceItem, SEARCH_KEYWORDS, useActionMenu(), groupItemsByType(), mapping
 
 ### Community 3282 - "Community 3282"
 Cohesion: 0.25
@@ -19806,8 +19823,8 @@ Cohesion: 0.25
 Nodes (7): allOf, oneOf, definitions, cssValue, required, $schema, type
 
 ### Community 3410 - "Community 3410"
-Cohesion: 0.43
-Nodes (6): Message(), MessageAvatar(), MessageContent(), MessageFooter(), MessageGroup(), MessageHeader()
+Cohesion: 0.33
+Nodes (9): AttachmentContentOnly(), AttachmentExample(), AttachmentFiles(), AttachmentImages(), AttachmentImageStates(), AttachmentScrollableGroup(), AttachmentSizes(), AttachmentStates() (+1 more)
 
 ### Community 3411 - "Community 3411"
 Cohesion: 0.32
@@ -22801,13 +22818,9 @@ Nodes (6): author, files, name, registryDependencies, $schema, type
 Cohesion: 0.29
 Nodes (6): author, files, name, registryDependencies, $schema, type
 
-### Community 4159 - "Community 4159"
-Cohesion: 0.18
-Nodes (10): devDependencies, tailwindcss, name, private, scripts, build, dev, lint (+2 more)
-
 ### Community 4160 - "Community 4160"
-Cohesion: 0.18
-Nodes (10): dependencies, tailwindcss, name, private, scripts, build, dev, lint (+2 more)
+Cohesion: 0.29
+Nodes (6): MinimalAuthPage(), MinimalAuthPageProps, hexToRgb(), MousePosition, Particles(), ParticlesProps
 
 ### Community 4161 - "Community 4161"
 Cohesion: 0.29
@@ -28146,8 +28159,8 @@ Cohesion: 0.80
 Nodes (3): _check_file(), main(), _read_rows()
 
 ### Community 5499 - "Community 5499"
-Cohesion: 0.80
-Nodes (3): handleBotRequest(), handleBrowserRequest(), handleRequest()
+Cohesion: 0.33
+Nodes (5): coverLabel(), PayForm(), PayPageInner(), planMonthly(), SuccessScreen()
 
 ### Community 5500 - "Community 5500"
 Cohesion: 0.40
@@ -28798,28 +28811,28 @@ Cohesion: 0.40
 Nodes (5): TailwindConfigGenerator._default_output_path, excluded_lines, executed_lines, missing_lines, summary
 
 ### Community 5662 - "Community 5662"
-Cohesion: 0.67
-Nodes (3): Add Legend, code:tsx (import { ChartLegend, ChartLegendContent } from "@/component), code:tsx (<ChartContainer config={chartConfig} className="h-[200px] w-)
+Cohesion: 0.32
+Nodes (4): finderFn(), normalizeQuery(), searchDirectory(), useSearchRegistry()
 
 ### Community 5663 - "Community 5663"
-Cohesion: 0.40
-Nodes (5): TailwindConfigGenerator.add_spacing, excluded_lines, executed_lines, missing_lines, summary
+Cohesion: 0.29
+Nodes (6): Alert, AlertContent, AlertDescription, AlertProps, AlertTitle, alertVariants
 
 ### Community 5664 - "Community 5664"
 Cohesion: 0.40
 Nodes (5): TailwindConfigGenerator._default_content_paths, excluded_lines, executed_lines, missing_lines, summary
 
 ### Community 5665 - "Community 5665"
-Cohesion: 0.40
-Nodes (5): TailwindConfigGenerator._format_plugins, excluded_lines, executed_lines, missing_lines, summary
+Cohesion: 0.33
+Nodes (4): Boxes, BoxesCore(), AnimatedStat(), stats
 
 ### Community 5666 - "Community 5666"
-Cohesion: 0.67
-Nodes (3): description, type, author
+Cohesion: 0.40
+Nodes (5): TestShadcnInstaller.test_add_components_no_config, excluded_lines, executed_lines, missing_lines, summary
 
 ### Community 5667 - "Community 5667"
-Cohesion: 0.40
-Nodes (5): TailwindConfigGenerator.validate_config, excluded_lines, executed_lines, missing_lines, summary
+Cohesion: 0.33
+Nodes (5): Compare(), CompareProps, MemoizedSparklesCore, ParticlesProps, SparklesCore()
 
 ### Community 5668 - "Community 5668"
 Cohesion: 0.40
@@ -28835,23 +28848,27 @@ Nodes (10): 30. HIGH-VALUE ITEMS, 6. Quote Engine — Deep Dive, Add High-Value 
 
 ### Community 5671 - "Community 5671"
 Cohesion: 0.40
-Nodes (5): TestShadcnInstaller.test_add_components_no_components, excluded_lines, executed_lines, missing_lines, summary
+Nodes (5): TestShadcnInstaller.test_add_components_with_overwrite, excluded_lines, executed_lines, missing_lines, summary
 
 ### Community 5672 - "Community 5672"
 Cohesion: 0.40
-Nodes (5): TestShadcnInstaller.test_add_components_no_config, excluded_lines, executed_lines, missing_lines, summary
+Nodes (3): fetchProjects(), NavProjects(), projects
 
 ### Community 5673 - "Community 5673"
-Cohesion: 0.40
-Nodes (5): TestShadcnInstaller.test_add_components_with_overwrite, excluded_lines, executed_lines, missing_lines, summary
+Cohesion: 0.60
+Nodes (5): formatValue(), getToolName(), getToolTitle(), PartTool(), ToolPart
+
+### Community 5674 - "Community 5674"
+Cohesion: 0.18
+Nodes (10): dependencies, tailwindcss, name, private, scripts, build, dev, lint (+2 more)
 
 ### Community 5675 - "Community 5675"
-Cohesion: 0.40
-Nodes (5): TestShadcnInstaller.test_get_installed_components_no_config, excluded_lines, executed_lines, missing_lines, summary
+Cohesion: 0.67
+Nodes (3): code:bash (npx shadcn@latest registry validate acme/toolkit), code:bash (npx shadcn@latest registry validate acme/toolkit#v1.0.0), Step 3: Validate the registry
 
 ### Community 5676 - "Community 5676"
-Cohesion: 0.22
-Nodes (6): SiteConfig(), Layout, LayoutContext, LayoutProviderProps, LayoutProviderState, useLayout()
+Cohesion: 0.40
+Nodes (3): fetchProjects(), NavProjects(), projects
 
 ### Community 5677 - "Community 5677"
 Cohesion: 0.40
@@ -29013,6 +29030,10 @@ Nodes (3): name, private, version
 Cohesion: 0.50
 Nodes (3): name, private, version
 
+### Community 5718 - "Community 5718"
+Cohesion: 0.50
+Nodes (4): code:bash (python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --d), code:bash (python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --d), code:block9 (I am building the [Page Name] page. Please read design-syste), Step 2b: Persist Design System (Master + Overrides Pattern)
+
 ### Community 5719 - "Community 5719"
 Cohesion: 0.50
 Nodes (3): name, $schema, type
@@ -29110,8 +29131,8 @@ Cohesion: 0.50
 Nodes (3): code:js (export default {), Expanding the ESLint configuration, React + TypeScript + Vite
 
 ### Community 5743 - "Community 5743"
-Cohesion: 0.50
-Nodes (3): @/layouts/main.astro, @/components/ui/button, @/styles/global.css
+Cohesion: 0.18
+Nodes (11): devDependencies, @antfu/ni, msw, rimraf, tsup, type-fest, @types/babel__core, @types/fs-extra (+3 more)
 
 ### Community 5745 - "Community 5745"
 Cohesion: 0.50
@@ -29162,12 +29183,8 @@ Cohesion: 0.50
 Nodes (4): 3.0.0, Major Changes, Minor Changes, Patch Changes
 
 ### Community 5757 - "Community 5757"
-Cohesion: 0.50
-Nodes (4): dependsOn, env, outputs, build
-
-### Community 5758 - "Community 5758"
-Cohesion: 0.50
-Nodes (4): test, cache, dependsOn, outputs
+Cohesion: 0.67
+Nodes (3): description, type, extends
 
 ### Community 5759 - "Community 5759"
 Cohesion: 0.50
@@ -29176,10 +29193,6 @@ Nodes (4): Common Sticking Points, Pre-Delivery Checklist, Query Strategy, Tips 
 ### Community 5760 - "Community 5760"
 Cohesion: 0.50
 Nodes (4): Must Use, Recommended, Skip, When to Apply
-
-### Community 5761 - "Community 5761"
-Cohesion: 0.33
-Nodes (4): bunResult, localBin(), tsc, tscResult
 
 ### Community 5762 - "Community 5762"
 Cohesion: 0.67
@@ -29285,10 +29298,6 @@ Nodes (3): Mail, lucide, radix
 Cohesion: 0.67
 Nodes (3): MailOpen, lucide, radix
 
-### Community 5803 - "Community 5803"
-Cohesion: 0.25
-Nodes (6): CATEGORIES, DOCUMENTS, ease, fadeUp, FILE_ICON, STATUS_CFG
-
 ### Community 5804 - "Community 5804"
 Cohesion: 0.67
 Nodes (3): Plus, lucide, radix
@@ -29298,8 +29307,8 @@ Cohesion: 0.67
 Nodes (3): Settings, lucide, radix
 
 ### Community 5806 - "Community 5806"
-Cohesion: 0.32
-Nodes (4): finderFn(), normalizeQuery(), searchDirectory(), useSearchRegistry()
+Cohesion: 0.40
+Nodes (4): BentoGrid(), BentoGridProps, BentoItem, itemsSample
 
 ### Community 5807 - "Community 5807"
 Cohesion: 0.67
@@ -29326,8 +29335,8 @@ Cohesion: 0.29
 Nodes (7): 01 — Simple, 02 — Transparent, 03 — Progressive, 04 — Responsive, 05 — Reassuring, 06 — Human, 73. UX PRINCIPLES
 
 ### Community 5819 - "Community 5819"
-Cohesion: 0.50
-Nodes (4): code:bash (python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --d), code:bash (python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --d), code:block9 (I am building the [Page Name] page. Please read design-syste), Step 2b: Persist Design System (Master + Overrides Pattern)
+Cohesion: 0.20
+Nodes (9): dependencies, tailwindcss, imports, #components/*, #lib/*, name, private, type (+1 more)
 
 ### Community 5820 - "Community 5820"
 Cohesion: 0.67
@@ -29493,17 +29502,13 @@ Nodes (3): 4.7.0, Minor Changes, Patch Changes
 Cohesion: 0.67
 Nodes (3): 4.8.0, Minor Changes, Patch Changes
 
-### Community 5880 - "Community 5880"
-Cohesion: 0.67
-Nodes (3): cache, persistent, dev
-
 ### Community 5881 - "Community 5881"
-Cohesion: 0.67
-Nodes (3): cache, outputs, lint
+Cohesion: 0.40
+Nodes (4): baseOptions, baseProjectInfo, exitSpy, { mockedGetProjectInfo, mockedExistsSync, mockedLogger }
 
 ### Community 5882 - "Community 5882"
-Cohesion: 0.67
-Nodes (3): env, outputs, preview
+Cohesion: 0.40
+Nodes (5): TailwindConfigGenerator.add_colors, excluded_lines, executed_lines, missing_lines, summary
 
 ### Community 5883 - "Community 5883"
 Cohesion: 0.67
@@ -29512,6 +29517,14 @@ Nodes (3): 🟢 Basic Version (This Repository), 💎 Basic vs. Premium Version 
 ### Community 5884 - "Community 5884"
 Cohesion: 0.67
 Nodes (3): 🟢 基础版（本仓库）, 💎 基础版与高级版对比, 🟡 高级版
+
+### Community 5892 - "Community 5892"
+Cohesion: 0.33
+Nodes (4): build, button, outputDir, registry
+
+### Community 6015 - "Community 6015"
+Cohesion: 0.40
+Nodes (5): TailwindConfigGenerator.add_plugins, excluded_lines, executed_lines, missing_lines, summary
 
 ### Community 6117 - "Community 6117"
 Cohesion: 0.33
@@ -29522,8 +29535,12 @@ Cohesion: 0.33
 Nodes (6): 11. GET QUOTE — STEP 01, Actions, Alternative, Postcode, Question, Result
 
 ### Community 6122 - "Community 6122"
+Cohesion: 0.80
+Nodes (3): deriveAliasFromComponents(), getInitAliasDefaults(), replaceComponentsAliasTail()
+
+### Community 6142 - "Community 6142"
 Cohesion: 0.18
-Nodes (11): ShadcnInstaller.add_all_components, TailwindConfigGenerator.add_fonts, excluded_lines, executed_lines, missing_lines, summary, percent_covered_display, excluded_lines (+3 more)
+Nodes (11): ShadcnInstaller.add_all_components, TailwindConfigGenerator.generate_config_string, excluded_lines, executed_lines, missing_lines, summary, percent_covered_display, excluded_lines (+3 more)
 
 ### Community 6143 - "Community 6143"
 Cohesion: 0.33
@@ -29536,6 +29553,10 @@ Nodes (6): 65. EXECUTIVE OVERVIEW, Active Policies, Annual Retention, Governance
 ### Community 6146 - "Community 6146"
 Cohesion: 0.40
 Nodes (5): 01 — Public Website, 02 — Get Quote, 03 — Participant Portal, 04 — Operational Dashboards, 07. PRODUCT ECOSYSTEM
+
+### Community 6152 - "Community 6152"
+Cohesion: 0.40
+Nodes (5): TailwindConfigGenerator.add_spacing, excluded_lines, executed_lines, missing_lines, summary
 
 ### Community 6302 - "Community 6302"
 Cohesion: 0.40
@@ -29578,16 +29599,20 @@ Cohesion: 0.40
 Nodes (5): If "Flat", Is the flat self-contained?, PROPERTY TYPE, Question, Which floor is your property on?
 
 ### Community 6312 - "Community 6312"
-Cohesion: 0.67
-Nodes (3): code:bash (npx shadcn@latest registry validate acme/toolkit), code:bash (npx shadcn@latest registry validate acme/toolkit#v1.0.0), Step 3: Validate the registry
+Cohesion: 0.40
+Nodes (5): TestShadcnInstaller.test_init_default_project_root, excluded_lines, executed_lines, missing_lines, summary
 
 ### Community 6313 - "Community 6313"
-Cohesion: 0.67
-Nodes (3): getHostname(), PartSource(), SourcePart
+Cohesion: 0.40
+Nodes (5): TailwindConfigGenerator.__init__, excluded_lines, executed_lines, missing_lines, summary
 
 ### Community 6314 - "Community 6314"
+Cohesion: 0.40
+Nodes (5): TailwindConfigGenerator.validate_config, excluded_lines, executed_lines, missing_lines, summary
+
+### Community 6315 - "Community 6315"
 Cohesion: 0.50
-Nodes (3): required, $schema, type
+Nodes (4): dependsOn, env, outputs, build
 
 ### Community 6316 - "Community 6316"
 Cohesion: 0.50
@@ -29614,28 +29639,20 @@ Cohesion: 0.50
 Nodes (4): Needs, PERSONA 01 — HOMEOWNER, Tariq & Amina, UX Opportunity
 
 ### Community 6322 - "Community 6322"
-Cohesion: 0.67
-Nodes (3): GripVertical, lucide, radix
-
-### Community 6323 - "Community 6323"
-Cohesion: 0.67
-Nodes (3): Minus, lucide, radix
+Cohesion: 0.22
+Nodes (8): name, private, scripts, build, dev, lint, start, version
 
 ### Community 6324 - "Community 6324"
-Cohesion: 0.67
-Nodes (3): MoreHorizontal, lucide, radix
+Cohesion: 0.50
+Nodes (4): test, cache, dependsOn, outputs
 
 ### Community 6325 - "Community 6325"
-Cohesion: 0.67
-Nodes (3): enum, type, menuAccent
+Cohesion: 0.40
+Nodes (5): TestShadcnInstaller.test_get_installed_components_empty, excluded_lines, executed_lines, missing_lines, summary
 
 ### Community 6326 - "Community 6326"
-Cohesion: 0.67
-Nodes (3): style, enum, type
-
-### Community 6327 - "Community 6327"
-Cohesion: 0.67
-Nodes (3): Add Legend, code:tsx (import { ChartLegend, ChartLegendContent } from "@/component), code:tsx (<ChartContainer config={chartConfig} className="h-[200px] w-)
+Cohesion: 0.50
+Nodes (4): code:bash (npx shadcn@latest add chart), code:bash (npm install recharts), code:css (@layer base {), Installation
 
 ### Community 6328 - "Community 6328"
 Cohesion: 0.67
@@ -29689,25 +29706,81 @@ Nodes (3): Design, PHASE 01 — FOUNDATION, Public Experience
 Cohesion: 0.67
 Nodes (3): Needs, PERSONA 02 — RENTER, Zayd
 
+### Community 6342 - "Community 6342"
+Cohesion: 0.67
+Nodes (3): resolve, readJson(), replaceJsonVersion()
+
+### Community 6345 - "Community 6345"
+Cohesion: 0.67
+Nodes (3): cache, persistent, dev
+
+### Community 6346 - "Community 6346"
+Cohesion: 0.67
+Nodes (3): cache, outputs, lint
+
+### Community 6347 - "Community 6347"
+Cohesion: 0.67
+Nodes (3): env, outputs, preview
+
+### Community 6348 - "Community 6348"
+Cohesion: 0.50
+Nodes (3): required, $schema, type
+
+### Community 6349 - "Community 6349"
+Cohesion: 0.50
+Nodes (3): @/layouts/main.astro, @/components/ui/button, @/styles/global.css
+
+### Community 6350 - "Community 6350"
+Cohesion: 0.67
+Nodes (3): Add an Axis, code:tsx (<ChartContainer config={chartConfig} className="h-[200px] w-), code:tsx (import { Bar, BarChart, CartesianGrid, XAxis } from "rechart)
+
+### Community 6351 - "Community 6351"
+Cohesion: 0.67
+Nodes (3): GripVertical, lucide, radix
+
+### Community 6352 - "Community 6352"
+Cohesion: 0.67
+Nodes (3): Minus, lucide, radix
+
+### Community 6353 - "Community 6353"
+Cohesion: 0.67
+Nodes (3): MoreHorizontal, lucide, radix
+
+### Community 6354 - "Community 6354"
+Cohesion: 0.67
+Nodes (3): required, type, aliases
+
+### Community 6355 - "Community 6355"
+Cohesion: 0.67
+Nodes (3): enum, type, menuAccent
+
+### Community 6359 - "Community 6359"
+Cohesion: 0.67
+Nodes (3): style, enum, type
+
+### Community 6360 - "Community 6360"
+Cohesion: 0.67
+Nodes (3): Add Legend, code:tsx (import { ChartLegend, ChartLegendContent } from "@/component), code:tsx (<ChartContainer config={chartConfig} className="h-[200px] w-)
+
 ## Knowledge Gaps
-- **48132 isolated node(s):** `BLOCKED_UA_PATTERNS`, `PRIVATE_PATHS`, `config`, `version`, `source` (+48127 more)
+- **48139 isolated node(s):** `BLOCKED_UA_PATTERNS`, `PRIVATE_PATHS`, `config`, `version`, `source` (+48134 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **272 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **275 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `lucide-react` connect `pill-badge.tsx` to `dependencies`, `page.tsx`, `page.tsx`, `particles.tsx`, `Community 266`, `package.json`, `react`, `Community 270`, `Community 18`, `Community 19`, `Community 20`, `Community 148`, `Community 21`, `Community 1304`, `Community 25`, `Community 26`, `Community 411`, `Community 27`, `Community 28`, `Community 30`, `Community 32`, `Community 33`, `Community 416`, `Community 34`, `Community 36`, `Community 37`, `Community 294`, `Community 295`, `Community 39`, `Community 38`, `Community 426`, `Community 5803`, `Community 42`, `Community 683`, `Community 46`, `Community 422`, `Community 45`, `Community 44`, `Community 48`, `Community 54`, `Community 440`, `Community 61`, `Community 62`, `Community 63`, `Community 64`, `Community 577`, `Community 67`, `Community 325`, `Community 69`, `Community 71`, `Community 1992`, `Community 73`, `Community 72`, `Community 74`, `Community 79`, `Community 336`, `Community 80`, `Community 82`, `Community 83`, `Community 468`, `Community 296`, `Community 87`, `Community 471`, `Community 91`, `Community 232`, `Community 491`, `Community 236`, `Community 632`, `Community 370`, `Community 376`, `Community 377`, `Community 122`, `Community 381`, `Community 382`, `Community 511`?**
-  _High betweenness centrality (0.007) - this node is a cross-community bridge._
-- **Why does `react` connect `particles.tsx` to `dependencies`, `page.tsx`, `page.tsx`, `pill-badge.tsx`, `Community 392`, `Community 266`, `package.json`, `Community 268`, `react`, `Community 2831`, `Community 18`, `Community 659`, `Community 20`, `Community 21`, `Community 25`, `Community 411`, `Community 414`, `Community 415`, `Community 32`, `Community 33`, `Community 290`, `Community 416`, `Community 294`, `Community 5030`, `Community 39`, `Community 681`, `Community 5803`, `Community 811`, `Community 46`, `Community 54`, `Community 313`, `Community 314`, `Community 573`, `Community 577`, `Community 67`, `Community 1987`, `Community 325`, `Community 1992`, `Community 73`, `Community 72`, `Community 75`, `Community 76`, `Community 77`, `Community 81`, `Community 82`, `Community 468`, `Community 217`, `Community 476`, `Community 608`, `Community 97`, `Community 352`, `Community 101`, `Community 358`, `Community 377`, `Community 236`, `Community 632`, `Community 114`, `Community 371`, `Community 376`, `Community 505`, `Community 122`, `Community 5499`, `Community 255`?**
-  _High betweenness centrality (0.007) - this node is a cross-community bridge._
-- **Why does `node_modules` connect `Community 66` to `Community 611`, `Community 547`, `Community 453`, `Community 68`, `Community 644`, `Community 1972`, `Community 3156`, `Community 309`, `Community 1975`, `Community 1787`, `Community 445`?**
+- **Why does `tailwind-merge` connect `Community 54` to `Community 416`, `dependencies`, `page.tsx`, `Community 265`, `package.json`, `Community 811`, `Community 24`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
+- **Why does `lucide-react` connect `Community 25` to `dependencies`, `page.tsx`, `page.tsx`, `hero-section-nexus.tsx`, `pill-badge.tsx`, `particles.tsx`, `Community 266`, `package.json`, `Community 268`, `react`, `Community 778`, `Community 18`, `Community 19`, `Community 20`, `Community 21`, `Community 1300`, `Community 23`, `Community 281`, `Community 26`, `Community 282`, `Community 27`, `Community 28`, `Community 30`, `Community 416`, `Community 33`, `Community 34`, `Community 32`, `Community 36`, `Community 37`, `Community 294`, `Community 295`, `Community 39`, `Community 681`, `Community 42`, `Community 38`, `Community 422`, `Community 426`, `Community 46`, `Community 44`, `Community 5676`, `Community 5672`, `Community 1076`, `Community 54`, `Community 440`, `Community 61`, `Community 62`, `Community 63`, `Community 1984`, `Community 64`, `Community 65`, `Community 67`, `Community 325`, `Community 71`, `Community 72`, `Community 74`, `Community 77`, `Community 334`, `Community 79`, `Community 80`, `Community 82`, `Community 87`, `Community 471`, `Community 98`, `Community 232`, `Community 370`, `Community 506`, `Community 122`, `Community 5499`, `Community 382`, `Community 511`?**
+  _High betweenness centrality (0.005) - this node is a cross-community bridge._
+- **Why does `react` connect `Community 268` to `dependencies`, `page.tsx`, `page.tsx`, `hero-section-nexus.tsx`, `devDependencies`, `Community 392`, `particles.tsx`, `Community 266`, `package.json`, `react`, `Community 2831`, `Community 18`, `Community 659`, `Community 20`, `Community 21`, `Community 1300`, `Community 148`, `Community 1304`, `Community 25`, `Community 282`, `Community 26`, `Community 27`, `Community 414`, `Community 415`, `Community 416`, `Community 33`, `Community 290`, `Community 294`, `Community 5030`, `Community 38`, `Community 683`, `Community 46`, `Community 48`, `Community 1076`, `Community 54`, `Community 313`, `Community 314`, `Community 573`, `Community 325`, `Community 72`, `Community 73`, `Community 76`, `Community 77`, `Community 81`, `Community 83`, `Community 217`, `Community 476`, `Community 608`, `Community 97`, `Community 352`, `Community 101`, `Community 358`, `Community 632`, `Community 114`, `Community 371`, `Community 376`, `Community 122`, `Community 5499`, `Community 255`?**
+  _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **What connects `BLOCKED_UA_PATTERNS`, `PRIVATE_PATHS`, `config` to the rest of the system?**
-  _48366 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _48373 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `cn` be split into smaller, more focused modules?**
-  _Cohesion score 0.03146067415730337 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07058823529411765 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
-  _Cohesion score 0.03007518796992481 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.029211295034079845 - nodes in this community are weakly interconnected._
 - **Should `page.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.03798076923076923 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06896551724137931 - nodes in this community are weakly interconnected._

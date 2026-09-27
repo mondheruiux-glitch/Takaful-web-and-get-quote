@@ -11,13 +11,13 @@ import {
   ShieldCheck, ArrowUpRight, FilePlus, Calendar, Eye,
   FileCheck, Shield, ChevronDown, CheckSquare, Square,
   CornerDownRight, Scale, AlertOctagon, Bell, FileQuestion,
-  Printer, FolderPlus, Banknote,
+  Printer, FolderPlus, Banknote, Flag,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme, useRole } from '../../ThemeRoleContext';
 import { usePermission } from '@/lib/dashboard/permissions';
-import { CLAIMS, CLAIM_DOCUMENTS, CLAIM_NOTES, PARTICIPANTS, DEMO_USERS } from '@/lib/dashboard/mock-data';
-import { Claim, ClaimDocument, ClaimNote } from '@/lib/dashboard/types';
+import { CLAIMS, CLAIM_DOCUMENTS, CLAIM_NOTES, PARTICIPANTS, DEMO_USERS, PARTICIPANT_REPORTS } from '@/lib/dashboard/mock-data';
+import { Claim, ClaimDocument, ClaimNote, ParticipantReportCategory, ParticipantReportSeverity } from '@/lib/dashboard/types';
 import { getDicebearAvatar } from '@/lib/dashboard/avatars';
 import { DashboardAlert } from '@/components/ui/dashboard-alert';
 
@@ -164,6 +164,15 @@ export default function ClaimDetailPage({ params }: Props) {
   const [rejectionActiveTab, setRejectionActiveTab] = useState<'form' | 'preview'>('form');
   const [rejectionSubmitAttempted, setRejectionSubmitAttempted] = useState(false);
   const [viewDecisionLetterModalOpen, setViewDecisionLetterModalOpen] = useState(false);
+
+  // Participant Management & Disciplinary Referral Modal (Claim Handler -> Management)
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [reportCategory, setReportCategory] = useState<ParticipantReportCategory>('Suspected Fraud / Arnaque');
+  const [reportSeverity, setReportSeverity] = useState<ParticipantReportSeverity>('High');
+  const [reportRecommendedAction, setReportRecommendedAction] = useState<'Freeze Account' | 'Suspend Membership' | 'Issue Warning' | 'Audit Review'>('Freeze Account');
+  const [reportSummary, setReportSummary] = useState('');
+  const [reportEvidence, setReportEvidence] = useState('');
+  const [reportSubmitting, setReportSubmitting] = useState(false);
 
   const handleToggleRejectionPreset = (presetId: string) => {
     const nextSelected = selectedRejectionPresets.includes(presetId)
@@ -521,6 +530,42 @@ export default function ClaimDetailPage({ params }: Props) {
     showToast('Claim rejected: Formal notice and audit record generated', 'info');
   };
 
+  // Submit Investigation Referral / Disciplinary Report to Management
+  const handleSubmitReportToManagement = () => {
+    if (!reportSummary.trim()) {
+      showToast('Please provide an incident summary describing the irregularity.', 'error');
+      return;
+    }
+
+    setReportSubmitting(true);
+    setTimeout(() => {
+      const newReportId = `REP-${Date.now().toString().slice(-4)}`;
+      const timestamp = new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      // Add internal audit note to claim thread
+      const referralNote: ClaimNote = {
+        id: `NOTE-${Date.now()}`,
+        claimId: claim.id,
+        authorId: 'U-HAND-001',
+        authorName: 'Omar Hassan',
+        authorInitials: 'OH',
+        authorRole: 'Senior Claims Handler',
+        authorGender: 'male',
+        authorAvatar: getDicebearAvatar('Omar Hassan', 'male'),
+        text: `🚨 Disciplinary Referral Dispatched to Operations Management (${newReportId}):\n\n• Category: ${reportCategory}\n• Severity: ${reportSeverity}\n• Recommended Action: ${reportRecommendedAction}\n\nCase Summary:\n${reportSummary}\n\nAssessor / Forensic Notes:\n${reportEvidence || 'Refer to claim loss evidence and quotation discrepancies in system.'}\n\nStatus: Pending review in Management Executive Dashboard. Mutual pool safeguards initiated.`,
+        isInternal: true,
+        createdAt: timestamp,
+      };
+
+      setNotes(prev => [referralNote, ...prev]);
+      setReportSubmitting(false);
+      setReportModalOpen(false);
+      setReportSummary('');
+      setReportEvidence('');
+      showToast(`Referral ${newReportId} dispatched to Management Dashboard. Operations review initiated.`, 'success');
+    }, 600);
+  };
+
   // Handle Approve Claim via Adjudication Modal
   const handleConfirmApproval = () => {
     const gross = parseFloat(assessedAmountInput) || claim.amountClaimed;
@@ -606,12 +651,14 @@ export default function ClaimDetailPage({ params }: Props) {
 
   // Dynamic colors & styles
   const GREEN = '#00c685';
-  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
-  const BG_PANEL_ALT = isLight ? '#f4f6f5' : '#112218';
+  const BG_PANEL = isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.02)';
+  const BG_PANEL_ALT = isLight ? '#f4f6f5' : 'rgba(255, 255, 255, 0.02)';
   const TEXT_MAIN = isLight ? 'text-black/90' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/60' : 'text-white/45';
   const TEXT_MUTED = isLight ? 'text-black/40' : 'text-white/35';
   const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
+  const BG_INPUT = isLight ? 'bg-black/[0.03]' : 'bg-white/[0.04]';
+  const BORDER_INPUT = isLight ? 'border-black/[0.08]' : 'border-white/[0.08]';
 
   // Visible Timeline computation based on current status state
   const getTimelineSteps = () => {
@@ -621,11 +668,45 @@ export default function ClaimDetailPage({ params }: Props) {
     const isDecision = ['Approved', 'Rejected', 'Paid'].includes(claim.status);
     const isPaid = claim.status === 'Paid';
 
+    let activeIndex = 0;
+    if (claim.status === 'Submitted') activeIndex = 1;
+    else if (claim.status === 'Under Review' || claim.status === 'Awaiting Information') activeIndex = 1;
+    else if (claim.status === 'Approved' || claim.status === 'Rejected') activeIndex = 2;
+    else if (claim.status === 'Paid') activeIndex = 3;
+
     return [
-      { label: 'Claim Submitted', date: claim.submittedDate, done: isSubmitted, note: 'Submitted via portal' },
-      { label: 'Under Review', date: isUnderReview ? 'Reviewed' : 'Pending', done: isUnderReview, note: isAwaitingInfo ? 'Awaiting participant documents' : 'Assigned to Omar Hassan' },
-      { label: 'Decision Made', date: isDecision ? 'Completed' : 'Pending', done: isDecision, note: claim.status === 'Rejected' ? 'Claim Rejected' : claim.status === 'Approved' || isPaid ? 'Claim Approved' : '' },
-      { label: 'Payment Released', date: isPaid ? 'Completed' : 'Pending', done: isPaid, note: isPaid ? `£${(claim.amountApproved || claim.amountClaimed).toLocaleString()} transferred` : '' },
+      {
+        label: 'Claim Submitted',
+        date: claim.submittedDate,
+        done: activeIndex > 0,
+        active: activeIndex === 0,
+        note: 'Submitted via portal',
+        type: 'submit',
+      },
+      {
+        label: 'Under Review',
+        date: isUnderReview ? 'Reviewed' : 'Pending',
+        done: activeIndex > 1,
+        active: activeIndex === 1,
+        note: isAwaitingInfo ? 'Awaiting participant documents' : 'Assigned to Omar Hassan',
+        type: 'clock',
+      },
+      {
+        label: 'Decision Made',
+        date: isDecision ? 'Completed' : 'Pending',
+        done: activeIndex > 2,
+        active: activeIndex === 2,
+        note: claim.status === 'Rejected' ? 'Claim Rejected' : claim.status === 'Approved' || isPaid ? 'Claim Approved' : 'Assessment in progress',
+        type: 'alert',
+      },
+      {
+        label: 'Payment Released',
+        date: isPaid ? 'Completed' : 'Pending',
+        done: isPaid,
+        active: activeIndex === 3,
+        note: isPaid ? `£${(claim.amountApproved || claim.amountClaimed).toLocaleString()} transferred` : 'Disbursement upon approval',
+        type: 'payout',
+      },
     ];
   };
 
@@ -729,8 +810,8 @@ export default function ClaimDetailPage({ params }: Props) {
               variants={fadeUp} initial="hidden" animate="visible" custom={1}
               className="rounded-2xl p-5 border transition-all duration-200 overflow-hidden relative"
               style={{
-                background: isLight ? '#ffffff' : '#0e1d17',
-                borderColor: isLight ? '#e5e7eb' : 'rgba(255,255,255,0.08)',
+                background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.02)',
+                borderColor: isLight ? '#e5e7eb' : 'rgba(255,255,255,0.06)',
                 boxShadow: isLight ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
               }}
             >
@@ -825,7 +906,9 @@ export default function ClaimDetailPage({ params }: Props) {
           {/* Claim Summary Details */}
           <motion.div
             variants={fadeUp} initial="hidden" animate="visible" custom={1}
-            className="rounded-2xl p-5 transition-colors duration-200"
+            className={`rounded-2xl p-5 transition-all ${
+              isLight ? 'hover:border-black/[0.12]' : 'hover:border-white/[0.12]'
+            }`}
             style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -869,7 +952,9 @@ export default function ClaimDetailPage({ params }: Props) {
           {/* Documents & Evidence Section */}
           <motion.div
             variants={fadeUp} initial="hidden" animate="visible" custom={2}
-            className="rounded-2xl p-5 transition-colors duration-200"
+            className={`rounded-2xl p-5 transition-all ${
+              isLight ? 'hover:border-black/[0.12]' : 'hover:border-white/[0.12]'
+            }`}
             style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -897,7 +982,11 @@ export default function ClaimDetailPage({ params }: Props) {
               {docs.map(doc => (
                 <div
                   key={doc.id}
-                  className="flex items-center gap-3 p-3.5 rounded-xl hover:bg-black/[0.015] dark:hover:bg-white/[0.02] transition-colors group"
+                  className={`flex items-center gap-3 p-3.5 rounded-xl transition-all group ${
+                    isLight
+                      ? 'bg-white border-black/[0.06] hover:border-black/[0.12]'
+                      : 'bg-white/[0.02] border-white/[0.06] hover:border-white/[0.12]'
+                  }`}
                   style={{ border: `1px solid ${BORDER}` }}
                 >
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#00c685]/10 shrink-0">
@@ -927,7 +1016,9 @@ export default function ClaimDetailPage({ params }: Props) {
           {/* Conversation and Notes Workspace */}
           <motion.div
             variants={fadeUp} initial="hidden" animate="visible" custom={3}
-            className="rounded-2xl p-5 transition-colors duration-200"
+            className={`rounded-2xl p-5 transition-all ${
+              isLight ? 'hover:border-black/[0.12]' : 'hover:border-white/[0.12]'
+            }`}
             style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -1006,7 +1097,7 @@ export default function ClaimDetailPage({ params }: Props) {
                     className={`p-4 rounded-xl transition-all ${
                       note.isInternal
                         ? isLight ? 'bg-amber-500/[0.05] border border-amber-500/20' : 'bg-amber-500/[0.03] border border-amber-500/20'
-                        : isLight ? 'bg-black/[0.02] border border-black/[0.04]' : 'bg-white/[0.03] border border-white/[0.04]'
+                        : isLight ? 'bg-black/[0.02] border border-black/[0.04]' : 'bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.12]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
@@ -1064,24 +1155,56 @@ export default function ClaimDetailPage({ params }: Props) {
             className="rounded-2xl p-5 transition-colors duration-200"
             style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
           >
-            <h3 className={`text-xs font-bold uppercase tracking-wider mb-4 ${TEXT_MUTED}`}>Timeline & SLA Tracking</h3>
+            <h3 className={`text-xs font-bold uppercase tracking-wider mb-4 ${TEXT_MUTED}`}>Timeline &amp; SLA Tracking</h3>
             <div className="relative">
-              <div className="absolute left-[11px] top-2 bottom-2 w-px bg-black/5 dark:bg-white/5" />
+              {/* Sleek vertical connector line */}
+              <div
+                className="absolute left-[13px] top-3 bottom-3 w-px"
+                style={{ background: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }}
+              />
               <div className="space-y-4">
                 {getTimelineSteps().map((step, idx) => (
-                  <div key={step.label} className="flex gap-3">
-                    <div className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center z-10" style={{
-                      background: step.done ? `${GREEN}15` : isLight ? '#f4f6f5' : '#112218',
-                      border: `2px solid ${step.done ? GREEN : isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)'}`,
-                    }}>
+                  <div key={step.label} className="flex items-start gap-3 relative">
+                    {/* Stepper node matching uploaded screenshot */}
+                    <div className="relative shrink-0 flex items-center justify-center z-10 w-7 h-7 mt-0.5">
                       {step.done ? (
-                        <CheckCircle2 size={12} style={{ color: GREEN }} />
+                        /* Completed: Solid white circle with crisp dark checkmark */
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center shadow-sm ${
+                          isLight ? 'bg-gray-900 text-white' : 'bg-white text-black'
+                        }`}>
+                          <Check size={13} strokeWidth={3} />
+                        </div>
+                      ) : step.active ? (
+                        /* Active: Solid white circle with dark clock & concentric halo ring */
+                        <div className="relative flex items-center justify-center">
+                          <div className={`absolute -inset-1 rounded-full animate-pulse ${
+                            isLight ? 'bg-gray-900/10' : 'bg-white/20'
+                          }`} />
+                          <div className={`w-7 h-7 rounded-full flex items-center justify-center relative z-10 shadow-sm ${
+                            isLight ? 'bg-gray-900 text-white' : 'bg-white text-black'
+                          }`}>
+                            <Clock size={13} strokeWidth={2.5} />
+                          </div>
+                        </div>
                       ) : (
-                        <Clock size={12} className={TEXT_MUTED} />
+                        /* Pending: Translucent dark circle with subtle outline icon */
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center border transition-colors ${
+                          isLight
+                            ? 'bg-black/[0.04] border-black/10 text-black/40'
+                            : 'bg-white/10 border-white/15 text-white/50'
+                        }`}>
+                          {step.type === 'alert' ? (
+                            <AlertCircle size={13} strokeWidth={2} />
+                          ) : step.type === 'payout' ? (
+                            <Banknote size={13} strokeWidth={2} />
+                          ) : (
+                            <ShieldCheck size={13} strokeWidth={2} />
+                          )}
+                        </div>
                       )}
                     </div>
-                    <div>
-                      <p className={`text-xs font-semibold ${step.done ? TEXT_MAIN : TEXT_MUTED}`}>{step.label}</p>
+                    <div className="pt-0.5 flex-1">
+                      <p className={`text-xs font-semibold ${step.done || step.active ? TEXT_MAIN : TEXT_MUTED}`}>{step.label}</p>
                       <p className={`text-[10px] ${TEXT_SUB}`}>{step.date} {step.note && `· ${step.note}`}</p>
                     </div>
                   </div>
@@ -1244,39 +1367,87 @@ export default function ClaimDetailPage({ params }: Props) {
 
             {role === 'participant' ? (
               <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={getDicebearAvatar('Omar Hassan', 'male')}
-                    alt="Omar Hassan"
-                    className="w-11 h-11 rounded-2xl object-cover border-2 border-blue-500/30 bg-blue-500/10 shadow-sm shrink-0"
-                  />
-                  <div>
-                    <p className={`font-bold text-xs ${TEXT_MAIN}`}>Omar Hassan</p>
-                    <p className="text-[10px] font-semibold text-blue-500">Senior Claims Handler</p>
-                    <p className={`text-[10px] mt-0.5 ${TEXT_MUTED}`}>Takaful UK Direct Line</p>
+                {/* Profile Header */}
+                <div className="flex items-start gap-3.5">
+                  <div className="relative shrink-0">
+                    <img
+                      src={getDicebearAvatar('Omar Hassan', 'male')}
+                      alt="Omar Hassan"
+                      className="w-12 h-12 rounded-2xl object-cover border-2 border-[#00c685]/30 bg-[#00c685]/10 shadow-sm"
+                    />
+                    <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#00c685] border-2 border-white dark:border-[#0a1a14]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <p className={`font-bold text-sm leading-tight ${TEXT_MAIN}`}>Omar Hassan</p>
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#00c685]/15 text-[#00c685]">
+                        Active Handler
+                      </span>
+                    </div>
+                    <p className="text-[11px] font-medium text-emerald-500 mt-0.5">Senior Claims Handler · Shariah Property</p>
+                    <p className={`text-[11px] mt-1 line-clamp-2 leading-relaxed ${TEXT_MUTED}`}>
+                      Specialised in domestic water damage &amp; rapid structural restoration.
+                    </p>
                   </div>
                 </div>
 
-                <div className="space-y-2 text-xs pt-3 border-t" style={{ borderColor: BORDER }}>
-                  <div className="flex items-center gap-2">
+                {/* Performance stats row */}
+                <div className="grid grid-cols-3 gap-2 py-2.5 px-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border" style={{ borderColor: BORDER }}>
+                  <div className="text-center">
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400">Settled</p>
+                    <p className={`text-xs font-bold mt-0.5 ${TEXT_MAIN}`}>142</p>
+                  </div>
+                  <div className="text-center border-x" style={{ borderColor: BORDER }}>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400">Avg Time</p>
+                    <p className={`text-xs font-bold mt-0.5 ${TEXT_MAIN}`}>1.8d</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400">Rating</p>
+                    <p className="text-xs font-bold mt-0.5 text-amber-500">4.9 ★</p>
+                  </div>
+                </div>
+
+                {/* Contact information */}
+                <div className="space-y-2 text-xs pt-1">
+                  <a
+                    href="mailto:o.hassan@takaful.com"
+                    className={`flex items-center gap-2 transition-colors hover:text-[#00c685] ${TEXT_SUB}`}
+                  >
                     <Mail size={12} className={TEXT_MUTED} />
-                    <span className={TEXT_SUB}>o.hassan@takaful.com</span>
-                  </div>
-                  <div className="flex items-center gap-2">
+                    <span>o.hassan@takaful.com</span>
+                  </a>
+                  <a
+                    href="tel:+442079460192"
+                    className={`flex items-center gap-2 transition-colors hover:text-[#00c685] ${TEXT_SUB}`}
+                  >
                     <Phone size={12} className={TEXT_MUTED} />
-                    <span className={TEXT_SUB}>+44 20 7946 0192</span>
-                  </div>
+                    <span>+44 20 7946 0192 (Direct Line)</span>
+                  </a>
                 </div>
 
-                <button
-                  onClick={() => {
-                    const el = document.querySelector('textarea');
-                    if (el) el.focus();
-                  }}
-                  className="w-full text-xs font-semibold py-2 rounded-xl border border-[#00c685]/30 text-[#00c685] bg-[#00c685]/10 hover:bg-[#00c685]/15 transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <MessageSquare size={12} /> Message Omar directly
-                </button>
+                {/* Actions */}
+                <div className="space-y-2 pt-1">
+                  <button
+                    onClick={() => {
+                      const el = document.querySelector('textarea');
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        el.focus();
+                      }
+                    }}
+                    className="w-full text-xs font-bold py-2.5 rounded-xl border border-[#00c685]/30 text-[#00c685] bg-[#00c685]/10 hover:bg-[#00c685]/15 transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+                  >
+                    <MessageSquare size={13} /> Message Omar directly
+                  </button>
+                  <a
+                    href="tel:+442079460192"
+                    className={`w-full text-xs font-medium py-2 rounded-xl border transition-colors flex items-center justify-center gap-1.5 ${
+                      isLight ? 'border-gray-200 text-gray-700 hover:bg-gray-50' : 'border-white/10 text-white/80 hover:bg-white/5'
+                    }`}
+                  >
+                    <Phone size={12} /> Call Direct Line
+                  </a>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
@@ -1315,12 +1486,41 @@ export default function ClaimDetailPage({ params }: Props) {
                   </div>
                 </div>
 
-                <Link
-                  href="/dashboard/participants"
-                  className="w-full text-center text-xs font-semibold py-2 rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors block"
-                >
-                  Open in Participant Registry
-                </Link>
+                {/* Account Status / Disciplinary Notice if flagged */}
+                {participantRecord.accountStatus && participantRecord.accountStatus !== 'Active' && (
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 space-y-1">
+                    <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-bold text-[11px]">
+                      <AlertTriangle size={13} className="shrink-0" />
+                      <span>Account Status: {participantRecord.accountStatus}</span>
+                    </div>
+                    {participantRecord.accountActionReason && (
+                      <p className="text-[10px] text-amber-700 dark:text-amber-300/80 leading-relaxed">
+                        {participantRecord.accountActionReason}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <div className="space-y-2 pt-1">
+                  {/* Flag to Management Button for Claim Handlers */}
+                  {(role === 'claim_handler' || role === 'management') && (
+                    <button
+                      type="button"
+                      onClick={() => setReportModalOpen(true)}
+                      className="w-full text-center text-xs font-semibold py-2 px-3 rounded-xl border border-red-500/20 bg-red-500/10 hover:bg-red-500/15 text-red-600 dark:text-red-400 transition-colors flex items-center justify-center gap-1.5 active:scale-[0.99]"
+                    >
+                      <Flag size={12} className="text-red-500" />
+                      Report / Flag to Management
+                    </button>
+                  )}
+
+                  <Link
+                    href={`/dashboard/participants?id=${claim.participantId}`}
+                    className="w-full text-center text-xs font-semibold py-2 rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors block text-inherit"
+                  >
+                    Open in Participant Registry
+                  </Link>
+                </div>
               </div>
             )}
           </motion.div>
@@ -2400,6 +2600,215 @@ export default function ClaimDetailPage({ params }: Props) {
                 >
                   Done
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* REFERRAL TO MANAGEMENT MODAL (CLAIM HANDLER -> MANAGEMENT)     */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {reportModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[300] flex items-start justify-center pt-10 sm:pt-14 pb-8 px-3 sm:px-4 bg-black/75 backdrop-blur-xs overflow-y-auto"
+            onClick={() => setReportModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.96, opacity: 0, y: 16 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.96, opacity: 0, y: 16 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-2xl rounded-2xl p-5 sm:p-7 shadow-2xl relative space-y-5 my-auto"
+              style={{ background: isLight ? '#ffffff' : '#0d2117', border: `1px solid ${isLight ? '#e5e7eb' : 'rgba(255,255,255,0.1)'}` }}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between gap-3 border-b pb-4" style={{ borderColor: BORDER }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 shrink-0">
+                    <ShieldAlert size={20} />
+                  </div>
+                  <div>
+                    <h3 className={`text-base font-bold ${TEXT_MAIN}`}>Refer Participant to Management</h3>
+                    <p className={`text-xs mt-0.5 ${TEXT_SUB}`}>
+                      Submit formal notification of suspected fraud, excessive claims, or policy non-compliance for executive review.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setReportModalOpen(false)}
+                  className={`p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${TEXT_MUTED}`}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Context strip */}
+              <div className="p-3.5 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.02] flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className={`font-semibold ${TEXT_MAIN}`}>{claim.participantName}</span>
+                  <span className="font-mono text-[10px] text-gray-500">({claim.participantId})</span>
+                </div>
+                <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                  <span>Linked Claim:</span>
+                  <span className="font-mono font-bold text-gray-700 dark:text-gray-300">{claim.id}</span>
+                  <span>·</span>
+                  <span>Amount: £{claim.amountClaimed.toLocaleString()}</span>
+                </div>
+              </div>
+
+              {/* Form */}
+              <div className="space-y-4">
+                {/* Category */}
+                <div>
+                  <label className={`block text-xs font-bold mb-2 ${TEXT_MAIN}`}>
+                    Irregularity / Violation Category <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {([
+                      'Suspected Fraud / Arnaque',
+                      'Excessive / Repeat Claims',
+                      'Document Falsification',
+                      'Inconsistent Loss Event',
+                      'Non-Disclosure at Inception',
+                      'Aggressive / Uncooperative Conduct',
+                      'Other Irregularity',
+                    ] as ParticipantReportCategory[]).map(cat => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setReportCategory(cat)}
+                        className={`p-2.5 rounded-xl border text-xs text-left font-medium transition-all ${
+                          reportCategory === cat
+                            ? 'border-red-500/40 bg-red-500/10 text-red-600 dark:text-red-400 font-semibold shadow-xs'
+                            : isLight
+                              ? 'border-gray-200 bg-white hover:bg-gray-50 text-gray-700'
+                              : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05] text-gray-300'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Severity & Recommended Action Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Severity */}
+                  <div>
+                    <label className={`block text-xs font-bold mb-1.5 ${TEXT_MAIN}`}>
+                      Assessed Severity Level <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex gap-1.5">
+                      {(['Low', 'Medium', 'High', 'Critical'] as ParticipantReportSeverity[]).map(sev => (
+                        <button
+                          key={sev}
+                          type="button"
+                          onClick={() => setReportSeverity(sev)}
+                          className={`flex-1 py-2 rounded-xl text-xs font-semibold border text-center transition-all ${
+                            reportSeverity === sev
+                              ? sev === 'Critical'
+                                ? 'bg-red-600 text-white border-red-600'
+                                : sev === 'High'
+                                  ? 'bg-amber-600 text-white border-amber-600'
+                                  : 'bg-[#00c685] text-white border-[#00c685]'
+                              : isLight
+                                ? 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                                : 'border-white/10 bg-white/[0.02] text-gray-400 hover:border-white/20'
+                          }`}
+                        >
+                          {sev}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Recommended Action */}
+                  <div>
+                    <label className={`block text-xs font-bold mb-1.5 ${TEXT_MAIN}`}>
+                      Recommended Action for Management
+                    </label>
+                    <select
+                      value={reportRecommendedAction}
+                      onChange={e => setReportRecommendedAction(e.target.value as any)}
+                      className={`w-full py-2 px-3 rounded-xl border text-xs ${BG_INPUT} ${BORDER_INPUT} ${TEXT_MAIN} focus:outline-none focus:border-red-500/50`}
+                    >
+                      <option value="Freeze Account">Freeze Account (Block Payouts & Claims)</option>
+                      <option value="Suspend Membership">Suspend Membership (Halt Cover)</option>
+                      <option value="Issue Warning">Issue Formal Compliance Warning</option>
+                      <option value="Audit Review">Full Forensic Audit Investigation</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Detailed Incident Summary */}
+                <div>
+                  <label className={`block text-xs font-bold mb-1.5 ${TEXT_MAIN}`}>
+                    Incident Summary & Findings <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={reportSummary}
+                    onChange={e => setReportSummary(e.target.value)}
+                    placeholder="Describe specific discrepancies, suspect quotes, timeline anomalies, or contractor inconsistencies..."
+                    className={`w-full p-3 rounded-xl border text-xs ${BG_INPUT} ${BORDER_INPUT} ${TEXT_MAIN} focus:outline-none focus:border-red-500/50 resize-none leading-relaxed`}
+                  />
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    Provide objective observations. This referral is immediately logged in the Executive Management registry.
+                  </p>
+                </div>
+
+                {/* Evidence Notes */}
+                <div>
+                  <label className={`block text-xs font-bold mb-1.5 ${TEXT_MAIN}`}>
+                    Corroborating Evidence / Document References (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={reportEvidence}
+                    onChange={e => setReportEvidence(e.target.value)}
+                    placeholder="e.g. Invoice #INV-8812 duplicate VAT; metadata mismatch on photo #3"
+                    className={`w-full py-2 px-3 rounded-xl border text-xs ${BG_INPUT} ${BORDER_INPUT} ${TEXT_MAIN} focus:outline-none focus:border-red-500/50`}
+                  />
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center justify-between gap-3 pt-3 border-t" style={{ borderColor: BORDER }}>
+                <p className="text-[11px] text-gray-500">
+                  Submitted as <strong>Omar Hassan</strong> (Senior Claims Handler)
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setReportModalOpen(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSubmitReportToManagement}
+                    disabled={reportSubmitting || !reportSummary.trim()}
+                    className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center gap-1.5 shadow-sm active:scale-[0.98]"
+                  >
+                    {reportSubmitting ? (
+                      <>
+                        <RefreshCw size={13} className="animate-spin" /> Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <Flag size={13} /> Submit Referral to Management
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

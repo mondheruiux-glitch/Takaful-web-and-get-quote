@@ -40,7 +40,6 @@ function Navbar() {
     ['How it Works', '/how-it-works'],
     ['Compare Plans', '/compare-plans'],
     ['About Us', '/about'],
-    ['Dashboard', '/dashboard'],
     ['Contact', '/contact'],
   ];
 
@@ -69,10 +68,10 @@ function Navbar() {
         </div>
         <div className="flex items-center gap-3">
           <Link
-            href="/dashboard"
+            href="/portal"
             className="hidden md:block text-sm font-semibold px-4 py-2.5 rounded-full transition-all duration-300 text-gray-300 hover:bg-white/10"
           >
-            Dashboard
+            My Portal
           </Link>
           <Link
             href="/get-quote"

@@ -7,12 +7,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Shield, FileText, PieChart, CreditCard,
   Folder, Bell, Settings, ChevronDown, Menu, X, LogOut,
-  Users, ChevronRight, TrendingUp, Sun, Moon,
-  ClipboardList, Banknote, ArrowLeftRight, BarChart3,
-  ShieldAlert, Home, HelpCircle,
+  ChevronRight, TrendingUp, Sun, Moon,
+  ClipboardList, Banknote, ArrowLeftRight,
+  ShieldAlert, HelpCircle, UserCog,
 } from 'lucide-react';
 import { DEMO_USERS } from '@/lib/dashboard/mock-data';
 import { getDicebearAvatar } from '@/lib/dashboard/avatars';
+
 import { RoleContext, ThemeContext, useRole, useTheme, ThemeMode, DashboardRole } from './ThemeRoleContext';
 
 /* ─── Nav item type ──────────────────────────────────────────────────────── */
@@ -24,23 +25,12 @@ interface NavItem {
 }
 
 /* ─── Role-specific nav arrays ───────────────────────────────────────────── */
-const PARTICIPANT_NAV: NavItem[] = [
-  { href: '/dashboard',                label: 'Overview',          icon: LayoutDashboard },
-  { href: '/dashboard/my-cover',       label: 'My Cover',          icon: Home },
-  { href: '/dashboard/contributions',  label: 'My Contributions',  icon: CreditCard },
-  { href: '/dashboard/claims',         label: 'My Claims',         icon: FileText },
-  { href: '/dashboard/documents',      label: 'My Documents',      icon: Folder },
-  { href: '/dashboard/pool',           label: 'Takaful Pool',      icon: PieChart },
-  { href: '/dashboard/support',        label: 'Support & Chat',    icon: HelpCircle, badge: 1 },
-  { href: '/dashboard/notifications',  label: 'Notifications',     icon: Bell, badge: 2 },
-  { href: '/dashboard/settings',       label: 'Settings',          icon: Settings },
-];
+// Participant nav lives in /portal layout — not used here
 
 const CLAIM_HANDLER_NAV: NavItem[] = [
   { href: '/dashboard',                label: 'Overview',          icon: LayoutDashboard },
   { href: '/dashboard/queue',          label: 'My Queue',          icon: ClipboardList, badge: 8 },
   { href: '/dashboard/claims',         label: 'All Claims',        icon: FileText },
-  { href: '/dashboard/participants',   label: 'Participants',      icon: Users },
   { href: '/dashboard/documents',      label: 'Documents',         icon: Folder },
   { href: '/dashboard/support',        label: 'Support Tickets',   icon: HelpCircle, badge: 3 },
   { href: '/dashboard/notifications',  label: 'Notifications',     icon: Bell, badge: 4 },
@@ -61,7 +51,6 @@ const FINANCE_NAV: NavItem[] = [
 
 const MANAGEMENT_NAV: NavItem[] = [
   { href: '/dashboard',                label: 'Overview',          icon: LayoutDashboard },
-  { href: '/dashboard/participants',   label: 'Participants',      icon: Users },
   { href: '/dashboard/certificates',   label: 'Certificates',      icon: Shield },
   { href: '/dashboard/claims',         label: 'Claims',            icon: FileText },
   { href: '/dashboard/pool',           label: 'Takaful Pool',      icon: PieChart },
@@ -73,11 +62,27 @@ const MANAGEMENT_NAV: NavItem[] = [
   { href: '/dashboard/settings',       label: 'Settings',          icon: Settings },
 ];
 
+const SUPER_ADMIN_NAV: NavItem[] = [
+  { href: '/dashboard',                label: 'Overview',          icon: LayoutDashboard },
+  { href: '/dashboard/staff',          label: 'Staff & Roles',     icon: UserCog, badge: 6 },
+  { href: '/dashboard/certificates',   label: 'Certificates',      icon: Shield },
+  { href: '/dashboard/claims',         label: 'Claims',            icon: FileText },
+  { href: '/dashboard/pool',           label: 'Takaful Pool',      icon: PieChart },
+  { href: '/dashboard/contributions',  label: 'Contributions',     icon: TrendingUp },
+  { href: '/dashboard/risk',           label: 'Risk & Solvency',   icon: ShieldAlert },
+  { href: '/dashboard/transactions',   label: 'Audit Ledger',      icon: ArrowLeftRight },
+  { href: '/dashboard/notifications',  label: 'Platform Alerts',   icon: Bell, badge: 8 },
+  { href: '/dashboard/settings',       label: 'Settings',          icon: Settings },
+];
+
+// Staff nav arrays — all dashboard roles are staff roles
+// Participant portal lives at /portal
 const NAV_BY_ROLE: Record<DashboardRole, NavItem[]> = {
-  participant:   PARTICIPANT_NAV,
+  participant:   [],
   claim_handler: CLAIM_HANDLER_NAV,
   finance:       FINANCE_NAV,
   management:    MANAGEMENT_NAV,
+  super_admin:   SUPER_ADMIN_NAV,
 };
 
 /* ─── Sidebar ────────────────────────────────────────────────────────────── */
@@ -188,12 +193,14 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
 
 
 /* ─── Top Bar ─────────────────────────────────────────────────────────────── */
-const ROLE_LABELS: Record<DashboardRole, string> = {
-  participant:   'Participant',
+const ROLE_LABELS: Record<string, string> = {
   claim_handler: 'Claim Handler',
   finance:       'Finance Team',
   management:    'Management',
+  super_admin:   'Super Admin (Exec)',
 };
+
+const STAFF_ROLES: DashboardRole[] = ['claim_handler', 'finance', 'management', 'super_admin'];
 
 function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
   const pathname = usePathname();
@@ -283,7 +290,7 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
               className="absolute right-0 top-full mt-1.5 w-48 rounded-xl overflow-hidden z-50"
               style={{ background: SURFACE_COLOR, border: `1px solid ${BORDER}`, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
             >
-              {(Object.keys(ROLE_LABELS) as DashboardRole[]).map(r => (
+              {STAFF_ROLES.map(r => (
                 <button
                   key={r}
                   onClick={() => { setRole(r); setRoleOpen(false); }}
@@ -399,23 +406,37 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
 }
 
 
+
+
 /* ─── Dashboard Layout ───────────────────────────────────────────────────── */
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [role, setRoleState] = useState<DashboardRole>('claim_handler');
-  const [theme, setThemeState] = useState<ThemeMode>('light');
+  const [theme, setThemeState] = useState<ThemeMode>('dark');
 
-  // Hydrate saved role & theme from localStorage
+  // Hydrate saved role & theme from localStorage / URL
   useEffect(() => {
     try {
-      const savedRole = localStorage.getItem('takaful_dashboard_role') as DashboardRole;
-      if (savedRole && ['participant', 'claim_handler', 'finance', 'management'].includes(savedRole)) {
-        setRoleState(savedRole);
+      const validRoles: DashboardRole[] = ['claim_handler', 'finance', 'management', 'super_admin'];
+      const params = new URLSearchParams(window.location.search);
+      const urlRole = params.get('role') as DashboardRole;
+
+      if (urlRole && validRoles.includes(urlRole)) {
+        setRoleState(urlRole);
+        localStorage.setItem('takaful_dashboard_role', urlRole);
+      } else {
+        const savedRole = localStorage.getItem('takaful_dashboard_role') as DashboardRole;
+        if (savedRole && validRoles.includes(savedRole)) {
+          setRoleState(savedRole);
+        } else {
+          setRoleState('claim_handler');
+          localStorage.setItem('takaful_dashboard_role', 'claim_handler');
+        }
       }
+
       const savedTheme = localStorage.getItem('takaful_dashboard_theme') as ThemeMode;
       if (savedTheme && ['light', 'dark'].includes(savedTheme)) {
         setThemeState(savedTheme);
-        // Apply .dark class to <html> so Tailwind dark: variants & Radix portals work
         document.documentElement.classList.toggle('dark', savedTheme === 'dark');
       }
     } catch {}
@@ -428,16 +449,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const setTheme = (t: ThemeMode) => {
     setThemeState(t);
-    // Apply .dark class to <html> so Tailwind dark: variants & Radix portals work
     document.documentElement.classList.toggle('dark', t === 'dark');
     try { localStorage.setItem('takaful_dashboard_theme', t); } catch {}
   };
 
-  const BG_COLOR = theme === 'light' ? '#F9FAFB' : '#0a1a14';
+  const isLight = theme === 'light';
+  const BG_COLOR = isLight ? '#F9FAFB' : '#0a1a14';
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <RoleContext.Provider value={{ role, setRole }}>
+        {/* Staff dashboard: sidebar + topbar */}
         <div className="flex h-screen overflow-hidden transition-colors duration-200" style={{ background: BG_COLOR, fontFamily: "'Inter', sans-serif" }}>
           <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
           <div className="flex flex-col flex-1 min-w-0 overflow-hidden">

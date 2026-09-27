@@ -521,47 +521,79 @@ export default function SupportPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 transition-colors duration-200">
+    <div className={`transition-colors duration-200 ${
+      !isStaff
+        ? 'max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 space-y-10 sm:space-y-12 font-body'
+        : 'p-4 sm:p-6 space-y-6'
+    }`}>
       {/* ─── Header ──────────────────────────────────────────────────────── */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className={`text-xl font-bold ${TEXT_MAIN}`}>
-              {isStaff ? 'Customer Support & Helpdesk Desk' : 'Support & Live Assistance'}
-            </h1>
-            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#00c685]/15 text-[#00c685]">
-              {isStaff ? 'Staff Portal' : 'Member Portal'}
-            </span>
-          </div>
-          <p className={`text-xs mt-1 ${TEXT_SUB}`}>
-            {isStaff
-              ? 'Manage participant inquiries, resolve tickets, and engage in real-time chat assistance'
-              : 'Get instant answers, submit support requests, or chat live with your Takaful advisor'}
-          </p>
-        </div>
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" className="space-y-4">
+        {!isStaff ? (
+          <div>
+            <div className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-[11px] font-semibold tracking-wide mb-3 ${
+              isLight ? 'bg-gray-50 border-gray-200 text-gray-600' : 'bg-white/[0.04] border-white/[0.08] text-white/70'
+            }`}>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00c685]" />
+              24/7 Member Care
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5">
+              <div>
+                <h1 className={`font-heading text-4xl sm:text-5xl font-normal tracking-[-0.02em] leading-[1.08] ${TEXT_MAIN}`}>
+                  Support Desk
+                </h1>
+                <p className={`mt-2 text-base sm:text-lg leading-relaxed max-w-xl ${TEXT_SUB}`}>
+                  Live chat with your dedicated Takaful advisor, browse answers, or submit an inquiry.
+                </p>
+              </div>
 
-        {/* Action Button */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white shadow-sm hover:opacity-90 transition-all shrink-0"
-            style={{ background: GREEN }}
-          >
-            <Plus size={15} />
-            Submit Support Ticket
-          </button>
-          {isStaff && (
-            <button
-              onClick={() => setActiveTab('tickets')}
-              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold border transition-all shrink-0 ${
-                isLight ? 'bg-black/5 border-black/10 text-black hover:bg-black/10' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
-              }`}
-            >
-              <Ticket size={15} className="text-[#00c685]" />
-              Queue ({tickets.filter(t => t.status === 'Open').length})
-            </button>
-          )}
-        </div>
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all hover:opacity-85 active:scale-[0.98] shrink-0 self-start sm:self-auto ${
+                  isLight ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-900 shadow-sm'
+                }`}
+              >
+                <Plus size={15} />
+                Submit Support Ticket
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className={`text-xl font-bold ${TEXT_MAIN}`}>
+                  Customer Support & Helpdesk Desk
+                </h1>
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#00c685]/15 text-[#00c685]">
+                  Staff Portal
+                </span>
+              </div>
+              <p className={`text-xs mt-1 ${TEXT_SUB}`}>
+                Manage participant inquiries, resolve tickets, and engage in real-time chat assistance
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white shadow-sm hover:opacity-90 transition-all shrink-0"
+                style={{ background: GREEN }}
+              >
+                <Plus size={15} />
+                Submit Support Ticket
+              </button>
+              <button
+                onClick={() => setActiveTab('tickets')}
+                className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold border transition-all shrink-0 ${
+                  isLight ? 'bg-black/5 border-black/10 text-black hover:bg-black/10' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                }`}
+              >
+                <Ticket size={15} className="text-[#00c685]" />
+                Queue ({tickets.filter(t => t.status === 'Open').length})
+              </button>
+            </div>
+          </div>
+        )}
       </motion.div>
 
       {/* ─── Support Stats ────────────────────────────────────────────────── */}

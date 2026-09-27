@@ -1,6 +1,6 @@
 /* ─── Takaful Dashboard — Shared TypeScript Types ───────────────────────── */
 
-export type UserRole = 'participant' | 'claim_handler' | 'finance' | 'management';
+export type UserRole = 'participant' | 'claim_handler' | 'finance' | 'management' | 'super_admin';
 
 export interface DemoUser {
   id: string;
@@ -14,6 +14,29 @@ export interface DemoUser {
   gender?: 'male' | 'female';
 }
 
+export interface StaffMember {
+  id: string;
+  name: string;
+  initials: string;
+  email: string;
+  role: 'claim_handler' | 'finance' | 'management';
+  title: string;
+  department: string;
+  status: 'Active' | 'On Leave' | 'Suspended';
+  joinedDate: string;
+  gender: 'male' | 'female';
+  // Performance metrics
+  claimsResolved?: number;
+  avgResolutionDays?: number;
+  slaRate?: number; // e.g. 97.4%
+  csatScore?: number; // e.g. 4.8 / 5.0
+  irregularitiesFlagged?: number;
+  fraudPreventedAmount?: number; // in GBP
+  dailyApprovalLimit?: number; // in GBP
+  financePayoutsProcessed?: number;
+  accuracyRate?: number; // percentage
+}
+
 export interface Participant {
   id: string;
   name: string;
@@ -24,6 +47,14 @@ export interface Participant {
   memberSince: string;
   status: 'Active' | 'Review' | 'Suspended' | 'Cancelled' | 'Pending';
   riskRating: 'Low' | 'Medium' | 'High';
+  accountStatus?: 'Active' | 'Under Investigation' | 'Frozen' | 'Suspended' | 'Warning Issued';
+  flagCount?: number;
+  totalClaims?: number;
+  totalClaimValue?: number;
+  notes?: string;
+  accountActionReason?: string;
+  accountActionDate?: string;
+  accountActionBy?: string;
 }
 
 export interface Certificate {
@@ -180,3 +211,39 @@ export interface Pool {
   claimsReserve: number;
   periodLabel: string;
 }
+
+/* ─── Participant Investigation & Management Reports ─────────────────────── */
+
+export type ParticipantReportCategory =
+  | 'Excessive / Repeat Claims'
+  | 'Suspected Fraud / Arnaque'
+  | 'Document Falsification'
+  | 'Inconsistent Loss Event'
+  | 'Non-Disclosure at Inception'
+  | 'Aggressive / Uncooperative Conduct'
+  | 'Other Irregularity';
+
+export type ParticipantReportSeverity = 'Low' | 'Medium' | 'High' | 'Critical';
+export type ParticipantReportStatus = 'Pending Review' | 'Investigating' | 'Action Taken' | 'Dismissed';
+
+export interface ParticipantReport {
+  id: string;
+  participantId: string;
+  participantName: string;
+  claimId?: string;
+  reporterId: string;
+  reporterName: string;
+  reporterRole: UserRole;
+  category: ParticipantReportCategory;
+  severity: ParticipantReportSeverity;
+  status: ParticipantReportStatus;
+  incidentSummary: string;
+  evidenceNotes?: string;
+  recommendedAction?: 'Freeze Account' | 'Suspend Membership' | 'Issue Warning' | 'Audit Review';
+  createdAt: string;
+  resolvedAt?: string;
+  resolvedBy?: string;
+  resolutionNotes?: string;
+}
+
+export type ParticipantAccountActionType = 'freeze' | 'suspend' | 'warn' | 'reinstate';

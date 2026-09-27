@@ -49,10 +49,19 @@ export function MeteorsDemo() {
 }
 
 import StatsBento from "@/components/ui/stats-bento";
+import Stepper03 from "@/components/ui/stepper-03";
 
 export function StatsBentoDemo() {
   return <StatsBento standalone />;
 }
 
-export default StatsBentoDemo;
+export function StepperDemo() {
+  return (
+    <div className="flex min-h-screen w-full items-center justify-center p-6">
+      <Stepper03 />
+    </div>
+  );
+}
+
+export default StepperDemo;
 

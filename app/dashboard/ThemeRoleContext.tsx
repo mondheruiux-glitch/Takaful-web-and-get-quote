@@ -2,8 +2,7 @@
 
 import React, { createContext, useContext } from 'react';
 
-/* ─── Role Context ───────────────────────────────────────────────────────── */
-export type DashboardRole = 'participant' | 'claim_handler' | 'finance' | 'management';
+export type DashboardRole = 'participant' | 'claim_handler' | 'finance' | 'management' | 'super_admin';
 
 interface RoleContextValue {
   role: DashboardRole;

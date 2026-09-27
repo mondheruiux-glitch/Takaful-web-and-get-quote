@@ -214,11 +214,11 @@ export default function SpecificationV3Page() {
             <span>Approved UX Blueprint</span>
           </div>
           <Link
-            href="/dashboard"
+            href="/portal"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#27272a] bg-[#18181b] hover:bg-[#27272a] text-[#f4f4f5] transition-colors"
           >
             <LayoutDashboard size={13} className="text-[#00c685]" />
-            <span>Open Dashboard Console</span>
+            <span>Open My Portal</span>
             <ArrowUpRight size={12} className="text-[#71717a]" />
           </Link>
           <Link
@@ -293,7 +293,7 @@ export default function SpecificationV3Page() {
           <div className="pt-6 border-t border-[#27272a] space-y-2 text-xs font-mono text-[#71717a]">
             <div className="text-[10px] uppercase tracking-wider font-semibold">Live Consoles</div>
             <div className="space-y-1">
-              <Link href="/dashboard" className="flex items-center justify-between hover:text-[#f4f4f5] py-1 px-2 rounded hover:bg-[#121215]">
+              <Link href="/portal" className="flex items-center justify-between hover:text-[#f4f4f5] py-1 px-2 rounded hover:bg-[#121215]">
                 <span>Member Portal</span>
                 <ArrowUpRight size={11} />
               </Link>
@@ -952,7 +952,7 @@ export default function SpecificationV3Page() {
                   <h3 className="text-base font-bold text-[#f4f4f5]">47. Participant Member Portal</h3>
                   <div className="text-xs text-[#a1a1aa]">Central customer self-service area</div>
                 </div>
-                <Link href="/dashboard" className="text-xs font-mono text-[#00c685] hover:underline flex items-center gap-1">
+                <Link href="/portal" className="text-xs font-mono text-[#00c685] hover:underline flex items-center gap-1">
                   <span>Open Console</span>
                   <ArrowUpRight size={12} />
                 </Link>
@@ -1342,7 +1342,7 @@ Protection     Management`}
               Takaful UK Specification Revision 3.0 • Working Product Blueprint
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
+              <Link href="/portal" className="hover:text-white transition-colors">My Portal</Link>
               <Link href="/get-quote" className="hover:text-white transition-colors">Get Quote</Link>
               <a href="#doc-purpose" className="hover:text-[#00c685] transition-colors">Back to Top ↑</a>
             </div>

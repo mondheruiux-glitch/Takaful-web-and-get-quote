@@ -11,6 +11,8 @@ import {
   Sparkles, Package, ArrowLeft, Tv, MapPin, Calendar, Users,
   LayoutGrid, Percent, Expand, User, Briefcase, PoundSterling,
   Settings, HelpCircle, LogOut, Sun, Moon, Armchair, Shirt, Bike, Hammer, Phone,
+  ShieldAlert, FileSearch, Repeat, FileX, MessageSquareWarning,
+  BadgeAlert, TriangleAlert, Snowflake, Ban, ClipboardCheck, Flag,
 } from 'lucide-react';
 import Link from 'next/link';
 import { DEMO_USERS } from '@/lib/dashboard/mock-data';
@@ -681,6 +683,10 @@ export default function DesignSystemPage() {
   const [dClaimItemCat, setDClaimItemCat] = useState('');
   const [dClaimEmergency, setDClaimEmergency] = useState('');
   const [dClaimDamageCat, setDClaimDamageCat] = useState('');
+  // Flag to Management dropdowns
+  const [dFlagCategory, setDFlagCategory] = useState('');
+  const [dFlagSeverity, setDFlagSeverity] = useState('');
+  const [dFlagSanction, setDFlagSanction] = useState('');
 
   return (
     <DSThemeCtx.Provider value={{ isLight }}>
@@ -1435,6 +1441,97 @@ export default function DesignSystemPage() {
                   <OptionPreviewItem icon={<Package className="w-3.5 h-3.5 text-[#00c685]"/>}>Personal belongings</OptionPreviewItem>
                   <OptionPreviewItem icon={<Plus className="w-3.5 h-3.5 text-[#00c685]"/>}>Other</OptionPreviewItem>
                 </OptionPreviewCard>
+              </div>
+            </div>
+          </div>
+
+          {/* ── FLAG TO MANAGEMENT: Irregularity Reporting ─────────────────────── */}
+          <div className="mt-8 pt-6 border-t space-y-4" style={{ borderColor: isLight ? '#E5E7EB' : 'rgba(255,255,255,0.05)' }}>
+            <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: isLight ? '#E5E7EB' : 'rgba(255,255,255,0.05)' }}>
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-md flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.15)' }}>
+                  <Flag size={11} className="text-red-400" />
+                </div>
+                <span className="text-[10px] font-bold tracking-[0.12em] uppercase text-red-400">Flag to Management — Irregularity Reporting</span>
+                <span className="text-[10px] font-mono" style={{ color: isLight ? '#6B7280' : 'rgba(255,255,255,0.25)' }}>· 3 dropdowns</span>
+              </div>
+              <span className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: isLight ? '#6B7280' : 'rgba(255,255,255,0.4)' }}>Live Triggers &amp; Option Previews</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+              {/* 16 — Irregularity Category */}
+              <div className="space-y-1.5">
+                <FieldLabel>Irregularity Category <span style={{ color: 'rgba(239,68,68,0.7)' }}>*</span></FieldLabel>
+                <Select value={dFlagCategory} onValueChange={setDFlagCategory}>
+                  <SelectTrigger/><SelectContent>
+                    <SelectItem value="excessive-claims" icon={<Repeat className="w-3.5 h-3.5 text-red-400"/>}>Excessive / Repeat Claims</SelectItem>
+                    <SelectItem value="suspected-fraud" icon={<ShieldAlert className="w-3.5 h-3.5 text-red-400"/>}>Suspected Fraud / Arnaque</SelectItem>
+                    <SelectItem value="doc-falsification" icon={<FileX className="w-3.5 h-3.5 text-red-400"/>}>Document Falsification</SelectItem>
+                    <SelectItem value="inconsistent-event" icon={<FileSearch className="w-3.5 h-3.5 text-red-400"/>}>Inconsistent Loss Event</SelectItem>
+                    <SelectItem value="non-disclosure" icon={<AlertTriangle className="w-3.5 h-3.5 text-red-400"/>}>Non-Disclosure at Inception</SelectItem>
+                    <SelectItem value="uncooperative" icon={<MessageSquareWarning className="w-3.5 h-3.5 text-red-400"/>}>Aggressive / Uncooperative Conduct</SelectItem>
+                    <SelectItem value="other-irregularity" icon={<BadgeAlert className="w-3.5 h-3.5 text-red-400"/>}>Other Irregularity</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 17 — Severity Level */}
+              <div className="space-y-1.5">
+                <FieldLabel>Severity Level <span style={{ color: 'rgba(239,68,68,0.7)' }}>*</span></FieldLabel>
+                <Select value={dFlagSeverity} onValueChange={setDFlagSeverity}>
+                  <SelectTrigger/><SelectContent>
+                    <SelectItem value="low" icon={<TriangleAlert className="w-3.5 h-3.5 text-[#00c685]"/>}>Low — Minor concern, monitor only</SelectItem>
+                    <SelectItem value="medium" icon={<TriangleAlert className="w-3.5 h-3.5 text-amber-400"/>}>Medium — Warrants formal review</SelectItem>
+                    <SelectItem value="high" icon={<TriangleAlert className="w-3.5 h-3.5 text-orange-400"/>}>High — Likely intentional misconduct</SelectItem>
+                    <SelectItem value="critical" icon={<TriangleAlert className="w-3.5 h-3.5 text-red-400"/>}>Critical — Immediate management action</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 18 — Recommended Sanction */}
+              <div className="space-y-1.5">
+                <FieldLabel>Recommended Sanction <span style={{ color: 'rgba(239,68,68,0.7)' }}>*</span></FieldLabel>
+                <Select value={dFlagSanction} onValueChange={setDFlagSanction}>
+                  <SelectTrigger/><SelectContent>
+                    <SelectItem value="freeze-account" icon={<Snowflake className="w-3.5 h-3.5 text-blue-400"/>}>Freeze Account</SelectItem>
+                    <SelectItem value="suspend-membership" icon={<Ban className="w-3.5 h-3.5 text-red-400"/>}>Suspend Membership</SelectItem>
+                    <SelectItem value="issue-warning" icon={<Bell className="w-3.5 h-3.5 text-amber-400"/>}>Issue Warning</SelectItem>
+                    <SelectItem value="audit-review" icon={<ClipboardCheck className="w-3.5 h-3.5 text-[#00c685]"/>}>Audit Review</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+            </div>
+
+            {/* Flag Dropdowns — Expanded Previews */}
+            <div className="pt-2">
+              <p className="text-[11px] font-semibold mb-3 uppercase tracking-wider" style={{ color: isLight ? '#4B5563' : 'rgba(255,255,255,0.5)' }}>Flag to Management Dropdown Options (Expanded Previews)</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                <OptionPreviewCard title="Irregularity Category">
+                  <OptionPreviewItem icon={<Repeat className="w-3.5 h-3.5 text-red-400"/>}>Excessive / Repeat Claims</OptionPreviewItem>
+                  <OptionPreviewItem icon={<ShieldAlert className="w-3.5 h-3.5 text-red-400"/>}>Suspected Fraud / Arnaque</OptionPreviewItem>
+                  <OptionPreviewItem icon={<FileX className="w-3.5 h-3.5 text-red-400"/>}>Document Falsification</OptionPreviewItem>
+                  <OptionPreviewItem icon={<FileSearch className="w-3.5 h-3.5 text-red-400"/>}>Inconsistent Loss Event</OptionPreviewItem>
+                  <OptionPreviewItem icon={<AlertTriangle className="w-3.5 h-3.5 text-red-400"/>}>Non-Disclosure at Inception</OptionPreviewItem>
+                  <OptionPreviewItem icon={<MessageSquareWarning className="w-3.5 h-3.5 text-red-400"/>}>Aggressive / Uncooperative Conduct</OptionPreviewItem>
+                  <OptionPreviewItem icon={<BadgeAlert className="w-3.5 h-3.5 text-red-400"/>}>Other Irregularity</OptionPreviewItem>
+                </OptionPreviewCard>
+
+                <OptionPreviewCard title="Severity Level">
+                  <OptionPreviewItem icon={<TriangleAlert className="w-3.5 h-3.5 text-[#00c685]"/>}>Low — Minor concern, monitor only</OptionPreviewItem>
+                  <OptionPreviewItem icon={<TriangleAlert className="w-3.5 h-3.5 text-amber-400"/>}>Medium — Warrants formal review</OptionPreviewItem>
+                  <OptionPreviewItem icon={<TriangleAlert className="w-3.5 h-3.5 text-orange-400"/>}>High — Likely intentional misconduct</OptionPreviewItem>
+                  <OptionPreviewItem icon={<TriangleAlert className="w-3.5 h-3.5 text-red-400"/>}>Critical — Immediate management action</OptionPreviewItem>
+                </OptionPreviewCard>
+
+                <OptionPreviewCard title="Recommended Sanction">
+                  <OptionPreviewItem icon={<Snowflake className="w-3.5 h-3.5 text-blue-400"/>}>Freeze Account</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Ban className="w-3.5 h-3.5 text-red-400"/>}>Suspend Membership</OptionPreviewItem>
+                  <OptionPreviewItem icon={<Bell className="w-3.5 h-3.5 text-amber-400"/>}>Issue Warning</OptionPreviewItem>
+                  <OptionPreviewItem icon={<ClipboardCheck className="w-3.5 h-3.5 text-[#00c685]"/>}>Audit Review</OptionPreviewItem>
+                </OptionPreviewCard>
+
               </div>
             </div>
           </div>

@@ -7,6 +7,8 @@ import {
   Flame, Zap, Droplets, Wrench, Trees, CircleSlash, Clock, Lock, Key,
   Shield, Laptop, Plus, Check, ChevronDown, User, BriefcaseBusiness, ArrowLeft,
   Armchair, Tv, Shirt, Gem, Layers, Hammer, Bike, Package,
+  AlertTriangle, ShieldAlert, FileSearch, Repeat, FileX, MessageSquareWarning,
+  BadgeAlert, TriangleAlert, Snowflake, Ban, Bell, ClipboardCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -151,6 +153,9 @@ export default function AllDropdownsPage() {
   const [d13, setD13] = useState('');
   const [d14, setD14] = useState('');
   const [d15, setD15] = useState('');
+  const [d16, setD16] = useState('');
+  const [d17, setD17] = useState('');
+  const [d18, setD18] = useState('');
 
   const dropdownsList = [
     { id: 1, title: 'Flat Type', state: d1, setState: setD1, options: [
@@ -268,6 +273,28 @@ export default function AllDropdownsPage() {
       { v: 'bicycle', l: 'Bicycle', icon: <Bike className="w-3.5 h-3.5 text-[#00c685]" /> },
       { v: 'other', l: 'Other', icon: <Package className="w-3.5 h-3.5 text-[#00c685]" /> },
     ]},
+    // ── Flag to Management — 3 new dropdowns ─────────────────────────────────
+    { id: 16, title: 'Irregularity Category (Flag to Management)', state: d16, setState: setD16, options: [
+      { v: 'excessive-claims',     l: 'Excessive / Repeat Claims',         icon: <Repeat className="w-3.5 h-3.5 text-red-400" /> },
+      { v: 'suspected-fraud',      l: 'Suspected Fraud / Arnaque',          icon: <ShieldAlert className="w-3.5 h-3.5 text-red-400" /> },
+      { v: 'doc-falsification',    l: 'Document Falsification',             icon: <FileX className="w-3.5 h-3.5 text-red-400" /> },
+      { v: 'inconsistent-event',   l: 'Inconsistent Loss Event',            icon: <FileSearch className="w-3.5 h-3.5 text-red-400" /> },
+      { v: 'non-disclosure',       l: 'Non-Disclosure at Inception',        icon: <AlertTriangle className="w-3.5 h-3.5 text-red-400" /> },
+      { v: 'uncooperative',        l: 'Aggressive / Uncooperative Conduct', icon: <MessageSquareWarning className="w-3.5 h-3.5 text-red-400" /> },
+      { v: 'other-irregularity',   l: 'Other Irregularity',                 icon: <BadgeAlert className="w-3.5 h-3.5 text-red-400" /> },
+    ]},
+    { id: 17, title: 'Severity Level (Flag to Management)', state: d17, setState: setD17, options: [
+      { v: 'low',      l: 'Low — Minor concern, monitor only',         icon: <TriangleAlert className="w-3.5 h-3.5 text-[#00c685]" /> },
+      { v: 'medium',   l: 'Medium — Warrants formal review',           icon: <TriangleAlert className="w-3.5 h-3.5 text-amber-400" /> },
+      { v: 'high',     l: 'High — Likely intentional misconduct',      icon: <TriangleAlert className="w-3.5 h-3.5 text-orange-400" /> },
+      { v: 'critical', l: 'Critical — Immediate management action',    icon: <TriangleAlert className="w-3.5 h-3.5 text-red-400" /> },
+    ]},
+    { id: 18, title: 'Recommended Sanction (Flag to Management)', state: d18, setState: setD18, options: [
+      { v: 'freeze-account',     l: 'Freeze Account',       icon: <Snowflake className="w-3.5 h-3.5 text-blue-400" /> },
+      { v: 'suspend-membership', l: 'Suspend Membership',   icon: <Ban className="w-3.5 h-3.5 text-red-400" /> },
+      { v: 'issue-warning',      l: 'Issue Warning',        icon: <Bell className="w-3.5 h-3.5 text-amber-400" /> },
+      { v: 'audit-review',       l: 'Audit Review',         icon: <ClipboardCheck className="w-3.5 h-3.5 text-[#00c685]" /> },
+    ]},
   ];
 
   return (
@@ -280,13 +307,13 @@ export default function AllDropdownsPage() {
             <Link href="/" className="inline-flex items-center gap-2 text-xs text-[#00c685] hover:underline mb-2">
               <ArrowLeft size={14} /> Back to Home
             </Link>
-            <h1 className="text-2xl font-bold text-white tracking-tight">All 15 Dropdown Components</h1>
+            <h1 className="text-2xl font-bold text-white tracking-tight">All 18 Dropdown Components</h1>
             <p className="text-sm text-white/50 mt-1">
-              Complete collection of custom portal-based select components used across Get Quote and Claims flows.
+              Complete collection of custom portal-based select components used across Get Quote, Claims, and the Flag to Management workflow.
             </p>
           </div>
           <div className="px-3.5 py-1.5 rounded-full bg-[#00c685]/10 border border-[#00c685]/20 text-[#00c685] text-xs font-semibold">
-            15 Components
+            18 Components
           </div>
         </div>
 
@@ -323,7 +350,7 @@ export default function AllDropdownsPage() {
           <div>
             <h2 className="text-xl font-bold text-white tracking-tight">Expanded View — All Available Options for Each Dropdown</h2>
             <p className="text-xs text-white/50 mt-1">
-              Static expanded previews showing all items, icons, and option values for each of the 14 dropdowns.
+              Static expanded previews showing all items, icons, and option values for each of the 18 dropdowns.
             </p>
           </div>
 

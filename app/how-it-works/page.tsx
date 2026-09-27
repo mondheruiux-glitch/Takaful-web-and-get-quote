@@ -108,7 +108,7 @@ function Nav() {
   }, []);
 
   const onDark = !scrolled;
-  const links = [['Home', '/'], ['How it Works', '/how-it-works'], ['Compare Plans', '/compare-plans'], ['About Us', '/about'], ['Dashboard', '/dashboard'], ['Contact', '/contact']];
+  const links = [['Home', '/'], ['How it Works', '/how-it-works'], ['Compare Plans', '/compare-plans'], ['About Us', '/about'], ['Contact', '/contact']];
 
   return (
     <>
@@ -120,7 +120,7 @@ function Nav() {
           ))}
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/dashboard" className={`hidden md:block text-sm font-semibold px-4 py-2.5 rounded-full transition-all duration-300 ${onDark ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-black/5'}`}>Dashboard</Link>
+          <Link href="/portal" className={`hidden md:block text-sm font-semibold px-4 py-2.5 rounded-full transition-all duration-300 ${onDark ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-black/5'}`}>My Portal</Link>
           <Link href="/signup" className={`hidden md:block text-sm font-semibold px-6 py-2.5 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg ${onDark ? 'bg-white text-gray-900' : 'bg-[#00c685] text-white'}`}>Sign Up</Link>
           <button onClick={() => setMobileMenuOpen(true)} className={`md:hidden p-2 ${onDark ? 'text-white' : 'text-gray-900'}`}><Menu size={24} /></button>
         </div>
@@ -469,7 +469,7 @@ const timelineSteps = [
   { step: '02', icon: FileText, title: 'Review Your Coverage', desc: 'See your contribution and exactly what\'s protected. No hidden fees. No confusing small print. Full transparency from day one.', img: '/home-how-it-works/step3.png', color: '#7C3AED', bg: '#F5F3FF', checks: ['Itemized breakdown', "What's included", 'Sharia certificate'] },
   { step: '03', icon: UserPlus, title: 'Create Your Account', desc: 'Create your secure account in under 2 minutes. Your quote is saved. Your data is protected.', img: '/home-how-it-works/step4.png', color: GREEN_DEEP, bg: '#ECFDF5', checks: ['2-minute sign-up', 'Bank-level security', 'Quote auto-saved'] },
   { step: '04', icon: CreditCard, title: 'Complete Your Contribution', desc: 'Contribute securely via our Sharia-compliant payment system. Your money goes directly into the community protection pool.', img: '/home-how-it-works/step5.png', color: '#EA580C', bg: '#FFF7ED', checks: ['All cards accepted', 'Halal-certified', 'Instant confirmation'] },
-  { step: '05', icon: ShieldCheck, title: 'Certificate Issued', desc: 'Your digital Takaful certificate is generated instantly. Download it or access it anytime from your dashboard.', img: '/home-how-it-works/step6.png', color: '#0F766E', bg: '#F0FDFA', checks: ['Instant delivery', 'FCA registered', 'Shareable PDF'] },
+  { step: '05', icon: ShieldCheck, title: 'Certificate Issued', desc: 'Your digital Takaful certificate is generated instantly. Download it or access it anytime from your portal.', img: '/home-how-it-works/step6.png', color: '#0F766E', bg: '#F0FDFA', checks: ['Instant delivery', 'FCA registered', 'Shareable PDF'] },
   { step: '06', icon: Home, title: "You're Protected", desc: 'Coverage begins immediately. Your home is backed by the full strength of the community from this moment.', img: '/home-how-it-works/step2.png', color: GREEN, bg: '#F0FDF4', checks: ['Immediate cover', 'Claims in 48 hrs', 'Community-backed'] },
 ];
 
@@ -796,7 +796,7 @@ function ClaimsProcess() {
                     const Icon = step.icon;
                     const detailedDescriptions = [
                       "Submit your claim 24/7 through our secure, fully digital portal in minutes. Upload photos of the damage, describe the event in your own words, and provide any receipts or estimates. Our system instantly logs the claim, notifies the community pool managers, and generates your tracking reference number without any paperwork or phone queues.",
-                      "Our team reviews the details of your submission within hours. We cross-reference the claim details with the community guidelines to ensure full compliance. You get instant updates via SMS and your dashboard as we check the validity, verify the community policy limits, and prepare the file for expert assessment.",
+                      "Our team reviews the details of your submission within hours. We cross-reference the claim details with the community guidelines to ensure full compliance. You get instant updates via SMS and your portal as we check the validity, verify the community policy limits, and prepare the file for expert assessment.",
                       "Claims are verified openly based on Sharia principles. No hidden fine print or corporate bias. We look at the actual repair costs and assess the contribution distribution. If additional details are needed, we contact you directly, showing you exactly how the evaluation is calculated based on our mutual aid pool rules.",
                       "Since funds belong to the community, approvals are backed by cooperative trust. The required funds are authorized directly from the mutual protection pool. This community-backed authorization guarantees that claims are approved based on fairness and genuine need, maintaining the ethical integrity of the fund.",
                       "Once approved, the funds are dispatched directly to your registered bank account within 48 hours to cover repairs. Surplus sharing means any unclaimed funds remain inside the community pool rather than being taken as corporate profit, keeping your future contributions low and community spirit high."
@@ -971,8 +971,8 @@ const faqs = [
   { q: 'How long does the process take?', a: 'From getting your quote to receiving your digital certificate takes less than 10 minutes. Fully online, no paperwork required.' },
   { q: 'Is my contribution Sharia-compliant?', a: 'Yes. Every contribution is managed strictly according to Islamic financial principles, verified by independent Sharia scholars. No interest (riba), no excessive uncertainty (gharar).' },
   { q: 'What happens to unused contributions?', a: 'Any surplus remaining in the community fund at year-end is returned proportionally to members — not kept as profit.' },
-  { q: 'How quickly are claims paid?', a: 'We aim to assess and pay eligible claims within 48 hours of approval. The process is transparent and fully tracked through your dashboard.' },
-  { q: 'Can I cancel my coverage?', a: 'Yes. You can cancel at any time from your dashboard. Unused contributions are refunded on a pro-rata basis, minus a small administrative fee.' },
+  { q: 'How quickly are claims paid?', a: 'We aim to assess and pay eligible claims within 48 hours of approval. The process is transparent and fully tracked through your portal.' },
+  { q: 'Can I cancel my coverage?', a: 'Yes. You can cancel at any time from your portal. Unused contributions are refunded on a pro-rata basis, minus a small administrative fee.' },
 ];
 
 function FAQSection() {

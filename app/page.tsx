@@ -114,7 +114,6 @@ function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'cen
     { label: 'How it Works', href: '/how-it-works' },
     { label: 'Compare Plans', href: '/compare-plans' },
     { label: 'About Us', href: '/about' },
-    { label: 'Dashboard', href: '/dashboard' },
     { label: 'Contact', href: '/contact' },
   ];
 
@@ -158,13 +157,13 @@ function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'cen
 
         <div className="flex items-center gap-3">
           <Link
-            href="/dashboard"
+            href="/portal"
             className={`hidden md:block text-sm font-semibold px-4 py-2.5 rounded-full transition-all duration-300 ${onDark
                 ? 'text-white/90 hover:text-white hover:bg-white/10'
                 : 'text-gray-700 hover:text-gray-900 hover:bg-black/5'
               }`}
           >
-            Dashboard
+            My Portal
           </Link>
           <Link
             href="/signup"
@@ -213,11 +212,11 @@ function ScrollAwareNav({ hoveredSide }: { hoveredSide?: 'left' | 'right' | 'cen
             </div>
             <div className="flex flex-col gap-3 mt-auto">
               <Link
-                href="/dashboard"
+                href="/portal"
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full text-center py-3 bg-[#00c685] hover:bg-[#00a871] text-white font-bold rounded-full transition-all"
               >
-                Go to Dashboard
+                Go to My Portal
               </Link>
               <Link
                 href="/signup"

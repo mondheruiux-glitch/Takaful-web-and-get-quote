@@ -1161,7 +1161,7 @@ export default function NewClaimPage() {
   const isLight = theme === 'light';
   const router = useRouter();
 
-  const BG_PAGE = isLight ? '#fcfdfd' : '#03120d';
+  const BG_PAGE = 'transparent';
   const BG_CARD = isLight ? '#ffffff' : '#0d2117';
   const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)';
   const TEXT_MAIN = isLight ? 'text-black/85' : 'text-white';
@@ -1234,10 +1234,13 @@ export default function NewClaimPage() {
         {/* Top bar */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2.5">
-            <Link href="/dashboard/claims"
-              className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-colors ${isLight ? 'border-black/[0.06] text-black/50 hover:text-black hover:bg-black/[0.04]' : 'border-white/[0.05] text-white/50 hover:text-white hover:bg-white/[0.04]'}`}>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              aria-label="Back"
+              className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-colors cursor-pointer ${isLight ? 'border-black/[0.06] text-black/50 hover:text-black hover:bg-black/[0.04]' : 'border-white/[0.05] text-white/50 hover:text-white hover:bg-white/[0.04]'}`}>
               <ArrowLeft size={15} />
-            </Link>
+            </button>
             <div>
               <p className={`text-xs font-semibold ${isLight ? 'text-black/40' : 'text-white/35'}`}>My Claims</p>
               <p className={`text-sm font-bold leading-tight ${TEXT_MAIN}`}>New Claim</p>

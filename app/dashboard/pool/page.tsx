@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   PieChart, Info, ShieldCheck, AlertCircle, ChevronDown, ChevronUp,
@@ -73,107 +74,248 @@ function MetricCard({ label, value, sub, color, tooltip, theme }: { label: strin
   );
 }
 
-/* ─── Participant view: Simplified transparency ──────────────────────────── */
-function ParticipantPoolView({ theme }: { theme: string }) {
+/* ─── Participant view: Simplified transparency (Editorial) ───────────────── */
+export function ParticipantPoolView({ theme }: { theme: string }) {
   const isLight = theme === 'light';
-  const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
-  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
-  const [flowOpen, setFlowOpen] = useState(true);
+  const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
+  const BG_SURFACE = isLight ? '#ffffff' : 'rgba(255,255,255,0.02)';
+  const BG_SUBTLE = isLight ? '#f8faf9' : 'rgba(255,255,255,0.02)';
+  const TEXT_MAIN = isLight ? '#111827' : '#ffffff';
+  const TEXT_SUB = isLight ? '#4b5563' : 'rgba(255,255,255,0.6)';
+  const TEXT_MUTED = isLight ? '#9ca3af' : 'rgba(255,255,255,0.35)';
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
-      <motion.div variants={fadeUp} initial="hidden" animate="visible">
-        <h1 className={`text-xl font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>Takaful Pool Transparency</h1>
-        <p className={`text-sm mt-0.5 ${isLight ? 'text-black/50' : 'text-white/45'}`}>Understand how your monthly contributions help the community.</p>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 space-y-10 sm:space-y-12 font-body transition-colors duration-200">
+      
+      {/* ── 1. Editorial Header ── */}
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="space-y-4">
+        <div className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-[11px] font-semibold tracking-wide ${
+          isLight ? 'bg-gray-50 border-gray-200 text-gray-600' : 'bg-white/[0.04] border-white/[0.08] text-white/70'
+        }`}>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00c685]" />
+          Ethical Transparency
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5">
+          <div>
+            <h1 className="font-heading text-4xl sm:text-5xl font-normal tracking-[-0.02em] leading-[1.08]" style={{ color: TEXT_MAIN }}>
+              Community Pool
+            </h1>
+            <p className="mt-2 text-base sm:text-lg leading-relaxed max-w-xl" style={{ color: TEXT_SUB }}>
+              Complete visibility into the mutual fund protecting every participant home across the United Kingdom.
+            </p>
+          </div>
+
+          <Link
+            href="/clauses"
+            target="_blank"
+            className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all hover:opacity-85 active:scale-[0.98] shrink-0 self-start sm:self-auto ${
+              isLight ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-900 shadow-sm'
+            }`}
+          >
+            <BookOpen size={15} />
+            Shariah Governance
+          </Link>
+        </div>
       </motion.div>
 
-      {/* Principle block */}
+      {/* ── 2. Mutual Principle Quote Card ── */}
       <motion.div
         variants={fadeUp} initial="hidden" animate="visible" custom={1}
-        className="rounded-2xl p-5 flex items-start gap-4 transition-colors shadow-sm"
-        style={{ background: isLight ? '#F8FAFC' : 'rgba(0,198,133,0.06)', border: `1px solid ${isLight ? '#E2E8F0' : 'rgba(0,198,133,0.15)'}` }}
+        className={`rounded-3xl p-6 sm:p-8 border ${
+          isLight ? 'bg-emerald-50/50 border-emerald-200/60' : 'bg-emerald-500/[0.04] border-emerald-500/15'
+        }`}
       >
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isLight ? 'bg-gray-200 text-gray-700' : 'bg-white/10 text-white'}`}>
-          <ShieldCheck size={18} />
-        </div>
-        <div>
-          <p className={`text-sm font-semibold ${isLight ? 'text-gray-900' : 'text-[#00c685]'}`}>The Takaful Mutual Principle</p>
-          <p className={`text-xs mt-1 leading-relaxed ${isLight ? 'text-black/60' : 'text-white/50'}`}>
-            As a participant, your contribution isn't a premium sold for commercial profit. Instead, it is a donation (Tabarru') into a shared community pool.
-            If you or any other participant suffers a loss, funds are released to cover it. Any administrative costs are managed via an upfront Wakāla fee.
-            No interest is ever charged or paid, ensuring full Shariah compliance.
-          </p>
-        </div>
-      </motion.div>
-
-      {/* Simplified metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <MetricCard label="Active Community Pool" value={`£${POOL.balance.toLocaleString()}`} sub="Current available balance" color={GREEN} tooltip="The pool balance available for payouts" theme={theme} />
-        <MetricCard label="Paid Out Claims" value={`£${POOL.totalClaimsPaid.toLocaleString()}`} sub="Claims settled this period" color="#ef4444" tooltip="Total amount released to help participants who had incidents" theme={theme} />
-      </div>
-
-      {/* Visual Category Bar Chart */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2}>
-        <TakafulPoolBarChart theme={theme} showLearnMore={false} />
-      </motion.div>
-
-      {/* Allocation breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <motion.div
-            variants={fadeUp} initial="hidden" animate="visible" custom={3}
-            className="rounded-2xl overflow-hidden transition-colors shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
-          >
-            <div className="px-5 py-4 border-b" style={{ borderColor: BORDER }}>
-              <h3 className={`font-semibold text-sm ${isLight ? 'text-black/80' : 'text-white/80'}`}>Contribution Allocation</h3>
-              <p className={`text-xs mt-0.5 ${isLight ? 'text-black/45' : 'text-white/40'}`}>For every £100 you contribute, this is how it is structured:</p>
-            </div>
-            <div className="p-5 space-y-4">
-              {[
-                { label: 'Participant Pool Fund (78%)', val: '£78.00', desc: 'Directly helps cover participant claims and property repairs.', color: GREEN },
-                { label: 'Claims Contingency Reserve (14%)', val: '£14.00', desc: 'Held back to ensure long-term stability of the pool during major events.', color: '#3b82f6' },
-                { label: 'Operator Wakāla Fee (8%)', val: '£8.00', desc: 'Agreed fee for administering the platform, customer service, and claims triage.', color: '#f59e0b' },
-              ].map(item => (
-                <div key={item.label} className="p-4 rounded-xl bg-black/[0.01] dark:bg-white/[0.015]" style={{ border: `1px solid ${BORDER}` }}>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className={`text-xs font-semibold ${isLight ? 'text-black/75' : 'text-white/75'}`}>{item.label}</span>
-                    <span className="text-xs font-bold" style={{ color: item.color }}>{item.val}</span>
-                  </div>
-                  <p className={`text-xs ${isLight ? 'text-black/45' : 'text-white/40'}`}>{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Shariah Compliance info */}
-        <motion.div
-          variants={fadeUp} initial="hidden" animate="visible" custom={4}
-          className="rounded-2xl p-5 space-y-4 shadow-sm" style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}
-        >
-          <div className="flex items-center gap-2">
-            <BookOpen size={16} className="text-[#00c685]" />
-            <h3 className={`font-semibold text-sm ${isLight ? 'text-black/80' : 'text-white/80'}`}>Shariah Board Audited</h3>
+        <div className="flex items-start gap-4">
+          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
+            isLight ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-500/15 text-emerald-400'
+          }`}>
+            <ShieldCheck size={20} />
           </div>
-          <p className={`text-xs leading-relaxed ${isLight ? 'text-black/55' : 'text-white/50'}`}>
-            Takaful UK is certified by our Shariah Supervisory Committee. We audit all operational fees and investment portfolios to verify:
+          <div className="space-y-1.5">
+            <h3 className="text-base font-bold tracking-tight" style={{ color: isLight ? '#065f46' : '#34d399' }}>
+              The Takaful Mutual Principle
+            </h3>
+            <p className="text-xs sm:text-sm leading-relaxed" style={{ color: TEXT_SUB }}>
+              Unlike commercial insurance where premiums become company profits, your contributions form a collective donation (<span className="font-semibold text-[#00c685]">Tabarru&apos;</span>) pool. If you or a fellow member suffers property loss or accidental damage, repair costs are paid directly from this shared resource. At the close of each cycle, any surplus is retained for members or distributed—never kept by shareholders.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── 3. Pool Highlights Snapshot Card ── */}
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2}>
+        <div
+          className="relative overflow-hidden rounded-3xl border transition-all duration-300"
+          style={{ background: BG_SURFACE, borderColor: BORDER }}
+        >
+          <div className="p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-bold tracking-wider uppercase" style={{ color: TEXT_MUTED }}>
+                Current Pool Balance
+              </span>
+              <p className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#00c685]">
+                £{POOL.balance.toLocaleString()}
+              </p>
+              <p className="text-xs" style={{ color: TEXT_SUB }}>
+                100% held in Shariah-compliant reserves
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-bold tracking-wider uppercase" style={{ color: TEXT_MUTED }}>
+                Total Claims Settled
+              </span>
+              <p className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: TEXT_MAIN }}>
+                £{POOL.totalClaimsPaid.toLocaleString()}
+              </p>
+              <p className="text-xs" style={{ color: TEXT_SUB }}>
+                Directly disbursed to rebuild member homes
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-bold tracking-wider uppercase" style={{ color: TEXT_MUTED }}>
+                Participating Households
+              </span>
+              <p className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: TEXT_MAIN }}>
+                1,248
+              </p>
+              <p className="text-xs" style={{ color: TEXT_SUB }}>
+                Mutually protecting one another across the UK
+              </p>
+            </div>
+          </div>
+
+          <div className="px-6 sm:px-8 py-4 border-t flex items-center justify-between gap-4" style={{ borderColor: BORDER, background: BG_SUBTLE }}>
+            <span className="text-xs font-medium" style={{ color: TEXT_MUTED }}>
+              Solvency Ratio: <strong style={{ color: TEXT_MAIN }}>285%</strong> (well above statutory minimum)
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+              <CheckCircle2 size={13} />
+              Fully Solvent & Inspected
+            </span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── 4. Transparent Breakdown: Where Your Money Goes ── */}
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={3} className="space-y-4">
+        <div>
+          <h2 className="text-xl font-bold tracking-tight" style={{ color: TEXT_MAIN }}>
+            Contribution Breakdown (For Every £100)
+          </h2>
+          <p className="text-sm mt-0.5" style={{ color: TEXT_SUB }}>
+            Full fee transparency under the Wakāla model, audited annually by external Shariah scholars.
           </p>
-          <ul className="space-y-2 text-xs">
-            <li className="flex gap-2">
-              <CheckCircle2 size={12} className="text-[#00c685] shrink-0 mt-0.5" />
-              <span className={isLight ? 'text-black/60' : 'text-white/55'}>No investments in non-compliant sectors.</span>
-            </li>
-            <li className="flex gap-2">
-              <CheckCircle2 size={12} className="text-[#00c685] shrink-0 mt-0.5" />
-              <span className={isLight ? 'text-black/60' : 'text-white/55'}>Absence of Riba (interest) in all pool cash reserves.</span>
-            </li>
-            <li className="flex gap-2">
-              <CheckCircle2 size={12} className="text-[#00c685] shrink-0 mt-0.5" />
-              <span className={isLight ? 'text-black/60' : 'text-white/55'}>Clear mutual surplus sharing arrangement.</span>
-            </li>
-          </ul>
-        </motion.div>
-      </div>
+        </div>
+
+        <div className="space-y-3">
+          {[
+            {
+              pct: '78%',
+              amount: '£78.00',
+              title: 'Mutual Participant Pool',
+              desc: 'Dedicated exclusively to settling property claims, flood restoration, and home emergency repairs.',
+              color: '#00c685',
+              bgLight: 'bg-emerald-50',
+              borderLight: 'border-emerald-200/80',
+            },
+            {
+              pct: '14%',
+              amount: '£14.00',
+              title: 'Claims Contingency Reserve',
+              desc: 'Safeguarded against extreme UK weather seasons (e.g. major storms, freeze surges) so the pool never falters.',
+              color: '#3b82f6',
+              bgLight: 'bg-blue-50',
+              borderLight: 'border-blue-200/80',
+            },
+            {
+              pct: '8%',
+              amount: '£8.00',
+              title: 'Wakala Operating Fee',
+              desc: 'Agreed fixed administration fee for digital platform operations, customer service, and 24/7 claims triage.',
+              color: '#8b5cf6',
+              bgLight: 'bg-purple-50',
+              borderLight: 'border-purple-200/80',
+            },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className={`p-5 rounded-2xl border transition-all ${
+                isLight ? 'bg-white border-black/[0.06] hover:border-black/[0.12]' : 'bg-white/[0.02] border-white/[0.06] hover:border-white/[0.12]'
+              }`}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span
+                    className="font-bold text-sm px-3 py-1 rounded-xl shrink-0"
+                    style={{ background: `${item.color}18`, color: item.color }}
+                  >
+                    {item.pct}
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: TEXT_MAIN }}>
+                      {item.title}
+                    </p>
+                    <p className="text-xs mt-0.5" style={{ color: TEXT_SUB }}>
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-right shrink-0 pl-11 sm:pl-0">
+                  <p className="text-base font-bold" style={{ color: item.color }}>
+                    {item.amount}
+                  </p>
+                  <p className="text-[10px]" style={{ color: TEXT_MUTED }}>
+                    per £100
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ── 5. Shariah Supervisory Governance ── */}
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+        custom={4}
+        className={`rounded-3xl p-6 sm:p-8 border ${
+          isLight ? 'bg-gray-50/80 border-black/[0.06]' : 'bg-white/[0.02] border-white/[0.06]'
+        }`}
+      >
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <BookOpen size={17} className="text-[#00c685]" />
+            <h4 className="text-sm font-bold tracking-tight" style={{ color: TEXT_MAIN }}>
+              Independent Shariah Supervisory Board
+            </h4>
+          </div>
+          <p className="text-xs sm:text-sm leading-relaxed" style={{ color: TEXT_SUB }}>
+            Takaful UK undergoes regular audits by registered Islamic scholars to verify that cash holdings are placed in interest-free accounts, no investments are made in prohibited sectors, and surplus calculation rules are strictly followed.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+            <div className="flex items-center gap-2 text-xs">
+              <CheckCircle2 size={14} className="text-[#00c685] shrink-0" />
+              <span style={{ color: TEXT_MAIN }}>Zero Riba (Interest)</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <CheckCircle2 size={14} className="text-[#00c685] shrink-0" />
+              <span style={{ color: TEXT_MAIN }}>Zero Gharar (Deception)</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <CheckCircle2 size={14} className="text-[#00c685] shrink-0" />
+              <span style={{ color: TEXT_MAIN }}>Annual Member Surplus</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
     </div>
   );
 }
@@ -334,8 +476,6 @@ export default function PoolPage() {
   const { role } = useRole();
 
   switch (role) {
-    case 'participant':
-      return <ParticipantPoolView theme={theme} />;
     case 'finance':
       return <StrategicPoolView theme={theme} isFinance />;
     case 'management':
