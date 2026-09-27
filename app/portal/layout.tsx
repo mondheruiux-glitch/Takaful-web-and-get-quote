@@ -13,6 +13,7 @@ import { DEMO_USERS } from '@/lib/dashboard/mock-data';
 import { getDicebearAvatar } from '@/lib/dashboard/avatars';
 import { Particles } from '@/components/ui/particles';
 import { RoleContext, ThemeContext, ThemeMode, DashboardRole } from '@/app/dashboard/ThemeRoleContext';
+import { FeedbackWidget } from '@/components/ui/feedback-widget';
 
 /* ─── Participant Nav Items ─────────────────────────────────────────────── */
 interface NavItem {
@@ -335,6 +336,75 @@ function ParticipantFloatingSideMenu() {
   );
 }
 
+/* ─── Floating Claim Feedback Trigger ──────────────────────────────────── */
+function ClaimFeedbackFloatingTrigger() {
+  const pathname = usePathname();
+  const [showFeedback, setShowFeedback] = useState(false);
+
+  useEffect(() => {
+    // Never show on the claim submission form itself
+    if (pathname.includes('/portal/claims/new')) {
+      setShowFeedback(false);
+      return;
+    }
+
+    // Check if user has submitted a claim recently
+    const hasRecentlySubmitted =
+      typeof window !== 'undefined' &&
+      sessionStorage.getItem('takaful_claim_submitted_recently') === 'true';
+
+    if (hasRecentlySubmitted) {
+      // Trigger after a pleasant duration: 2500ms
+      const timer = setTimeout(() => {
+        setShowFeedback(true);
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [pathname]);
+
+  // Also support manual event for testing or direct trigger
+  useEffect(() => {
+    const handleTrigger = () => setShowFeedback(true);
+    window.addEventListener('trigger-claim-feedback', handleTrigger);
+    return () => window.removeEventListener('trigger-claim-feedback', handleTrigger);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {showFeedback && (
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20, scale: 0.95 }}
+          transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+          className="fixed bottom-6 right-4 sm:right-6 md:right-8 z-[110] max-w-[calc(100vw-2rem)]"
+        >
+          <FeedbackWidget
+            label="How was your claim experience?"
+            placeholder="Share your feedback to help improve the mutual pool..."
+            onSubmit={(data) => {
+              if (typeof window !== 'undefined') {
+                sessionStorage.removeItem('takaful_claim_submitted_recently');
+                localStorage.setItem(
+                  'takaful_claim_feedback_completed',
+                  JSON.stringify({ ...data, date: new Date().toISOString() })
+                );
+              }
+            }}
+            onClose={() => {
+              if (typeof window !== 'undefined') {
+                sessionStorage.removeItem('takaful_claim_submitted_recently');
+              }
+              setShowFeedback(false);
+            }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 /* ─── Portal Layout Component ───────────────────────────────────────────── */
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const role: DashboardRole = 'participant';
@@ -364,6 +434,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
 
           <PortalHeader />
           <ParticipantFloatingSideMenu />
+          <ClaimFeedbackFloatingTrigger />
           <main className="flex-1 relative pt-16 md:pl-20 lg:pl-24 pb-20 md:pb-10 z-10">
             {children}
           </main>

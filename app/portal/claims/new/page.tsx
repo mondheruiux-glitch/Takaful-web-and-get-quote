@@ -1291,6 +1291,9 @@ export default function PortalNewClaimPage() {
         setErrors({ declaration: 'You must confirm the mutual declaration before submitting.' });
         return;
       }
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('takaful_claim_submitted_recently', 'true');
+      }
       setSubmitted(true);
     } else {
       goToStep(step + 1);

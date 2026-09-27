@@ -1193,6 +1193,9 @@ export default function NewClaimPage() {
     setErrors({});
     if (step === TOTAL_STEPS) {
       if (!draft.declaration) { setErrors({ declaration: 'You must confirm the declaration before submitting.' }); return; }
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('takaful_claim_submitted_recently', 'true');
+      }
       setSubmitted(true);
     } else {
       goToStep(step + 1);
