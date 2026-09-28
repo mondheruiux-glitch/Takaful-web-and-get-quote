@@ -15,6 +15,7 @@ import { DEMO_USERS } from '@/lib/dashboard/mock-data';
 import { getDicebearAvatar } from '@/lib/dashboard/avatars';
 
 import { RoleContext, ThemeContext, useRole, useTheme, ThemeMode, DashboardRole } from './ThemeRoleContext';
+import { NotificationPopover } from '@/components/ui/notification-popover';
 
 /* ─── Nav item type ──────────────────────────────────────────────────────── */
 interface NavItem {
@@ -28,61 +29,57 @@ interface NavItem {
 // Participant nav lives in /portal layout — not used here
 
 const CLAIM_HANDLER_NAV: NavItem[] = [
-  { href: '/dashboard',                label: 'Overview',          icon: LayoutDashboard },
-  { href: '/dashboard/queue',          label: 'My Queue',          icon: ClipboardList, badge: 8 },
-  { href: '/dashboard/claims',         label: 'All Claims',        icon: FileText },
-  { href: '/dashboard/documents',      label: 'Documents',         icon: Folder },
-  { href: '/dashboard/support',        label: 'Support Tickets',   icon: HelpCircle, badge: 3 },
-  { href: '/dashboard/notifications',  label: 'Notifications',     icon: Bell, badge: 4 },
-  { href: '/dashboard/settings',       label: 'Settings',          icon: Settings },
+  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/dashboard/queue', label: 'My Queue', icon: ClipboardList, badge: 8 },
+  { href: '/dashboard/claims', label: 'All Claims', icon: FileText },
+  { href: '/dashboard/documents', label: 'Documents', icon: Folder },
+  { href: '/dashboard/support', label: 'Support Tickets', icon: HelpCircle, badge: 3 },
+  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 const FINANCE_NAV: NavItem[] = [
-  { href: '/dashboard',                label: 'Overview',          icon: LayoutDashboard },
-  { href: '/dashboard/pool',           label: 'Takaful Pool',      icon: PieChart },
-  { href: '/dashboard/contributions',  label: 'Contributions',     icon: CreditCard },
-  { href: '/dashboard/claims-payments',label: 'Claims Payments',   icon: Banknote, badge: 3 },
-  { href: '/dashboard/transactions',   label: 'Transactions',      icon: ArrowLeftRight },
-  { href: '/dashboard/documents',      label: 'Documents',         icon: Folder },
-  { href: '/dashboard/support',        label: 'Support Tickets',   icon: HelpCircle, badge: 1 },
-  { href: '/dashboard/notifications',  label: 'Notifications',     icon: Bell, badge: 2 },
-  { href: '/dashboard/settings',       label: 'Settings',          icon: Settings },
+  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/dashboard/pool', label: 'Takaful Pool', icon: PieChart },
+  { href: '/dashboard/contributions', label: 'Contributions', icon: CreditCard },
+  { href: '/dashboard/claims-payments', label: 'Claims Payments', icon: Banknote, badge: 3 },
+  { href: '/dashboard/transactions', label: 'Transactions', icon: ArrowLeftRight },
+  { href: '/dashboard/documents', label: 'Documents', icon: Folder },
+  { href: '/dashboard/support', label: 'Support Tickets', icon: HelpCircle, badge: 1 },
+  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 const MANAGEMENT_NAV: NavItem[] = [
-  { href: '/dashboard',                label: 'Overview',          icon: LayoutDashboard },
-  { href: '/dashboard/certificates',   label: 'Certificates',      icon: Shield },
-  { href: '/dashboard/claims',         label: 'Claims',            icon: FileText },
-  { href: '/dashboard/pool',           label: 'Takaful Pool',      icon: PieChart },
-  { href: '/dashboard/contributions',  label: 'Contributions',     icon: TrendingUp },
-  { href: '/dashboard/risk',           label: 'Risk',              icon: ShieldAlert },
-  { href: '/dashboard/documents',      label: 'Documents',         icon: Folder },
-  { href: '/dashboard/support',        label: 'Support Desk',      icon: HelpCircle, badge: 4 },
-  { href: '/dashboard/notifications',  label: 'Notifications',     icon: Bell, badge: 6 },
-  { href: '/dashboard/settings',       label: 'Settings',          icon: Settings },
+  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/dashboard/certificates', label: 'Certificates', icon: Shield },
+  { href: '/dashboard/claims', label: 'Claims', icon: FileText },
+  { href: '/dashboard/pool', label: 'Takaful Pool', icon: PieChart },
+  { href: '/dashboard/contributions', label: 'Contributions', icon: TrendingUp },
+  { href: '/dashboard/risk', label: 'Risk', icon: ShieldAlert },
+  { href: '/dashboard/documents', label: 'Documents', icon: Folder },
+  { href: '/dashboard/support', label: 'Support Desk', icon: HelpCircle, badge: 4 },
+  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 const SUPER_ADMIN_NAV: NavItem[] = [
-  { href: '/dashboard',                label: 'Overview',          icon: LayoutDashboard },
-  { href: '/dashboard/staff',          label: 'Staff & Roles',     icon: UserCog, badge: 6 },
-  { href: '/dashboard/certificates',   label: 'Certificates',      icon: Shield },
-  { href: '/dashboard/claims',         label: 'Claims',            icon: FileText },
-  { href: '/dashboard/pool',           label: 'Takaful Pool',      icon: PieChart },
-  { href: '/dashboard/contributions',  label: 'Contributions',     icon: TrendingUp },
-  { href: '/dashboard/risk',           label: 'Risk & Solvency',   icon: ShieldAlert },
-  { href: '/dashboard/transactions',   label: 'Audit Ledger',      icon: ArrowLeftRight },
-  { href: '/dashboard/notifications',  label: 'Platform Alerts',   icon: Bell, badge: 8 },
-  { href: '/dashboard/settings',       label: 'Settings',          icon: Settings },
+  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/dashboard/staff', label: 'Staff & Roles', icon: UserCog, badge: 6 },
+  { href: '/dashboard/certificates', label: 'Certificates', icon: Shield },
+  { href: '/dashboard/claims', label: 'Claims', icon: FileText },
+  { href: '/dashboard/pool', label: 'Takaful Pool', icon: PieChart },
+  { href: '/dashboard/contributions', label: 'Contributions', icon: TrendingUp },
+  { href: '/dashboard/risk', label: 'Risk & Solvency', icon: ShieldAlert },
+  { href: '/dashboard/transactions', label: 'Audit Ledger', icon: ArrowLeftRight },
+  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 // Staff nav arrays — all dashboard roles are staff roles
 // Participant portal lives at /portal
 const NAV_BY_ROLE: Record<DashboardRole, NavItem[]> = {
-  participant:   [],
+  participant: [],
   claim_handler: CLAIM_HANDLER_NAV,
-  finance:       FINANCE_NAV,
-  management:    MANAGEMENT_NAV,
-  super_admin:   SUPER_ADMIN_NAV,
+  finance: FINANCE_NAV,
+  management: MANAGEMENT_NAV,
+  super_admin: SUPER_ADMIN_NAV,
 };
 
 /* ─── Sidebar ────────────────────────────────────────────────────────────── */
@@ -195,9 +192,9 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
 /* ─── Top Bar ─────────────────────────────────────────────────────────────── */
 const ROLE_LABELS: Record<string, string> = {
   claim_handler: 'Claim Handler',
-  finance:       'Finance Team',
-  management:    'Management',
-  super_admin:   'Super Admin (Exec)',
+  finance: 'Finance Team',
+  management: 'Management',
+  super_admin: 'Super Admin (Exec)',
 };
 
 const STAFF_ROLES: DashboardRole[] = ['claim_handler', 'finance', 'management', 'super_admin'];
@@ -304,11 +301,8 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
         </AnimatePresence>
       </div>
 
-      {/* Notifications */}
-      <Link href="/dashboard/notifications" className={`relative p-2 rounded-xl transition-colors ${theme === 'light' ? 'text-black/50 hover:text-black hover:bg-black/5' : 'text-white/50 hover:text-white hover:bg-white/5'}`}>
-        <Bell size={18} />
-        <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#00c685]" />
-      </Link>
+      {/* Notifications Popover */}
+      <NotificationPopover role={role} theme={theme} align="end" />
 
       {/* Profile avatar + dropdown */}
       <div className="relative" ref={profileRef}>
@@ -357,8 +351,8 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
               {/* Menu items */}
               <div className="py-2">
                 {[
-                  { icon: Settings,    label: 'Settings',  href: '/dashboard/settings' },
-                  { icon: HelpCircle,  label: 'Support Desk', href: '/dashboard/support' },
+                  { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+                  { icon: HelpCircle, label: 'Support Desk', href: '/dashboard/support' },
                 ].map((item) => {
                   const Icon = item.icon;
                   return (
@@ -366,11 +360,10 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
                       key={item.label}
                       href={item.href}
                       onClick={() => setProfileOpen(false)}
-                      className={`flex items-center gap-3.5 px-5 py-3 text-sm font-medium transition-colors ${
-                        theme === 'light'
+                      className={`flex items-center gap-3.5 px-5 py-3 text-sm font-medium transition-colors ${theme === 'light'
                           ? 'text-gray-700 hover:bg-gray-50'
                           : 'text-white/70 hover:bg-white/5'
-                      }`}
+                        }`}
                     >
                       <span className={`flex items-center justify-center w-8 h-8 rounded-full ${theme === 'light' ? 'bg-gray-100 text-gray-500' : 'bg-white/10 text-white/60'}`}>
                         <Icon size={15} />
@@ -385,11 +378,10 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
               <div style={{ borderTop: `1px solid ${BORDER}` }} className="py-2">
                 <button
                   onClick={() => { setProfileOpen(false); }}
-                  className={`w-full flex items-center gap-3.5 px-5 py-3 text-sm font-medium transition-colors ${
-                    theme === 'light'
+                  className={`w-full flex items-center gap-3.5 px-5 py-3 text-sm font-medium transition-colors ${theme === 'light'
                       ? 'text-gray-700 hover:bg-gray-50'
                       : 'text-white/70 hover:bg-white/5'
-                  }`}
+                    }`}
                 >
                   <span className={`flex items-center justify-center w-8 h-8 rounded-full ${theme === 'light' ? 'bg-gray-100 text-gray-500' : 'bg-white/10 text-white/60'}`}>
                     <LogOut size={15} />
@@ -439,18 +431,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setThemeState(savedTheme);
         document.documentElement.classList.toggle('dark', savedTheme === 'dark');
       }
-    } catch {}
+    } catch { }
   }, []);
 
   const setRole = (r: DashboardRole) => {
     setRoleState(r);
-    try { localStorage.setItem('takaful_dashboard_role', r); } catch {}
+    try { localStorage.setItem('takaful_dashboard_role', r); } catch { }
   };
 
   const setTheme = (t: ThemeMode) => {
     setThemeState(t);
     document.documentElement.classList.toggle('dark', t === 'dark');
-    try { localStorage.setItem('takaful_dashboard_theme', t); } catch {}
+    try { localStorage.setItem('takaful_dashboard_theme', t); } catch { }
   };
 
   const isLight = theme === 'light';

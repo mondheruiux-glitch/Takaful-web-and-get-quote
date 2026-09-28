@@ -14,6 +14,7 @@ import { getDicebearAvatar } from '@/lib/dashboard/avatars';
 import { Particles } from '@/components/ui/particles';
 import { RoleContext, ThemeContext, ThemeMode, DashboardRole } from '@/app/dashboard/ThemeRoleContext';
 import { FeedbackWidget } from '@/components/ui/feedback-widget';
+import { NotificationPopover } from '@/components/ui/notification-popover';
 
 /* ─── Participant Nav Items ─────────────────────────────────────────────── */
 interface NavItem {
@@ -24,14 +25,13 @@ interface NavItem {
 }
 
 const PARTICIPANT_NAV: NavItem[] = [
-  { href: '/portal/my-cover',       label: 'My Cover',          icon: Home },
-  { href: '/portal/claims',         label: 'My Claims',         icon: FileText },
-  { href: '/portal/contributions',  label: 'My Contributions',  icon: CreditCard },
-  { href: '/portal/documents',      label: 'My Documents',      icon: Folder },
-  { href: '/portal/pool',           label: 'Takaful Pool',      icon: PieChart },
-  { href: '/portal/support',        label: 'Support & Chat',    icon: HelpCircle, badge: 1 },
-  { href: '/portal/notifications',  label: 'Notifications',     icon: Bell, badge: 2 },
-  { href: '/portal/settings',       label: 'Settings',          icon: Settings },
+  { href: '/portal/my-cover', label: 'My Cover', icon: Home },
+  { href: '/portal/claims', label: 'My Claims', icon: FileText },
+  { href: '/portal/contributions', label: 'My Contributions', icon: CreditCard },
+  { href: '/portal/documents', label: 'My Documents', icon: Folder },
+  { href: '/portal/pool', label: 'Takaful Pool', icon: PieChart },
+  { href: '/portal/support', label: 'Support & Chat', icon: HelpCircle, badge: 1 },
+  { href: '/portal/settings', label: 'Settings', icon: Settings },
 ];
 
 /* ─── Participant Portal Header ─────────────────────────────────────────── */
@@ -72,11 +72,10 @@ function PortalHeader() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
-          scrolled
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled
             ? 'bg-[#061510]/90 backdrop-blur-xl border-b border-white/[0.08] shadow-2xl'
             : 'bg-transparent'
-        }`}
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Left: Brand logo */}
@@ -93,15 +92,8 @@ function PortalHeader() {
 
           {/* Right actions */}
           <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Notifications */}
-            <Link
-              href="/portal/notifications"
-              className="relative p-2 rounded-full transition-colors text-gray-400 hover:text-white hover:bg-white/10"
-              aria-label="Notifications"
-            >
-              <Bell size={17} />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#00c685]" />
-            </Link>
+            {/* Notifications Popover */}
+            <NotificationPopover role="participant" theme="dark" align="end" />
 
             {/* Profile avatar */}
             <div className="relative" ref={profileRef}>
@@ -145,8 +137,8 @@ function PortalHeader() {
                     {/* Links */}
                     <div className="py-2">
                       {[
-                        { icon: Settings,   label: 'Settings',     href: '/portal/settings' },
-                        { icon: HelpCircle, label: 'Support Desk', href: '/portal/support'  },
+                        { icon: Settings, label: 'Settings', href: '/portal/settings' },
+                        { icon: HelpCircle, label: 'Support Desk', href: '/portal/support' },
                       ].map(({ icon: Icon, label, href }) => (
                         <Link key={label} href={href} onClick={() => setProfileOpen(false)}
                           className="flex items-center gap-3.5 px-5 py-3 text-sm font-medium transition-colors text-white/70 hover:bg-white/5"
@@ -214,9 +206,8 @@ function PortalHeader() {
                     <Link
                       key={item.href} href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
-                        active ? 'bg-[#00c685]/15 text-[#00c685]' : 'text-gray-300 hover:bg-white/[0.07] hover:text-white'
-                      }`}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${active ? 'bg-[#00c685]/15 text-[#00c685]' : 'text-gray-300 hover:bg-white/[0.07] hover:text-white'
+                        }`}
                     >
                       <Icon size={18} className={active ? 'text-[#00c685]' : 'text-gray-400'} />
                       <span className="flex-1">{item.label}</span>
@@ -263,11 +254,10 @@ function ParticipantFloatingSideMenu() {
               )}
               <Link
                 href={item.href}
-                className={`group relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 ${
-                  isActive
+                className={`group relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 ${isActive
                     ? 'bg-[#00c685] text-[#061510] font-bold shadow-md shadow-[#00c685]/30'
                     : 'text-white/60 hover:text-white hover:bg-white/[0.08]'
-                }`}
+                  }`}
                 aria-label={item.label}
               >
                 <Icon size={18} />
@@ -303,11 +293,10 @@ function ParticipantFloatingSideMenu() {
             <Link
               key={item.href}
               href={item.href}
-              className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all ${
-                isActive
+              className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all ${isActive
                   ? 'bg-[#00c685] text-[#061510] font-bold shadow-md shadow-[#00c685]/30'
                   : 'text-white/60 hover:text-white'
-              }`}
+                }`}
               aria-label={item.label}
             >
               <Icon size={18} />
@@ -319,11 +308,10 @@ function ParticipantFloatingSideMenu() {
         })}
         <Link
           href="/portal/support"
-          className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all ${
-            pathname === '/portal/support' || pathname.startsWith('/portal/support/')
+          className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all ${pathname === '/portal/support' || pathname.startsWith('/portal/support/')
               ? 'bg-[#00c685] text-[#061510] font-bold shadow-md shadow-[#00c685]/30'
               : 'text-white/60 hover:text-white'
-          }`}
+            }`}
           aria-label="Support & Chat"
         >
           <HelpCircle size={18} />
@@ -414,8 +402,8 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme: 'dark', setTheme: () => {} }}>
-      <RoleContext.Provider value={{ role, setRole: () => {} }}>
+    <ThemeContext.Provider value={{ theme: 'dark', setTheme: () => { } }}>
+      <RoleContext.Provider value={{ role, setRole: () => { } }}>
         <div className="min-h-screen flex flex-col relative overflow-x-hidden bg-[#0a1a14] text-white" style={{ background: '#0a1a14', fontFamily: "'Inter', sans-serif" }}>
           {/* Animated Background: Particles + radial glows */}
           <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">

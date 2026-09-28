@@ -12,6 +12,7 @@ import { usePathname } from 'next/navigation';
 import { useTheme } from '../ThemeRoleContext';
 import { useRole } from '../ThemeRoleContext';
 import { getDicebearAvatar } from '@/lib/dashboard/avatars';
+import { HANDLER_NOTIFICATIONS, PARTICIPANT_NOTIFICATIONS } from '@/lib/dashboard/notifications-data';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -19,209 +20,6 @@ const fadeUp = {
   hidden: { opacity: 1, y: 0 },
   visible: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.4, ease, delay: i * 0.06 } }),
 };
-
-/* ─── Handler / Management / Finance Notifications ────────────────────────── */
-const HANDLER_NOTIFICATIONS = [
-  {
-    id: 'N-001',
-    type: 'claim',
-    icon: FileText,
-    color: '#3b82f6',
-    title: 'New claim submitted',
-    body: 'Hassan Mahmoud submitted claim CLM-2024-0890 for £1,850 (Contents — Escape of Water).',
-    time: '2 minutes ago',
-    read: false,
-    link: '/dashboard/claims/CLM-2024-0890',
-    senderName: 'Hassan Mahmoud',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'N-002',
-    type: 'claim',
-    icon: CheckCircle2,
-    color: '#00c685',
-    title: 'Claim approved & sent to finance',
-    body: 'Claim CLM-2024-0889 for Aisha Okonkwo (Accidental Damage, £380) has been approved and forwarded to Treasury for payment.',
-    time: '18 minutes ago',
-    read: false,
-    link: '/dashboard/claims/CLM-2024-0889',
-    senderName: 'Omar Hassan',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'N-003',
-    type: 'document',
-    icon: AlertTriangle,
-    color: '#f59e0b',
-    title: 'Documents still outstanding',
-    body: 'Claim CLM-2024-0886 (Ibrahim Al-Sayed – Subsidence, £12,400) requires the structural engineer survey report. Chased on 15 Jul.',
-    time: '1 hour ago',
-    read: false,
-    link: '/dashboard/claims/CLM-2024-0886',
-    senderName: 'System',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'N-004',
-    type: 'certificate',
-    icon: Shield,
-    color: '#8b5cf6',
-    title: 'Certificate expiring soon',
-    body: 'Certificate TK-2024-0098 (Maryam Patel) expires in 14 days on 12 Aug 2026. Renewal action required.',
-    time: '2 hours ago',
-    read: false,
-    link: '/dashboard/certificates',
-    senderName: 'System',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'N-005',
-    type: 'payment',
-    icon: CreditCard,
-    color: '#ef4444',
-    title: 'Direct debit failed',
-    body: 'Contribution collection failed for Maryam Patel (TK-2024-0098). Amount: £18.90. Retry scheduled.',
-    time: '4 hours ago',
-    read: false,
-    link: '/dashboard/contributions',
-    senderName: 'System',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'N-006',
-    type: 'participant',
-    icon: Users,
-    color: '#ec4899',
-    title: 'New applications received',
-    body: '3 new participant applications are pending review. 2 require identity verification.',
-    time: '6 hours ago',
-    read: true,
-    link: '/dashboard/participants',
-    senderName: 'System',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'N-007',
-    type: 'pool',
-    icon: Info,
-    color: '#00c685',
-    title: 'Pool monthly summary',
-    body: 'July 2026 pool summary: £61,400 collected, £18,900 in claims. Pool balance: £482,150. Full report available.',
-    time: '1 day ago',
-    read: true,
-    link: '/dashboard/pool',
-    senderName: 'System',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'N-008',
-    type: 'claim',
-    icon: FileText,
-    color: '#3b82f6',
-    title: 'Assessor report received',
-    body: 'Assessor report for CLM-2024-0891 (Fatima Al-Rashid – Storm damage, £4,200) has been received and is ready for review.',
-    time: '1 day ago',
-    read: true,
-    link: '/dashboard/claims/CLM-2024-0891',
-    senderName: 'System',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'N-009',
-    type: 'payment',
-    icon: CheckCircle2,
-    color: '#00c685',
-    title: 'Payment released by finance',
-    body: 'Payment of £1,600 for claim CLM-2024-0884 (Fatima Al-Rashid – Fire Damage) has been transferred to participant account. BACS ref: PYMNT-CLM-0884.',
-    time: '2 days ago',
-    read: true,
-    link: '/dashboard/claims/CLM-2024-0884',
-    senderName: 'Amira Siddiqui',
-    senderGender: 'female' as const,
-  },
-];
-
-/* ─── Participant Notifications (role-specific, Fatima P-0042) ─────────────── */
-const PARTICIPANT_NOTIFICATIONS = [
-  {
-    id: 'PN-001',
-    type: 'claim',
-    icon: XCircle,
-    color: '#ef4444',
-    title: 'Claim decision: Rejected',
-    body: 'Your claim CLM-2024-0888 (Attempted Break-In — Front Door Lock, £250) has been rejected. Reason: Repair cost falls below the mandatory £300 policy excess (Clause 4.2). You may appeal via the claim details page.',
-    time: '18 Jul 2026',
-    read: false,
-    link: '/dashboard/claims/CLM-2024-0888',
-    senderName: 'Omar Hassan',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'PN-002',
-    type: 'payment',
-    icon: CheckCircle2,
-    color: '#00c685',
-    title: 'Payment confirmed — £1,600 received',
-    body: 'Your settlement payment of £1,600.00 for fire damage claim CLM-2024-0884 has been processed and deposited to your registered bank account. BACS Ref: PYMNT-CLM-0884.',
-    time: '12 Jul 2026',
-    read: false,
-    link: '/dashboard/claims/CLM-2024-0884',
-    senderName: 'Amira Siddiqui',
-    senderGender: 'female' as const,
-  },
-  {
-    id: 'PN-003',
-    type: 'claim',
-    icon: AlertTriangle,
-    color: '#f59e0b',
-    title: 'Assessor visit scheduled',
-    body: 'For your storm damage claim CLM-2024-0891, an independent assessor (Dave Miller, Independent Assessors Ltd) has been booked for Friday 25 July at 10:00 AM. Please ensure access to the roof and loft.',
-    time: '20 Jul 2026',
-    read: false,
-    link: '/dashboard/claims/CLM-2024-0891',
-    senderName: 'Omar Hassan',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'PN-004',
-    type: 'claim',
-    icon: MessageSquare,
-    color: '#3b82f6',
-    title: 'New message from your handler',
-    body: 'Omar Hassan sent you a message regarding claim CLM-2024-0891: "All photos received clearly. We have scheduled Dave Miller from Independent Assessors Ltd for Friday 25 July at 10:00 AM..."',
-    time: '20 Jul 2026',
-    read: true,
-    link: '/dashboard/claims/CLM-2024-0891',
-    senderName: 'Omar Hassan',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'PN-005',
-    type: 'document',
-    icon: FileText,
-    color: '#8b5cf6',
-    title: 'Documents verified for CLM-2024-0891',
-    body: 'Your uploaded roof damage photos and contractor quote have been verified and accepted into your storm damage claim file. No further documents are required at this stage.',
-    time: '19 Jul 2026',
-    read: true,
-    link: '/dashboard/claims/CLM-2024-0891',
-    senderName: 'System',
-    senderGender: 'male' as const,
-  },
-  {
-    id: 'PN-006',
-    type: 'certificate',
-    icon: Shield,
-    color: '#00c685',
-    title: 'Certificate TK-2024-0042 is active',
-    body: 'Your Takaful Buildings Certificate is active and covers storm, fire, flood, subsidence, and escape of water risks at 14 Elm Street, Birmingham, B1 2PQ. Renews 15 Jan 2027.',
-    time: '15 Jan 2026',
-    read: true,
-    link: '/dashboard/my-cover',
-    senderName: 'System',
-    senderGender: 'male' as const,
-  },
-];
 
 const HANDLER_FILTERS = [
   { key: 'all', label: 'All' },
@@ -372,8 +170,8 @@ export default function NotificationsPage() {
                   <div className="relative shrink-0 mt-0.5">
                     {showAvatar ? (
                       <img
-                        src={getDicebearAvatar(n.senderName, n.senderGender)}
-                        alt={n.senderName}
+                        src={getDicebearAvatar(n.senderName || 'System', n.senderGender)}
+                        alt={n.senderName || 'Notification'}
                         className="w-8 h-8 rounded-xl object-cover border border-black/10 dark:border-white/10"
                       />
                     ) : (

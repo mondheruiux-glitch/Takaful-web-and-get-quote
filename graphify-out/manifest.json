@@ -290,8 +290,8 @@
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/package.json": {
-    "mtime": 1790333906.2776859,
-    "ast_hash": "dee7d4dd217ca6bdc857ad39dd3f7b90",
+    "mtime": 1790583865.9010289,
+    "ast_hash": "34757ba246bedaeac57c32fcaafef5df",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/tsconfig.json": {
@@ -365,8 +365,8 @@
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/dashboard/layout.tsx": {
-    "mtime": 1790353595.5008366,
-    "ast_hash": "8d3c2a4e9850d13a65b76870be6ba29d",
+    "mtime": 1790586119.771092,
+    "ast_hash": "aa12aef289800074adfb31a065842ebb",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/dashboard/ThemeRoleContext.tsx": {
@@ -400,8 +400,8 @@
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/dashboard/support/page.tsx": {
-    "mtime": 1790329569.2736871,
-    "ast_hash": "e9947bfb75562748a5731494fe43ce94",
+    "mtime": 1790582035.849588,
+    "ast_hash": "91c58c50f3cff3e0d7289d427a7f0363",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/dashboard/queue/page.tsx": {
@@ -420,8 +420,8 @@
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/dashboard/pool/page.tsx": {
-    "mtime": 1790514033.627848,
-    "ast_hash": "7966ff20b73ce6c758a2f19f0919bf60",
+    "mtime": 1790523580.3898566,
+    "ast_hash": "c47ac12b5c5c1a042083506d8fe94851",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/dashboard/risk/page.tsx": {
@@ -430,8 +430,8 @@
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/dashboard/notifications/page.tsx": {
-    "mtime": 1789899926.642925,
-    "ast_hash": "396520f7a211bbc46aa797c8f929308b",
+    "mtime": 1790586286.6603584,
+    "ast_hash": "7b1d6e0d8b55e5cc5b4a5ae28d6ec931",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/dashboard/claims/page.tsx": {
@@ -440,8 +440,8 @@
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/dashboard/claims/new/page.tsx": {
-    "mtime": 1790353469.7495162,
-    "ast_hash": "14f353d1ec50cb0af572c68f4ff4b908",
+    "mtime": 1790519627.5030239,
+    "ast_hash": "8c7e7a529e8cd70d26cd19fb1ee19457",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/dashboard/claims/[id]/page.tsx": {
@@ -475,13 +475,13 @@
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/dropdowns/page.tsx": {
-    "mtime": 1790259270.55962,
-    "ast_hash": "5308b3bcafd03cac3c809d880bb1a1f1",
+    "mtime": 1790523067.5822346,
+    "ast_hash": "265b13676da81adb585507954eb36cdb",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/design-system/page.tsx": {
-    "mtime": 1790259462.7534564,
-    "ast_hash": "7a2281671e9ddf7c2ec86e58e57753b2",
+    "mtime": 1790581443.130671,
+    "ast_hash": "82e31afaffcf240872572e82bd5387fb",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/.agents/skills/ui-ux-pro-max/scripts/design_system.py": {
@@ -575,8 +575,8 @@
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/components/ui/card.tsx": {
-    "mtime": 1789899926.6515286,
-    "ast_hash": "7205b7e292c2d4ff27c7220dbb7b3332",
+    "mtime": 1790516819.6267288,
+    "ast_hash": "9afc8c7b15b9890703da70bbf8223bd6",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/components/ui/hover-footer-demo.tsx": {
@@ -51390,8 +51390,8 @@
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/portal/layout.tsx": {
-    "mtime": 1790506043.7693765,
-    "ast_hash": "fa59c6dae4e36271c958d8a11331ff0b",
+    "mtime": 1790586081.038372,
+    "ast_hash": "5827d73a01875a560df9953ea6178be3",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/portal/page.tsx": {
@@ -51410,8 +51410,8 @@
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/portal/pool/page.tsx": {
-    "mtime": 1790353452.5694253,
-    "ast_hash": "bfa1ca9ced9dd0fb736987dc069b8fda",
+    "mtime": 1790523411.7487974,
+    "ast_hash": "3a65a03029f6076d631f10c9e91fe060",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/portal/claims/page.tsx": {
@@ -51420,8 +51420,8 @@
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/portal/claims/new/page.tsx": {
-    "mtime": 1790353729.415021,
-    "ast_hash": "20b082bd6ddb011bccd77022b93bd421",
+    "mtime": 1790519605.6982083,
+    "ast_hash": "976a2329a6f6c239cf587e521606ffa3",
     "semantic_hash": ""
   },
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/portal/claims/[id]/page.tsx": {
@@ -51432,6 +51432,51 @@
   "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/portal/my-cover/page.tsx": {
     "mtime": 1790348450.3600814,
     "ast_hash": "9fcbb770c5d53f1d47dd93467f72dee1",
+    "semantic_hash": ""
+  },
+  "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/portal/settings/page.tsx": {
+    "mtime": 1790522626.4069407,
+    "ast_hash": "8b2f83b545726ad8d226aec9ff799b75",
+    "semantic_hash": ""
+  },
+  "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/portal/support/page.tsx": {
+    "mtime": 1790522622.2281456,
+    "ast_hash": "fec4bfe2465f40ea0260096a63f7babe",
+    "semantic_hash": ""
+  },
+  "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/app/portal/notifications/page.tsx": {
+    "mtime": 1790522624.3741179,
+    "ast_hash": "98f576ed50fb926ad4426e375a5cdb79",
+    "semantic_hash": ""
+  },
+  "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/components/ui/participant-pool-view.tsx": {
+    "mtime": 1790523194.1946468,
+    "ast_hash": "bea365ccf80940f75c1059fcbca0c6b4",
+    "semantic_hash": ""
+  },
+  "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/components/ui/feedback-widget.tsx": {
+    "mtime": 1790518930.4348845,
+    "ast_hash": "9449d346eee63a31adb28bfb92ad3576",
+    "semantic_hash": ""
+  },
+  "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/components/ui/order-status-card.tsx": {
+    "mtime": 1790519310.1213992,
+    "ast_hash": "fc38c7fd2992662b012ad5ddd7032815",
+    "semantic_hash": ""
+  },
+  "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/components/ui/popover.tsx": {
+    "mtime": 1790584071.6920567,
+    "ast_hash": "3605d5cad571d28d126f572f2b966140",
+    "semantic_hash": ""
+  },
+  "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/components/ui/notification-popover.tsx": {
+    "mtime": 1790586093.2561572,
+    "ast_hash": "e1d4bd1c697c1df820c12da1a8a742fb",
+    "semantic_hash": ""
+  },
+  "/Users/mondhermac/Desktop/TAKAFUL FULL/TAKAFULL + DASHboard/lib/dashboard/notifications-data.ts": {
+    "mtime": 1790584085.0747595,
+    "ast_hash": "d2a6aa2ef22b8016aeba9ac23195a2e3",
     "semantic_hash": ""
   }
 }
