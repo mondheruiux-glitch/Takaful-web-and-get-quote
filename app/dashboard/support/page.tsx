@@ -217,6 +217,45 @@ const INITIAL_CHATS: ChatSession[] = [
   },
 ];
 
+const PARTICIPANT_CHATS: ChatSession[] = [
+  {
+    id: 'chat-advisor',
+    participantName: 'Omar Hassan (Senior Claims Advisor)',
+    participantId: 'P-0042',
+    lastMessage: 'Assessor visit booked for Friday 25 July at 10:00 AM.',
+    unread: 0,
+    online: true,
+    messages: [
+      { id: 'cm-1', sender: 'agent', senderName: 'Omar Hassan (Takaful Advisor)', text: 'Assalamu Alaikum Fatima! I am your dedicated Takaful claims and policy advisor. How can I help you today?', timestamp: '10:14 AM' },
+      { id: 'cm-2', sender: 'user', senderName: 'Fatima Al-Rashid', text: 'Hi Omar, I wanted to check on the status of my storm damage assessment and understand when the surveyor will arrive.', timestamp: '10:15 AM' },
+      { id: 'cm-3', sender: 'agent', senderName: 'Omar Hassan (Takaful Advisor)', text: 'The assessor visit has been booked with Dave Miller for Friday 25 July at 10:00 AM. He will call 30 minutes prior to arrival.', timestamp: '10:16 AM' },
+      { id: 'cm-4', sender: 'user', senderName: 'Fatima Al-Rashid', text: 'Thank you Omar, that is very clear and reassuring!', timestamp: '10:17 AM' },
+    ],
+  },
+  {
+    id: 'chat-emergency',
+    participantName: '24/7 Home Emergency Desk',
+    participantId: 'P-0042',
+    lastMessage: 'Emergency dispatchers available 24/7 for urgent bursts or security locks.',
+    unread: 0,
+    online: true,
+    messages: [
+      { id: 'cm-e1', sender: 'agent', senderName: 'Emergency Dispatch', text: 'Emergency Support line active. If your home has an active water leak, structural danger, or broken locks, message here or call 0800 123 4567.', timestamp: '09:00 AM' },
+    ],
+  },
+  {
+    id: 'chat-finance',
+    participantName: 'Contributions & Surplus Helpdesk',
+    participantId: 'P-0042',
+    lastMessage: 'Next monthly contribution scheduled for 1 Aug (£38.50).',
+    unread: 0,
+    online: false,
+    messages: [
+      { id: 'cm-f1', sender: 'agent', senderName: 'Treasury Desk', text: 'Welcome to the Contributions Desk. Your next monthly contribution of £38.50 is scheduled for collection on 1 August via Direct Debit.', timestamp: 'Yesterday' },
+    ],
+  },
+];
+
 const FAQ_ITEMS = [
   {
     category: 'Claims',
@@ -334,9 +373,30 @@ export default function SupportPage() {
   const [faqSearch, setFaqSearch] = useState('');
 
   // Live Chat state
-  const [chats, setChats] = useState<ChatSession[]>(INITIAL_CHATS);
-  const [activeChatId, setActiveChatId] = useState<string>('chat-1');
+  const isParticipant = role === 'participant';
+  const [chats, setChats] = useState<ChatSession[]>(isParticipant ? PARTICIPANT_CHATS : INITIAL_CHATS);
+  const [activeChatId, setActiveChatId] = useState<string>(isParticipant ? 'chat-advisor' : 'chat-1');
   const [chatInput, setChatInput] = useState('');
+
+  useEffect(() => {
+    if (isParticipant) {
+      setChats(PARTICIPANT_CHATS);
+      setActiveChatId('chat-advisor');
+    } else {
+      setChats(INITIAL_CHATS);
+      setActiveChatId('chat-1');
+    }
+  }, [isParticipant]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab === 'chat' || tab === 'tickets' || tab === 'faqs') {
+        setActiveTab(tab);
+      }
+    }
+  }, []);
 
   const activeChat = chats.find(c => c.id === activeChatId) ?? chats[0];
 
@@ -925,21 +985,21 @@ export default function SupportPage() {
             {/* Active Chat Header */}
             <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: BORDER }}>
               <div className="flex items-center gap-3">
-                <UserAvatar name={activeChat.participantName} className="w-9 h-9" />
+                <UserAvatar name={activeChat?.participantName ?? 'Advisor'} className="w-9 h-9" />
                 <div>
-                  <h4 className={`text-xs font-bold ${TEXT_MAIN}`}>{activeChat.participantName}</h4>
+                  <h4 className={`text-xs font-bold ${TEXT_MAIN}`}>{activeChat?.participantName}</h4>
                   <p className="text-[10px] text-[#00c685] flex items-center gap-1 font-medium">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#00c685]" />
-                    {isStaff ? 'Connected via Member App' : 'Takaful Advisor Online'}
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00c685] animate-pulse" />
+                    {isStaff ? 'Connected via Member App' : 'Takaful Advisor Online · < 2 min response'}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <button className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 border ${isLight ? 'border-gray-200 text-gray-700' : 'border-white/10 text-white/80'}`}>
+                <a href="tel:08001234567" className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-colors ${isLight ? 'border-gray-200 text-gray-700 hover:bg-black/5' : 'border-white/10 text-white/80 hover:bg-white/5'}`}>
                   <Phone size={13} />
-                  <span className="hidden sm:inline">Call Back</span>
-                </button>
+                  <span className="hidden sm:inline">Call Helpline</span>
+                </a>
               </div>
             </div>
 

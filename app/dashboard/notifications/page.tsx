@@ -8,6 +8,7 @@ import {
   XCircle, MessageSquare,
 } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useTheme } from '../ThemeRoleContext';
 import { useRole } from '../ThemeRoleContext';
 import { getDicebearAvatar } from '@/lib/dashboard/avatars';
@@ -242,8 +243,10 @@ const PARTICIPANT_FILTERS = [
 export default function NotificationsPage() {
   const { theme } = useTheme();
   const { role } = useRole();
+  const pathname = usePathname();
   const isLight = theme === 'light';
   const isParticipant = role === 'participant';
+  const isPortal = pathname?.startsWith('/portal');
 
   const BASE_NOTIFICATIONS = isParticipant ? PARTICIPANT_NOTIFICATIONS : HANDLER_NOTIFICATIONS;
   const FILTERS = isParticipant ? PARTICIPANT_FILTERS : HANDLER_FILTERS;
@@ -364,7 +367,7 @@ export default function NotificationsPage() {
                 className={`rounded-2xl transition-all ${!n.read ? '' : 'opacity-60 hover:opacity-100'}`}
                 style={{ background: n.read ? BG_PANEL : BG_PANEL2, border: `1px solid ${n.read ? BORDER : `${n.color}20`}` }}
               >
-                <Link href={n.link} onClick={() => markRead(n.id)} className="flex items-start gap-4 p-4 group">
+                <Link href={isPortal ? n.link.replace(/^\/dashboard/, '/portal') : n.link} onClick={() => markRead(n.id)} className="flex items-start gap-4 p-4 group">
                   {/* Icon or Avatar */}
                   <div className="relative shrink-0 mt-0.5">
                     {showAvatar ? (

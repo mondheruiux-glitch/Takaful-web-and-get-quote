@@ -61,7 +61,7 @@ function Select({ value, onValueChange, children, isLight: propIsLight }: { valu
   );
 }
 
-function SelectTrigger({ children, isLight: propIsLight }: { children?: React.ReactNode; isLight?: boolean }) {
+function SelectTrigger({ children, isLight: propIsLight, placeholder }: { children?: React.ReactNode; isLight?: boolean; placeholder?: string }) {
   const c = React.useContext(SelCtx); if (!c) return null;
   const themeIsLight = useDSTheme();
   const { open, setOpen, triggerText, triggerRef, isLight: ctxIsLight } = c;
@@ -78,7 +78,7 @@ function SelectTrigger({ children, isLight: propIsLight }: { children?: React.Re
       }}
       className="flex h-10 w-full items-center justify-between gap-2 rounded-xl border px-3.5 text-sm focus:outline-none focus:border-[#00c685]/40 transition-colors cursor-pointer"
     >
-      <span className="truncate">{triggerText || <span style={{ color: isLight ? '#9CA3AF' : 'rgba(255,255,255,0.2)' }}>Select...</span>}</span>
+      <span className="truncate">{triggerText || <span style={{ color: isLight ? '#9CA3AF' : 'rgba(255,255,255,0.2)' }}>{placeholder || 'Select...'}</span>}</span>
       <ChevronDown size={14} style={{ color: isLight ? '#6B7280' : 'rgba(255,255,255,0.4)' }} className={`shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
     </button>
   );
@@ -663,6 +663,37 @@ const NAV = [
   { id:'buttons', label:'Buttons' }, { id:'alerts', label:'Alerts' },
   { id:'claim-modal', label:'Claim Modal' }, { id:'feedback-widget', label:'Feedback Widget' }, { id:'claim-dropdowns', label:'Claim Dropdowns' },
 ];
+
+function ClaimDropdownItem({ dd, isLight }: { dd: { label: string; placeholder: string; options: string[] }; isLight: boolean }) {
+  const [val, setVal] = useState('');
+  return (
+    <div className="space-y-1.5">
+      <p className="text-xs font-semibold" style={{ color: isLight ? '#6B7280' : 'rgba(255,255,255,0.45)' }}>{dd.label}</p>
+      <Select value={val} onValueChange={setVal}>
+        <SelectTrigger placeholder={dd.placeholder} />
+        <SelectContent>
+          {dd.options.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+function ClaimDropdownsList({ isLight }: { isLight: boolean }) {
+  const dropdowns = [
+    { label: 'Claim Type', placeholder: 'Select type of claim', options: ['Escape of Water','Storm Damage','Fire Damage','Theft','Subsidence','Accidental Damage','Flood'] },
+    { label: 'Incident Room', placeholder: 'Where did it happen?', options: ['Kitchen','Living Room','Bathroom','Bedroom','Garage','Garden / Exterior','Roof'] },
+    { label: 'Number of Items', placeholder: 'How many items affected?', options: ['1 item','2–3 items','4–6 items','7–10 items','More than 10'] },
+    { label: 'Preferred Contact', placeholder: 'How should we reach you?', options: ['Email','Phone call','SMS','Post'] },
+  ];
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {dropdowns.map((dd) => (
+        <ClaimDropdownItem key={dd.label} dd={dd} isLight={isLight} />
+      ))}
+    </div>
+  );
+}
 
 export default function DesignSystemPage() {
   const [dsTheme, setDsTheme] = useState<'dark' | 'light'>('dark');
@@ -1771,27 +1802,7 @@ export default function DesignSystemPage() {
 
         {/* CLAIM DROPDOWNS */}
         <DSSection id="claim-dropdowns" title="Claim Form Dropdowns" desc="Portal-select components used across the new claim wizard. All rendered via ReactDOM.createPortal for z-index safety." isLight={isLight}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              { label: 'Claim Type', placeholder: 'Select type of claim', options: ['Escape of Water','Storm Damage','Fire Damage','Theft','Subsidence','Accidental Damage','Flood'] },
-              { label: 'Incident Room', placeholder: 'Where did it happen?', options: ['Kitchen','Living Room','Bathroom','Bedroom','Garage','Garden / Exterior','Roof'] },
-              { label: 'Number of Items', placeholder: 'How many items affected?', options: ['1 item','2–3 items','4–6 items','7–10 items','More than 10'] },
-              { label: 'Preferred Contact', placeholder: 'How should we reach you?', options: ['Email','Phone call','SMS','Post'] },
-            ].map((dd) => {
-              const [val, setVal] = useState('');
-              return (
-                <div key={dd.label} className="space-y-1.5">
-                  <p className="text-xs font-semibold" style={{ color: isLight ? '#6B7280' : 'rgba(255,255,255,0.45)' }}>{dd.label}</p>
-                  <Select value={val} onValueChange={setVal}>
-                    <SelectTrigger placeholder={dd.placeholder} />
-                    <SelectContent>
-                      {dd.options.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              );
-            })}
-          </div>
+          <ClaimDropdownsList isLight={isLight} />
         </DSSection>
 
         {/* Footer */}

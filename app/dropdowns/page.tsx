@@ -393,83 +393,105 @@ export default function AllDropdownsPage() {
               </div>
             ))}
           </div>
-          </div>
         </div>
 
-        {/* ── CLAIM FORM DROPDOWNS ── */}
-        <div className="space-y-8">
-          <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">Claim Form Dropdowns</h2>
-            <p className="text-xs text-white/50 mt-1">
-              Portal-select components used in the new claim wizard. Rendered via ReactDOM.createPortal for safe z-index layering inside the portal.
-            </p>
-          </div>
-
-          {/* Interactive triggers */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { label: 'Claim Type', placeholder: 'Select type of claim', options: [
-                { v:'escape-water', l:'Escape of Water' }, { v:'storm', l:'Storm Damage' },
-                { v:'fire', l:'Fire Damage' }, { v:'theft', l:'Theft' },
-                { v:'subsidence', l:'Subsidence' }, { v:'accidental', l:'Accidental Damage' }, { v:'flood', l:'Flood' },
-              ]},
-              { label: 'Incident Room', placeholder: 'Where did it happen?', options: [
-                { v:'kitchen', l:'Kitchen' }, { v:'living', l:'Living Room' },
-                { v:'bathroom', l:'Bathroom' }, { v:'bedroom', l:'Bedroom' },
-                { v:'garage', l:'Garage' }, { v:'garden', l:'Garden / Exterior' }, { v:'roof', l:'Roof' },
-              ]},
-              { label: 'Number of Items', placeholder: 'How many affected?', options: [
-                { v:'1', l:'1 item' }, { v:'2-3', l:'2–3 items' },
-                { v:'4-6', l:'4–6 items' }, { v:'7-10', l:'7–10 items' }, { v:'10+', l:'More than 10' },
-              ]},
-              { label: 'Preferred Contact', placeholder: 'How should we reach you?', options: [
-                { v:'email', l:'Email' }, { v:'phone', l:'Phone call' }, { v:'sms', l:'SMS' }, { v:'post', l:'Post' },
-              ]},
-            ].map((dd, i) => {
-              const [val, setVal] = React.useState('');
-              return (
-                <div key={i} className="space-y-1.5">
-                  <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">{dd.label}</p>
-                  <Select value={val} onValueChange={setVal}>
-                    <SelectTrigger />
-                    <SelectContent>
-                      {dd.options.map(o => (
-                        <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Static expanded view */}
-          <div>
-            <h3 className="text-sm font-bold text-white/60 mb-4 uppercase tracking-wider">Expanded — All Options</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                { title: 'Claim Type', options: ['Escape of Water','Storm Damage','Fire Damage','Theft','Subsidence','Accidental Damage','Flood'] },
-                { title: 'Incident Room', options: ['Kitchen','Living Room','Bathroom','Bedroom','Garage','Garden / Exterior','Roof'] },
-                { title: 'Number of Items', options: ['1 item','2–3 items','4–6 items','7–10 items','More than 10'] },
-                { title: 'Preferred Contact', options: ['Email','Phone call','SMS','Post'] },
-              ].map((dd) => (
-                <div key={dd.title} className="p-4 rounded-2xl border border-white/8 bg-[#041912]/60 space-y-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#00c685]">{dd.title}</span>
-                  <div className="rounded-xl border border-white/10 bg-[#061812] p-1.5 space-y-1">
-                    {dd.options.map((opt, i) => (
-                      <div key={opt} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium ${i === 0 ? 'text-[#00c685] bg-[#00c685]/15 font-semibold' : 'text-gray-300'}`}>
-                        {i === 0 && <Check size={12} className="text-[#00c685] shrink-0" />}
-                        <span>{opt}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        {/* Claim Form Dropdowns */}
+        <div className="pt-10 border-t border-white/10">
+          <ClaimDropdownsSection />
         </div>
 
       </div>
     </div>
   );
 }
+
+// ── Claim Dropdowns Section ────────────────────────────────────────────────────
+function ClaimDropdownsSection() {
+  const [claimType, setClaimType] = useState('');
+  const [room, setRoom] = useState('');
+  const [items, setItems] = useState('');
+  const [contact, setContact] = useState('');
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-xl font-bold text-white tracking-tight">Claim Form Dropdowns</h2>
+        <p className="text-xs text-white/50 mt-1">
+          Portal-select components used in the new claim wizard. Rendered via ReactDOM.createPortal for safe z-index layering inside the portal.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">Claim Type</p>
+          <Select value={claimType} onValueChange={setClaimType}>
+            <SelectTrigger />
+            <SelectContent>
+              {['Escape of Water','Storm Damage','Fire Damage','Theft','Subsidence','Accidental Damage','Flood'].map(o => (
+                <SelectItem key={o} value={o}>{o}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">Incident Room</p>
+          <Select value={room} onValueChange={setRoom}>
+            <SelectTrigger />
+            <SelectContent>
+              {['Kitchen','Living Room','Bathroom','Bedroom','Garage','Garden / Exterior','Roof'].map(o => (
+                <SelectItem key={o} value={o}>{o}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">Number of Items</p>
+          <Select value={items} onValueChange={setItems}>
+            <SelectTrigger />
+            <SelectContent>
+              {['1 item','2-3 items','4-6 items','7-10 items','More than 10'].map(o => (
+                <SelectItem key={o} value={o}>{o}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">Preferred Contact</p>
+          <Select value={contact} onValueChange={setContact}>
+            <SelectTrigger />
+            <SelectContent>
+              {['Email','Phone call','SMS','Post'].map(o => (
+                <SelectItem key={o} value={o}>{o}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-bold text-white/60 mb-4 uppercase tracking-wider">Expanded — All Options</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { title: 'Claim Type', options: ['Escape of Water','Storm Damage','Fire Damage','Theft','Subsidence','Accidental Damage','Flood'] },
+            { title: 'Incident Room', options: ['Kitchen','Living Room','Bathroom','Bedroom','Garage','Garden / Exterior','Roof'] },
+            { title: 'Number of Items', options: ['1 item','2-3 items','4-6 items','7-10 items','More than 10'] },
+            { title: 'Preferred Contact', options: ['Email','Phone call','SMS','Post'] },
+          ].map((dd) => (
+            <div key={dd.title} className="p-4 rounded-2xl border border-white/[0.08] bg-[#041912]/60 space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#00c685]">{dd.title}</span>
+              <div className="rounded-xl border border-white/10 bg-[#061812] p-1.5 space-y-1">
+                {dd.options.map((opt, idx) => (
+                  <div key={opt} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium ${idx === 0 ? 'text-[#00c685] bg-[#00c685]/15 font-semibold' : 'text-gray-300'}`}>
+                    {idx === 0 && <Check size={12} className="text-[#00c685] shrink-0" />}
+                    <span>{opt}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
