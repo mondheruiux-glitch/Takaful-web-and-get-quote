@@ -1,2204 +1,765 @@
-# TAKAFUL UK
+# Takaful UK — Complete Product Guide
 
-## Product, UX & Get Quote Specification
-
-**System Revision:** 3.0  
-**Updated:** September 2026  
-**Product:** Takaful UK Digital Home Protection Platform  
-**Document Type:** Product & UX Blueprint + Get Quote Functional Specification  
-**Audience:** Executive Stakeholders · Product Team · UX/UI Designers · Developers · Underwriting · Claims · Finance · Governance  
-**Interactive Console:** [`http://localhost:3002/documentation`](http://localhost:3002/documentation)
-
-![Takaful Logo](/brand/logo-light.png)
+**Version:** 4.0  
+**Last Updated:** September 2026  
+**Platform:** Takaful UK Digital Home Protection
 
 ---
 
-# 01. DOCUMENT PURPOSE
+## What is Takaful UK?
 
-This document is the central product reference for the Takaful UK platform.
+Takaful UK is a digital home protection platform built on the idea of **mutual help**. Instead of buying from a traditional insurance company, members contribute to a shared community pool. When someone has a loss, they get paid from that pool.
 
-It explains:
+It is designed to be:
 
-* What Takaful UK is
-* The business and mutual model
-* Target customers
-* Product objectives
-* Customer journeys
-* Get Quote experience
-* Quote form fields and conditional behaviour
-* Plan comparison
-* Payment journey
-* Participant experience
-* Claims operations
-* Finance operations
-* Management and governance dashboards
-* Product phases
+- **Simple** — no confusing insurance language
+- **Transparent** — you can see where your money goes
+- **Fair** — structured to align with ethical and Islamic finance principles
+- **Fully digital** — you can manage everything online without calling anyone
 
-For developers, the **Get Quote section** provides the functional behaviour required to reproduce the approved UX, including:
+The platform has four main areas:
 
-* Fields
-* Answer choices
-* Required/optional states
-* Conditional questions
-* What appears when an option is selected
-* What disappears
-* Quote summary behaviour
-* Dynamic pricing behaviour
-
-This document intentionally does not define backend architecture, APIs, database schemas, or programming implementation.
+1. **Public Website** — for people who want to learn about the product
+2. **Get a Quote** — for people who want to see how much cover costs
+3. **Participant Portal** — for existing members to manage their cover
+4. **Staff Dashboards** — for internal teams to manage claims, payments, and the business
 
 ---
 
-# 02. PRODUCT OVERVIEW
+## 1. The Public Website
 
-## 2.1 What is Takaful UK?
+The public website is what visitors see before they sign up. Its job is to explain what Takaful UK is and encourage people to get a quote.
 
-Takaful UK is a digital home protection platform built around the principles of mutual cooperation and Sharia-compliant financial structures.
+### Pages on the Website
 
-The experience is designed to provide customers with:
+| Page | What It Does |
+|---|---|
+| **Home** | The main landing page. Explains the product and prompts visitors to get a quote. |
+| **About** | Explains the story behind Takaful UK and the mutual model. |
+| **How Takaful Works** | A plain-English explanation of mutual contributions, the shared pool, and how members benefit. |
+| **Get a Quote** | Starts the 7-step quote form. |
+| **Compare Plans** | Shows the available protection plans side by side. |
+| **Contact** | Contact information and a contact form. |
+| **Privacy Policy** | Legal privacy notice. |
+| **Terms & Conditions** | Legal terms. |
+| **Policy Clauses** | Detailed policy clauses for people who want the full detail. |
 
-* Simple digital protection
-* Transparent contributions
-* Clear coverage
-* Digital claims
-* Accessible policy documents
-* Visibility into the mutual pool
-* A modern alternative to traditional insurance experiences
+### How the Home Page Works
 
-The product should feel like a modern financial technology platform rather than a traditional insurance website.
+The home page opens with a bold headline and a clear **Get a Quote** button. Below that, it explains:
 
----
-
-# 03. PRODUCT VISION
-
-## Vision
-
-Create a transparent, modern and easy-to-use UK home protection experience based on mutual support.
-
-The platform should allow customers to:
-
-1. Discover their eligibility.
-2. Get a quote.
-3. Compare protection options.
-4. Complete their application.
-5. Set up payment.
-6. Receive their policy documentation.
-7. Manage their protection.
-8. Submit and track claims.
-9. Understand their contributions.
-10. Understand the mutual pool.
-11. View eligible surplus information where applicable.
+- What Takaful is in simple terms
+- The three types of cover available (Buildings, Contents, Both)
+- How the community pool works
+- Why Takaful is different from regular insurance
+- Customer quotes and trust indicators
+- A final call to action to start a quote
 
 ---
 
-# 04. CORE TAKAFUL PRINCIPLES
+## 2. Authentication — How People Sign In
 
-## 4.1 Ta'awun — Mutual Cooperation
+The platform uses a **sign-up and login system** to protect participant data.
 
-Members participate in a structure designed around mutual assistance.
+### Sign Up
 
----
+New members create an account during or after the quote process. They provide:
 
-## 4.2 Tabarru — Mutual Contribution
+- Their name
+- Email address
+- A password
 
-An agreed portion of contributions is allocated to the mutual pool according to the approved product structure.
+After signing up, they receive a confirmation and can access their portal.
 
-The pool supports eligible claims and other approved obligations.
+### Log In
 
----
+Existing members log in with their email and password to access their personal portal.
 
-## 4.3 Wakala — Agency / Management Arrangement
+### Staff Access
 
-The operator receives an agreed management fee for operating and administering the platform.
-
-The exact percentage must be treated as a configurable business value until formally approved.
-
----
-
-## 4.4 Sharia-Compliant Financial Management
-
-The financial structure is intended to avoid prohibited elements according to the approved Sharia governance framework.
-
-All final claims regarding compliance must be reviewed and approved by the appropriate Sharia and legal advisers.
+Internal staff (claim handlers, finance team, management, admin) log in with their staff credentials. Once logged in, the platform shows them a dashboard that matches their role. A claim handler sees claims. A finance person sees financial data. A super admin sees everything.
 
 ---
 
-## 4.5 Mutual Surplus
+## 3. Get a Quote — The 7-Step Form
 
-Where the approved financial model allows it, eligible surplus may be distributed according to predefined rules.
+This is how a new customer finds out how much their cover will cost. It is a step-by-step form that asks questions one section at a time.
 
-The customer interface must clearly distinguish:
-
-**Estimated surplus**
-
-from
-
-**Final approved distribution.**
-
-A surplus must never be presented as guaranteed.
+The form has **7 steps**. At the end, the customer is shown the available plans with prices.
 
 ---
 
-# 05. BUSINESS VALUE
+### Step 1 — What You Want to Cover & Your Property
 
-Takaful UK aims to provide value through:
+**Goal:** Understand what the customer owns and where they live.
 
-### Transparency
+The customer is asked:
 
-Customers can understand where their contributions go.
+**What do you want to cover?**
+- Buildings only (for homeowners — covers the structure of the house)
+- Contents only (covers furniture, belongings, electronics)
+- Buildings & Contents (covers both)
 
-### Simplicity
-
-The customer journey removes unnecessary complexity and jargon.
-
-### Digital Self-Service
-
-Customers can manage their protection without relying on phone support.
-
-### Mutuality
-
-The product explains the relationship between members, contributions and the shared pool.
-
-### Trust
-
-Financial, claims and governance information is communicated clearly.
-
----
-
-# 06. TARGET USERS
-
-# PERSONA 01 — HOMEOWNER
-
-## Tariq & Amina
-
-**Age:** 34 & 31  
-**Location:** Birmingham  
-**Property:** 3-bedroom semi-detached house  
-
-They are purchasing their home using an Islamic home financing arrangement.
-
-### Needs
-
-* Buildings protection
-* Mortgage documentation
-* Simple quote
-* Clear exclusions
-* Digital policy documents
-* Easy claims
-
-### UX Opportunity
-
-Provide a fast and transparent journey from property address to policy documentation.
-
----
-
-# PERSONA 02 — RENTER
-
-## Zayd
-
-**Age:** 27  
-**Location:** London  
-**Property:** 1-bedroom flat  
-
-Owns valuable electronics, cameras and personal possessions.
-
-### Needs
-
-* Contents protection
-* High-value item protection
-* Mobile-first experience
-* Digital claims
-* Simple monthly payment
-
----
-
-# PERSONA 03 — ETHICAL / COOPERATIVE CUSTOMER
-
-## David & Eleanor
-
-**Age:** 48 & 46  
-**Location:** Bristol  
-
-Interested in cooperative and ethical financial models.
-
-### Needs
-
-* Transparent fees
-* Mutual pool visibility
-* Clear governance
-* Responsible claims handling
-* Understanding of surplus distribution
-
----
-
-# 07. PRODUCT ECOSYSTEM
-
-The platform contains four major experiences.
-
-## 01 — Public Website
-
-Customer discovery and education.
-
-## 02 — Get Quote
-
-Customer acquisition and conversion.
-
-## 03 — Participant Portal
-
-Customer self-service.
-
-## 04 — Operational Dashboards
-
-Internal management for:
-
-* Claims
-* Finance
-* Management/Governance
-
----
-
-# 08. PUBLIC WEBSITE
-
-Main navigation:
-
-```text
-Home
-About
-How Takaful Works
-Protection
-Claims
-Transparency
-FAQs
-Contact
-Get Quote
-```
-
-The website should communicate the product simply without overwhelming the customer with financial or religious terminology.
-
----
-
-# 09. CUSTOMER JOURNEY
-
-The overall journey is:
-
-```text
-DISCOVER
-   ↓
-UNDERSTAND TAKAFUL
-   ↓
-GET QUOTE
-   ↓
-ANSWER QUESTIONS
-   ↓
-COMPARE PLANS
-   ↓
-SELECT PLAN
-   ↓
-PAYMENT
-   ↓
-POLICY CREATED
-   ↓
-MEMBER DASHBOARD
-   ↓
-MANAGE COVER
-   ↓
-CLAIM IF NEEDED
-```
-
----
-
-# 10. GET QUOTE
-
-## Objective
-
-The Get Quote experience should allow an eligible customer to provide the information required to calculate their available home protection options.
-
-The experience should be:
-
-* Fast
-* Clear
-* Mobile-friendly
-* Progressive
-* Easy to understand
-* Transparent
-* Validated
-* Contextual
-
-The user should not see every question at once.
-
-Questions should appear according to previous answers.
-
----
-
-# 11. GET QUOTE — STEP 01
-
-## Postcode
-
-### Question
-
-**What's your postcode?**
-
-Example:
-
-`B13 9EG`
-
-### Actions
-
-**Find my address**
-
-### Result
-
-Display matching addresses.
-
-Example:
-
-* 12 Example Road, Birmingham
-* 14 Example Road, Birmingham
-* 16 Example Road, Birmingham
-
-### Alternative
-
-**Enter my address manually**
-
-If selected, display:
-
-* Address line 1
-* Address line 2
-* Town/City
-* County
-* Postcode
-
----
-
-# 12. GET QUOTE — STEP 02
-
-# WHAT DO YOU WANT TO PROTECT?
-
-### Question
-
-**What would you like to cover?**
-
-Choices:
-
-### Buildings & Contents
-
-Protects the building and possessions.
-
-### Buildings Only
-
-Protects the building.
-
-### Contents Only
-
-Protects possessions.
-
----
-
-## Conditional Behaviour
-
-### Buildings & Contents
-
-Show:
-
-* Buildings questions
-* Contents questions
-
-### Buildings Only
-
-Show:
-
-* Buildings questions
-
-Hide:
-
-* Contents questions
-
-### Contents Only
-
-Show:
-
-* Contents questions
-
-Hide:
-
-* Buildings questions
-
----
-
-# 13. GET QUOTE — STEP 03
-
-# PROPERTY TYPE
-
-### Question
+**What is your address?**
+- The customer can type their postcode and find their address from a list, or type it manually.
 
 **What type of property is it?**
+- House
+- Bungalow
+- Flat / Apartment
+- Maisonette
 
-Choices:
+**If they say Flat**, an extra question appears: what floor are they on?
+- Basement
+- Ground
+- First
+- Second floor or higher
 
-* House
-* Flat
-* Bungalow
-* Town house
-* Bedsit
-* Maisonette
-* Farm house
-* Other
+**How do you own it?**
+- Owned outright (no mortgage)
+- Owned with a mortgage
+- Rented from a private landlord
+- Rented from the council
+
+**Is it a listed building?**
+- Grade I
+- Grade II*
+- Grade II
+- Not listed
+
+**Is this your main home?**
+- Yes or No
 
 ---
 
-## If "Flat"
+### Step 2 — The Property Itself
 
-Show:
+**Goal:** Understand what the building is made of and how it was built.
 
-### Which floor is your property on?
+Questions:
 
-Choices:
+- **What are the walls made of?** — Brick, Stone, Timber, Concrete, Other
+- **What type of roof?** — Pitched tiles, Slate, Flat, Mixed, Other
+- **If flat roof** — what percentage of the roof is flat?
+- **When was the home built?** — Year
+- **Approximate size?** — Square footage
+- **How many bedrooms and bathrooms?**
+- **What is the heating?** — Gas central, Electric, Oil, Heat pump, Solid fuel, None
+- **Any extensions?** — Rear, Side, Loft, Garage, Conservatory, None
+- **Any trees within 7 metres of the property?** — Yes / No
+- **Any history of flooding or subsidence?** — Yes / No
 
-* Ground floor
-* 1st
-* 2nd
-* 3rd
-* 4th
-* 5th+
-* Other
+---
+
+### Step 3 — Who Lives There & How It Is Used
+
+**Goal:** Understand how the property is occupied.
+
+Questions:
+
+- **How long is it empty each year?**
+  - Less than 30 days
+  - 30–60 days
+  - 60–90 days
+  - More than 90 days
+
+- **How many adults live there?**
+- **How many children live there?**
+
+- **Is any business run from the home?**
+  - No
+  - Yes, just office/desk work (no visitors)
+  - Yes, clients/visitors come to the property
+  - Other business use
+
+- **If clients visit**, how often?
+  - Never, Occasionally, Monthly, Weekly, Daily
+
+---
+
+### Step 4 — Security & Safety
+
+**Goal:** Understand how secure the property is. This affects the risk level.
+
+Questions:
+
+- **What type of locks are on the external doors?**
+  - 5-lever BS 3621 (highest security)
+  - 5-lever standard
+  - Multi-point locking
+  - Yale (spring-latch)
+  - Smart lock
+
+- **Are ground floor and accessible windows locked?** — Yes / No
+
+- **Is there a burglar alarm?**
+  - None
+  - Standard siren alarm
+  - Smart or professionally monitored alarm
+
+- **Are there smoke alarms?** — Yes / No
+- **Is there CCTV?** — Yes / No
+
+---
+
+### Step 5 — Valuables & Optional Extras
+
+**Goal:** Find out if any high-value items need extra cover, and let the customer choose optional add-ons.
+
+**High-Value Items:**
+
+Does the customer own any single item worth more than £1,500?
+- Yes → they can list each item (type, description, value)
+- No → skip
+
+Types of items: Jewellery, Art, Electronics, Musical instruments, Sports equipment, Watches, Other
+
+**Personal Belongings Away from Home:**
+
+Do you want your belongings covered when you are out of the house?
+- Yes / No
+
+**Optional Add-ons (each one adds to the monthly cost):**
+
+| Add-on | What It Covers |
+|---|---|
+| Accidental Damage | Covers accidents like spilling wine on a laptop or dropping a phone |
+| Home Emergency | Covers urgent home repairs like boiler breakdown, burst pipe, or roof damage |
+| Legal Protection | Covers legal costs for disputes related to the property |
+
+---
+
+### Step 6 — Claims History
+
+**Goal:** Find out if the customer has had any claims in the past 5 years.
+
+This is important because it affects the risk level and the price.
+
+Questions:
+
+- **Have you made any home protection claims in the last 5 years?**
+  - None
+  - 1 claim
+  - 2 claims
+  - 3 or more claims
+
+**If they have made claims**, for each one:
+- Type of claim (e.g. storm, fire, theft, escape of water)
+- Year it happened
+- How much was paid out
+
+The system looks back exactly **5 years** from today. Anything older does not need to be declared.
+
+---
+
+### Step 7 — Personal Details & Confirmation
+
+**Goal:** Collect the customer's personal information and confirm the application.
+
+Questions:
+- Title (Mr, Mrs, Ms, Miss, Dr, Prof, Other)
+- First name and last name
+- Date of birth
+- Phone number
+- Email address
+- When do you want the cover to start?
 
 Then:
+- **Marketing preferences** — tick if they want emails about offers
+- **Declaration** — the customer confirms the information they gave is accurate
 
-### Is the flat self-contained?
-
-Choices:
-
-* Yes
-* No
+Once they click **Submit**, they are taken to the plan comparison page.
 
 ---
 
-# 14. GET QUOTE — STEP 04
+## 4. Compare Plans
 
-# PROPERTY DETAILS
+After completing the 7-step form, the customer sees a side-by-side comparison of available protection plans.
 
-## Bedrooms
+Three plans are shown:
 
-### Question
+| Plan | Summary |
+|---|---|
+| **Essential** | Basic cover at a lower price |
+| **Standard** | Balanced protection with a few extras included |
+| **Comprehensive** | Broadest cover with most add-ons included |
 
-**How many bedrooms does your home have?**
+Each plan shows:
+- Monthly cost
+- Annual cost
+- Buildings cover limit
+- Contents cover limit
+- Voluntary excess amount
+- What is included and what is not
 
-Choices:
+The customer can toggle between **monthly** and **annual** payments. The prices update instantly.
 
-* 1
-* 2
-* 3
-* 4
-* 5
-* 6
-* 7
-* 8
-* 9
-* 10+
-
----
-
-## Bathrooms
-
-Choices:
-
-* 1
-* 2
-* 3
-* 4
-* 5+
+When they click **Select Plan**, they move to the payment step.
 
 ---
 
-## Living Rooms
+## 5. Payment
 
-Choices:
+After selecting a plan, the customer completes their payment setup.
 
-* 0
-* 1
-* 2
-* 3+
+Steps:
+1. Review the selected plan
+2. Enter payment details (Direct Debit or card)
+3. Confirm the start date
+4. Review everything
+5. Confirm
 
----
+Once payment is set up, a **policy confirmation screen** appears with:
+- A policy/certificate number
+- The property address
+- What is covered
+- The monthly or annual amount
+- The start date
 
-## Kitchens
-
-Choices:
-
-* 1
-* 2
-* 3+
-
----
-
-## Other Rooms
-
-Choices:
-
-* 0
-* 1
-* 2
-* 3
-* 4
-* 5
-* 6
-* 7
-* 8
-* 9
-* 10+
+The customer can then go to their **Participant Portal**.
 
 ---
 
-# 15. GET QUOTE — STEP 05
+## 6. Participant Portal — The Member Dashboard
 
-# CONSTRUCTION
+The portal is where existing members manage their cover. It is a private area that only the logged-in member can see. The design is a dark, modern interface.
 
-## Year Built
+The participant used as a demo is **Fatima Al-Rashid**, a member with an active buildings & contents policy.
 
-### Question
-
-**When was your home built?**
-
-Input:
-
-**Year**
+The floating notification bell at the top right shows updates from the system without the member needing to navigate away.
 
 ---
 
-## Wall Construction
+### Portal — My Cover
 
-Choices should use the final approved underwriting options.
+What the member sees here:
 
-Example:
+- The property address they are covered for
+- What type of cover they have (Buildings, Contents, or Both)
+- Their buildings cover limit (e.g. £350,000)
+- Their contents cover limit (e.g. £50,000)
+- Their policy certificate number
+- Their policy start and renewal dates
+- Their excess amount
+- All the add-ons they have (e.g. Accidental Damage, Home Emergency)
+- Key exclusions — things that are not covered
 
-* Brick
-* Stone
-* Concrete
-* Timber
-* Other
-* Don't know
-
-### If Other
-
-Show:
-
-**Please describe the construction.**
+This page gives the member a complete picture of what protection they have.
 
 ---
 
-# 16. ROOF
+### Portal — My Claims
 
-### Question
+This is where a member submits a new claim and tracks existing ones.
 
-**What type of roof does your property have?**
+**To submit a new claim**, the member:
 
-Choices:
+1. Clicks **Start a Claim**
+2. Selects the type of incident:
+   - Fire
+   - Storm
+   - Flooding
+   - Theft / Break-in
+   - Escape of water (burst pipes)
+   - Accidental damage
+   - Subsidence
+   - Other
+3. Enters the date the incident happened
+4. Describes what happened in their own words
+5. Uploads photos or documents (e.g. repair quotes, police report)
+6. Reviews their submission
+7. Submits
 
-* Tile
-* Slate
-* Flat roof
-* Other
-* Don't know
+**Claim status updates:** After submitting, the member can track where their claim is:
 
----
+```
+Submitted → Under Review → Assessment → Decision → Payment → Completed
+```
 
-## If Flat Roof
-
-Show:
-
-### Approximately how much of the roof is flat?
-
-Choices:
-
-* 0%
-* Up to 25%
-* 26–50%
-* 51–75%
-* 76–100%
-
----
-
-# 17. HEATING
-
-### Question
-
-**What is the main heating system?**
-
-Choices should use approved underwriting options.
-
-Example:
-
-* Gas central heating
-* Electric
-* Oil
-* Heat pump
-* Other
-* Don't know
-
-### If Other
-
-Show:
-
-**Please describe your heating system.**
+Each claim shows:
+- The claim reference number
+- The type of incident
+- The date it was submitted
+- The current status
+- Any messages from the claim handler
 
 ---
 
-# 18. SECURITY
+### Portal — My Contributions
 
-# DOOR LOCKS
+This shows the member's payment history and upcoming payments.
 
-### Question
-
-**What type of locks do your external doors have?**
-
-Choices may include:
-
-* 5-lever mortice deadlock
-* Multi-point locking system
-* Other approved lock
-* Don't know
+Information shown:
+- How much they pay per month (or per year)
+- When the next payment is due
+- A history of all past payments with dates
+- Whether the Direct Debit is active
+- A breakdown showing how much goes to the community pool vs. the management fee
 
 ---
 
-# 19. WINDOWS
+### Portal — My Documents
 
-### Question
+A library of all documents related to the member's policy:
 
-**Do accessible windows have suitable locks?**
+- Policy schedule (summary of cover)
+- Certificate of insurance
+- Policy wording (full terms)
+- Claims documents (correspondence, assessor reports)
+- Contribution statements
+- Renewal documents
 
-Choices:
-
-* Yes
-* No
-* Don't know
-
----
-
-# 20. BURGLAR ALARM
-
-### Question
-
-**Does your home have a burglar alarm?**
-
-Choices:
-
-* No
-* Yes — professionally installed
-* Yes — other
-* Don't know
+Members can download any document as a PDF.
 
 ---
 
-# 21. SMOKE DETECTORS
+### Portal — Takaful Pool
 
-### Question
+This page explains the shared pool and the member's connection to it. It is designed to be transparent and easy to understand.
 
-**Does your home have smoke detectors?**
+Information shown:
+- Total contributions collected from all members
+- Total claims paid out
+- Current pool balance
+- Potential surplus (clearly marked as an estimate, not a guarantee)
 
-Choices:
-
-* Yes
-* No
-* Don't know
-
----
-
-# 22. EXTERNAL DOORS
-
-### Question
-
-**Does your home have any of these external doors?**
-
-Multi-select:
-
-* Patio doors
-* French doors
-* Bi-fold doors
-* None
+The purpose of this page is to show members that their money is being managed fairly and openly.
 
 ---
 
-# 23. PROPERTY USE
+### Portal — Support & Chat
 
-## Main Residence
+A live help area where members can:
 
-### Question
-
-**Is this your main residence?**
-
-Choices:
-
-* Yes
-* No
+- Send a message to the support team
+- Browse common questions and answers (FAQs)
+- Read guides on how to use the portal
 
 ---
 
-# 24. OCCUPANCY
+### Portal — Settings
 
-### Question
+Where members manage their personal account:
 
-**Who normally lives at the property?**
-
-Choices:
-
-* I live there alone
-* I live there with my partner/family
-* Other people live there
-* Tenant(s)
-* Other
+- Update their name, email, or phone number
+- Change their password
+- Update notification preferences (what emails they want to receive)
+- Manage their payment method
 
 ---
 
-# 25. UNOCUPIED PERIODS
+### Portal — Notifications (Floating Bell)
 
-### Question
+The notification bell in the top right corner of the portal shows the member updates without them having to navigate anywhere. Examples of notifications:
 
-**Will your property ever be unoccupied for 30 days or more?**
-
-Choices:
-
-* Yes
-* No
-
-### If Yes
-
-Show:
-
-**How often is the property unoccupied?**
-
-And:
-
-**What is the longest period it will be unoccupied?**
+- "Your claim has been approved"
+- "Your payment of £42.00 was collected"
+- "Your assessor visit is confirmed for Friday 25 July"
+- "New message from your claims handler"
 
 ---
 
-# 26. BUSINESS USE
+## 7. Staff Dashboards
 
-### Question
+Staff at Takaful UK use a separate internal system (the Dashboard) to manage the business. There are four different staff roles, each with their own view.
 
-**Is any business activity carried out from the property?**
-
-Choices:
-
-* No
-* Clerical/home office work
-* Customers or visitors come to the property
-* Other business use
+The dashboard has a light and dark mode and a **role switcher** in the top bar so that in the demo, a user can see how each role works.
 
 ---
 
-## If Clerical/Home Office
+### Staff Role: Claim Handler
 
-Show:
+**Who uses this:** The team members who review and process claims from participants.
 
-**What type of work do you do?**
+**Why this dashboard exists:** When a member submits a claim, someone needs to review the details, check the evidence, make a decision, and arrange payment. This dashboard gives them all the tools to do that in one place.
 
-Text input.
+**What they can see and do:**
 
----
+#### Overview
+A summary screen showing:
+- How many open claims they have
+- How many new claims came in today
+- Their SLA performance (are they handling claims fast enough?)
+- High-priority claims that need attention
 
-## If Customers/Visitors
+#### My Queue
+A personal list of all claims assigned to the handler. Each claim shows:
+- A reference number (e.g. CLM-2024-0889)
+- The member's name
+- The type of incident
+- When it was submitted
+- Its priority level (High, Medium, Low)
+- The current status
+- How many days until the SLA deadline
 
-Show:
+Handlers can filter by status: New, In Review, Awaiting Documents, Assessment, Decision, Paid, Closed.
 
-* Type of business
-* Frequency of visitors
-* Approximate number of visitors
-* Is the business area self-contained?
-* Are visitors escorted?
+#### All Claims
+A broader view of all claims across the team, not just the ones assigned to that handler. Useful for managers and senior handlers.
 
----
+#### Individual Claim Detail
+Clicking on a claim opens a full detail view. The handler can see:
 
-## If Other Business
+- **Member section:** The member's name, policy number, address, and past claims history
+- **Incident section:** What happened, when, and where
+- **Evidence section:** All photos, videos, and documents uploaded by the member
+- **Assessment section:** Fields to record the handler's assessment and estimated payout
+- **Decision section:** Tools to approve, request more information, or decline the claim
+- **Activity log:** A timeline of every action taken on the claim, with timestamps
 
-Show:
+The handler can also:
+- Send a message directly to the member
+- Request specific documents
+- Add internal notes
+- Assign the claim to another handler
+- Set the claim status
+- Process payment (which is then sent to the Finance team for approval)
 
-**Please describe the business activity.**
+#### Documents
+A library of all claim-related documents.
 
----
+#### Support Tickets
+Messages from participants that need a response.
 
-# 27. BUILDINGS DETAILS
-
-This section is displayed only when:
-
-**Buildings**
-
-or
-
-**Buildings & Contents**
-
-is selected.
-
----
-
-## Rebuild Cost
-
-### Question
-
-**How much would it cost to rebuild your home?**
-
-Currency:
-
-`£`
-
-Helper text:
-
-> This is the estimated cost of rebuilding your home, not its market value.
-
----
-
-# 28. EXTENSIONS
-
-### Question
-
-**Has your home been extended or significantly modified?**
-
-Choices:
-
-* Yes
-* No
-
-### If Yes
-
-Show:
-
-* Type of extension
-* Approximate size
-* Completion year
+#### Settings
+The handler's account settings.
 
 ---
 
-# 29. CONTENTS
+### Staff Role: Finance Team
 
-This section is displayed only when:
+**Who uses this:** The finance team who manage money in and money out.
 
-**Contents**
+**Why this dashboard exists:** Someone needs to make sure contributions are being collected, claims are being paid, and the pool is healthy. This dashboard gives complete financial visibility.
 
-or
+**What they can see and do:**
 
-**Buildings & Contents**
+#### Overview
+A real-time summary showing:
+- Total community pool balance
+- Total contributions collected this month
+- Total claims paid this month
+- Pending claim payments waiting for approval
+- Wakala (management fee) allocation
+- Whether the books are reconciled
 
-is selected.
+#### Takaful Pool
+A detailed view of the shared pool:
+- How much has been contributed in total
+- How much has been paid out in claims
+- What is held in reserve
+- The potential surplus (if contributions exceed claims and costs)
 
----
+The pool view separates the community money from the operator fee, making it clear that they are kept separate.
 
-## Contents Value
+#### Contributions
+A list of all contribution payments received:
+- Member name
+- Amount
+- Date
+- Payment method
+- Status (Collected, Failed, Pending)
 
-### Question
+The team can see if any direct debits have failed and take action.
 
-**How much would it cost to replace the contents of your home?**
+#### Claims Payments
+A list of all claims where payment has been approved and needs to go out:
+- Claim reference
+- Member name
+- Amount approved
+- Status (Scheduled, Sent, Confirmed)
 
-Input:
+The finance team processes the actual bank transfer from here.
 
-`£`
+#### Transactions
+A full ledger of all financial movements — every pound in and every pound out. Each transaction has:
+- Amount
+- Category (Contribution, Claim payment, Wakala, Reserve)
+- Date
+- Who authorised it
+- Reference number
 
-CTA:
+#### Support Tickets
+Messages related to billing or payment queries.
 
-**Use contents calculator**
-
----
-
-# 30. HIGH-VALUE ITEMS
-
-### Question
-
-**Do you have any individual items worth more than £1,000?**
-
-Choices:
-
-* Yes
-* No
-
----
-
-## If Yes
-
-Show:
-
-### What type of items do you own?
-
-Multi-select:
-
-* Jewellery
-* Watches
-* Electronics
-* Cameras
-* Computers
-* Artwork
-* Musical instruments
-* Other
-
-CTA:
-
-**Add an item**
+#### Settings
+Account settings for the finance team member.
 
 ---
 
-## Add High-Value Item
+### Staff Role: Management
 
-Fields:
+**Who uses this:** Senior managers who need an overview of the whole business.
 
-* Item type
-* Description
-* Value
-* Purchase date
-* Photo/document
+**Why this dashboard exists:** Management needs to see how the business is performing — growth, financials, claims, risk — all in one place without having to dig into individual records.
 
-Allow multiple items.
+**What they can see and do:**
 
-Example:
+#### Overview
+A high-level summary showing:
+- Total number of active members
+- Growth rate this month
+- Portfolio loss ratio (what percentage of contributions is being paid out in claims)
+- Member retention rate
+- The pool's financial health
+- Any governance alerts or actions needed
 
-```text
-Camera
-£2,200
+#### Certificates
+A list of all active policy certificates:
+- Member name
+- Certificate number
+- Type of cover
+- Start and end date
+- Status (Active, Expiring Soon, Expired)
 
-Laptop
-£1,800
+Management can search and filter to find any member's certificate.
 
-Watch
-£3,500
+#### Claims
+A summary view of all claims across the business:
+- Open, approved, declined, and paid
+- Claims by incident type
+- SLA performance across all handlers
+
+#### Takaful Pool
+The same pool view as Finance, showing the financial health of the community fund.
+
+#### Contributions
+Overview of contribution collection across all members.
+
+#### Risk
+A view of the potential risks in the portfolio:
+- Which geographic areas have the most exposure
+- Types of incidents that are most common
+- Members with multiple claims
+- Properties in flood or subsidence risk zones
+
+#### Documents
+All policy documents, wording versions, and certificates.
+
+#### Support Desk
+An overview of all customer support activity.
+
+#### Settings
+Account settings.
+
+---
+
+### Staff Role: Super Admin
+
+**Who uses this:** The executive team or platform administrators who need access to everything.
+
+**Why this dashboard exists:** Someone at the top level needs to be able to see all roles, manage staff, make platform-wide decisions, and have access to all financial and claims data. The super admin is that person.
+
+**What they can see and do:**
+
+Everything that claim handlers, finance, and management can see — plus:
+
+#### Staff & Roles
+A list of all staff members on the platform:
+- Name
+- Role
+- Status (Active, Suspended, Pending)
+
+The super admin can add new staff, change a person's role, reset passwords, and deactivate accounts.
+
+#### Audit Ledger
+A full record of every action taken on the platform by any staff member:
+- Who made the change
+- What they changed
+- When they changed it
+- The before and after values
+
+This provides a complete audit trail for regulatory purposes.
+
+#### Risk & Solvency
+An executive-level view of the platform's financial risk:
+- Surplus or deficit position
+- Solvency indicators
+- Reserve levels
+- Retakaful arrangements
+
+#### Overview
+The most comprehensive dashboard on the platform, combining all key metrics from every area: members, claims, pool, contributions, and governance.
+
+---
+
+## 8. Notifications (Floating Bell — All Roles)
+
+Both the participant portal and all staff dashboards have a floating **bell notification icon** in the top bar. Clicking it opens a panel with recent alerts.
+
+For participants, notifications include things like:
+- "Your claim CLM-2024-0891 has been approved"
+- "Payment of £1,600 has been sent to your account"
+- "Your assessor visit is confirmed"
+- "Your policy is active"
+
+For staff, notifications include things like:
+- "New claim submitted — CLM-2024-0889"
+- "Direct debit failed for member Maryam Patel"
+- "Assessor report received on CLM-2024-0891"
+- "Certificate TK-2024-0098 is expiring in 14 days"
+
+Notifications can be marked as read or dismissed. The bell shows a green dot when there are unread items.
+
+---
+
+## 9. The Full Journey — Start to Finish
+
+Here is how someone goes from knowing nothing about Takaful to being an active member:
+
+```
+1. Visits the website
+         ↓
+2. Reads about Takaful
+         ↓
+3. Clicks "Get a Quote"
+         ↓
+4. Completes the 7-step form
+         ↓
+5. Views plans and prices
+         ↓
+6. Selects a plan
+         ↓
+7. Sets up payment
+         ↓
+8. Receives policy confirmation
+         ↓
+9. Logs into the Participant Portal
+         ↓
+10. Manages their cover, tracks contributions,
+    submits claims, downloads documents
+```
+
+And internally:
+
+```
+Member submits claim
+         ↓
+Claim Handler reviews it
+         ↓
+Handler makes a decision
+         ↓
+Finance team sends payment
+         ↓
+Management monitors performance
+         ↓
+Super Admin audits everything
 ```
 
 ---
 
-# 31. BIKES & PORTABLE ELECTRONICS
+## 10. Key Things to Know
 
-### Question
+**The community pool** is where all member contributions go. Claims are paid from this pool. Whatever is left over after claims and costs may be distributed to members as a surplus.
 
-**Do you have bikes or portable electronics that require additional protection?**
+**Surplus is never guaranteed.** The platform always shows surplus as an estimate until it is formally confirmed and distributed.
 
-Choices:
+**The Wakala fee** is the management fee taken from contributions to run the platform. It is shown transparently in the contribution breakdown.
 
-* Yes
-* No
+**All numbers in the platform demo are example values.** The actual pricing, limits, and allocations depend on the approved financial and underwriting model.
 
-### If Yes
-
-Display the relevant additional value/detail questions.
+**The platform works on all devices.** The public website, quote form, and participant portal all work on desktop, tablet, and mobile.
 
 ---
 
-# 32. AWAY-FROM-HOME COVER
-
-### Question
-
-**Would you like your belongings to be covered when you're away from home?**
-
-Choices:
-
-* Yes
-* No
-
-### If Yes
-
-Show relevant questions about:
-
-* Items
-* Value
-* Usage
-* Locations
-
----
-
-# 33. CLAIM HISTORY
-
-### Question
-
-**Have you made any home insurance claims or experienced losses during the last 5 years?**
-
-Choices:
-
-* Yes
-* No
-
----
-
-## If No
-
-Continue.
-
----
-
-## If Yes
-
-Show:
-
-### How many incidents?
-
-Choices:
-
-* 1
-* 2
-* 3
-* 4
-* 5+
-
-For each incident:
-
-* Date
-* Incident type
-* Description
-* Estimated loss
-* Amount paid
-* Current status
-
----
-
-# 34. NO-CLAIMS HISTORY
-
-Where applicable:
-
-### Question
-
-**How many years have you been claim-free?**
-
-Choices:
-
-* 0
-* 1
-* 2
-* 3
-* 4
-* 5
-* 6
-* 7
-* 8
-* 9+
-
-Where applicable, Buildings and Contents history can be collected separately.
-
----
-
-# 35. PROPERTY OWNERSHIP
-
-### Question
-
-**What is your relationship to the property?**
-
-Choices:
-
-* Owner
-* Owner with mortgage
-* Tenant
-* Other
-
----
-
-## If Owner With Mortgage
-
-Show:
-
-**Mortgage provider**
-
----
-
-## If Tenant
-
-Show:
-
-### What type of tenancy do you have?
-
-Choices:
-
-* Private rental
-* Social housing
-* Other
-
----
-
-# 36. OPTIONAL COVER
-
-### Question
-
-**Would you like additional protection?**
-
-Options:
-
-### Accidental Damage
-
-Add/remove.
-
-### Legal Protection
-
-Add/remove.
-
-### Home Emergency
-
-Add/remove.
-
-### Away From Home
-
-Add/remove.
-
-### High-Value Item Cover
-
-Add/remove.
-
-When selected:
-
-* Explain the benefit.
-* Display additional cost.
-* Update quote.
-* Allow the user to remove it.
-
----
-
-# 37. VOLUNTARY EXCESS
-
-### Question
-
-**Choose your voluntary excess**
-
-Choices:
-
-* £0
-* £150
-* £250
-* £400
-
-The available options should remain configurable.
-
----
-
-## Behaviour
-
-When the user changes the excess:
-
-```text
-User selects excess
-        ↓
-Quote recalculates
-        ↓
-Contribution changes
-        ↓
-Updated price displayed
-```
-
-The user should not have to restart the form.
-
----
-
-# 38. PAYMENT FREQUENCY
-
-### Question
-
-**How would you like to pay?**
-
-Choices:
-
-### Monthly
-
-Example:
-
-**£42.00 / month**
-
-### Annually
-
-Example:
-
-**£480.00 / year**
-
-The selected frequency must be clearly reflected throughout the quote summary.
-
----
-
-# 39. GET QUOTE CONDITIONAL LOGIC
-
-| Selection            | Additional Questions          |
-| -------------------- | ----------------------------- |
-| Buildings & Contents | Buildings + Contents          |
-| Buildings Only       | Buildings                     |
-| Contents Only        | Contents                      |
-| Flat                 | Floor + self-contained        |
-| Flat roof            | Flat roof percentage          |
-| Business use         | Business details              |
-| No business          | Hide business details         |
-| Previous claims      | Claim history                 |
-| No claims            | Hide claim history            |
-| High-value items     | Item details                  |
-| No high-value items  | Hide item details             |
-| Extension            | Extension details             |
-| No extension         | Hide extension details        |
-| Away-from-home       | Additional item/use questions |
-| No away-from-home    | Hide additional questions     |
-| Mortgage owner       | Mortgage provider             |
-| Tenant               | Tenancy type                  |
-| Optional cover       | Add-on information            |
-
----
-
-# 40. FORM UX RULES
-
-## Progressive Disclosure
-
-Only show questions relevant to the user's situation.
-
-Example:
-
-```text
-User chooses:
-
-CONTENTS ONLY
-
-↓
-
-Buildings questions disappear
-
-↓
-
-Contents questions appear
-```
-
----
-
-## Back Navigation
-
-The user can return to previous questions.
-
-If they change an answer, dependent questions must update accordingly.
-
-Example:
-
-```text
-Buildings & Contents
-        ↓
-Buildings questions
-+
-Contents questions
-
-User goes back
-
-        ↓
-
-Changes to Contents Only
-
-        ↓
-
-Buildings questions removed
-```
-
----
-
-# 41. FORM SUMMARY
-
-Before generating the final quote, show a review screen.
-
-## Example
-
-### Property
-
-3-bedroom semi-detached house  
-Birmingham
-
-### Cover
-
-Buildings & Contents
-
-### Buildings
-
-£350,000
-
-### Contents
-
-£50,000
-
-### Excess
-
-£250
-
-### Additional Protection
-
-* Accidental Damage
-* Legal Protection
-
-Actions:
-
-**Edit**
-
-**Get my quote**
-
----
-
-# 42. QUOTE CALCULATION EXPERIENCE
-
-After submitting the form:
-
-### Loading State
-
-> We're calculating your personalised protection options…
-
-Then display the available plans.
-
-The user should not see a fake or hardcoded calculation presented as a final quote.
-
----
-
-# 43. PLAN COMPARISON
-
-Display three plans:
-
-## Essential
-
-Basic protection.
-
-## Standard
-
-Balanced protection.
-
-## Comprehensive
-
-Broader protection and additional benefits.
-
----
-
-## Comparison Example
-
-| Protection        | Essential | Standard | Comprehensive |
-| ----------------- | --------: | -------: | ------------: |
-| Buildings         |         ✓ |        ✓ |             ✓ |
-| Contents          |         ✓ |        ✓ |             ✓ |
-| Accidental Damage |         — | Optional |             ✓ |
-| Legal Protection  |         — |        ✓ |             ✓ |
-| Home Emergency    |         — | Optional |             ✓ |
-
-Each plan displays:
-
-* Monthly contribution
-* Annual contribution
-* Coverage limits
-* Excess
-* Included benefits
-* Optional benefits
-* Important exclusions
-
-CTA:
-
-**Select plan**
-
----
-
-# 44. TRANSPARENCY
-
-Where approved by the final financial model, the quote can show a contribution breakdown.
-
-Example:
-
-**Monthly contribution**
-
-£50.00
-
-**Community Pool**
-
-£40.75
-
-**Wakala**
-
-£9.25
-
-The exact allocation percentage must use the approved business configuration.
-
----
-
-# 45. PAYMENT JOURNEY
-
-After selecting a plan:
-
-```text
-Selected Plan
-     ↓
-Customer Details
-     ↓
-Payment Setup
-     ↓
-Review
-     ↓
-Confirmation
-     ↓
-Policy Created
-```
-
----
-
-# 46. POLICY CONFIRMATION
-
-After successful completion, display:
-
-## Your protection is active
-
-Show:
-
-* Policy number
-* Property
-* Coverage
-* Contribution
-* Start date
-* Excess
-
-Actions:
-
-**View policy**
-
-**Download documents**
-
-**Go to dashboard**
-
----
-
-# 47. PARTICIPANT DASHBOARD
-
-## Purpose
-
-The participant dashboard is the customer's central self-service area.
-
----
-
-## Main Navigation
-
-```text
-Overview
-My Cover
-Contributions
-Claims
-Documents
-Takaful Pool
-Profile
-Support
-```
-
----
-
-# 48. PARTICIPANT OVERVIEW
-
-Display:
-
-### Active Coverage
-
-Buildings & Contents
-
-### Coverage Limits
-
-£350k / £50k
-
-### Monthly Contribution
-
-£42.00 / month
-
-### Voluntary Excess
-
-£250
-
-### Estimated Surplus
-
-£18.40
-
-> Example values only.
-
----
-
-# 49. MY COVER
-
-Display:
-
-* Property
-* Address
-* Buildings limit
-* Contents limit
-* Excess
-* Coverage
-* Add-ons
-* Important exclusions
-* Policy dates
-
----
-
-# 50. CONTRIBUTIONS
-
-Display:
-
-* Current contribution
-* Payment frequency
-* Payment history
-* Upcoming payment
-* Direct Debit status
-* Contribution allocation
-* Annual statements
-
----
-
-# 51. CLAIMS
-
-The participant can:
-
-1. Start a claim
-2. Select incident type
-3. Enter incident date
-4. Describe what happened
-5. Upload photos
-6. Upload supporting documents
-7. Review
-8. Submit
-
----
-
-# 52. CLAIM STATUS
-
-The customer sees:
-
-```text
-Submitted
-   ↓
-Under Review
-   ↓
-Assessment
-   ↓
-Additional Information
-   ↓
-Decision
-   ↓
-Settlement
-   ↓
-Completed
-```
-
----
-
-# 53. DOCUMENTS
-
-Customers can access:
-
-* Policy schedule
-* Policy documents
-* Certificates
-* Claims documents
-* Contribution statements
-* Other approved documents
-
----
-
-# 54. TAKAFUL POOL
-
-The pool section should explain the mutual structure visually.
-
-Potential information:
-
-* Contributions
-* Claims paid
-* Pool balance
-* Reserves
-* Retakaful
-* Potential surplus
-* Historical distributions
-
-Personal surplus should be clearly labelled **estimated** until formally approved.
-
----
-
-# 55. CLAIMS HANDLER DASHBOARD
-
-## Purpose
-
-The Claims Handler dashboard is designed for operational teams managing customer claims.
-
-### Main areas
-
-```text
-Overview
-Queue
-Claims
-Participants
-Evidence
-Reports
-```
-
----
-
-# 56. CLAIMS OVERVIEW
-
-KPIs:
-
-* Open claims
-* New claims
-* High-priority claims
-* Average processing time
-* SLA performance
-* Settlement ratio
-
----
-
-# 57. CLAIM QUEUE
-
-Each claim displays:
-
-* Claim ID
-* Member
-* Incident
-* Date
-* Priority
-* Status
-* SLA
-* Assigned handler
-* Estimated amount
-
-Filters:
-
-* New
-* In review
-* Awaiting evidence
-* Assessment
-* Approved
-* Declined
-* Paid
-* Closed
-
----
-
-# 58. CLAIM DETAIL
-
-The claims handler can see:
-
-### Member
-
-* Name
-* Policy
-* Coverage
-* Address
-* Claim history
-
-### Incident
-
-* Type
-* Date
-* Description
-* Estimated damage
-
-### Evidence
-
-* Photos
-* Videos
-* Documents
-* Receipts
-* Contractor information
-
-### Assessment
-
-* Coverage
-* Excess
-* Assessment
-* Estimated settlement
-* Notes
-
----
-
-# 59. FINANCE DASHBOARD
-
-## Purpose
-
-Provide visibility into contributions, pool funds and claims payments.
-
-Main areas:
-
-```text
-Overview
-Pool
-Contributions
-Claims Payments
-Transactions
-Reports
-```
-
----
-
-# 60. FINANCE OVERVIEW
-
-Display:
-
-* Community pool
-* Contributions received
-* Claims paid
-* Pending payments
-* Wakala allocation
-* Reconciliation status
-* Approved surplus
-
-Example values shown in the UI should be clearly treated as demonstration data until live financial data is available.
-
----
-
-# 61. COMMUNITY POOL
-
-Display:
-
-* Total contributions
-* Pool allocation
-* Claims
-* Reserves
-* Retakaful
-* Potential surplus
-
-The presentation should make the separation between mutual funds and operator fees easy to understand.
-
----
-
-# 62. CLAIM PAYMENTS
-
-Display:
-
-* Approved claims
-* Payment status
-* Amount
-* Member/contractor
-* Date
-* Approval status
-
----
-
-# 63. TRANSACTIONS
-
-Display:
-
-* Transaction
-* Amount
-* Date
-* Category
-* Status
-* Reference
-* Responsible user
-
-Sensitive financial actions should be clearly recorded and traceable.
-
----
-
-# 64. MANAGEMENT & GOVERNANCE DASHBOARD
-
-## Purpose
-
-Provide executive-level visibility into the overall platform.
-
-Main areas:
-
-```text
-Overview
-Risk
-Participants
-Financial Performance
-Governance
-Certificates
-Settings
-```
-
----
-
-# 65. EXECUTIVE OVERVIEW
-
-KPIs:
-
-### Active Policies
-
-14,280
-
-### Growth
-
-+14.2% MoM
-
-### Portfolio Loss Ratio
-
-41.2% YTD
-
-### Annual Retention
-
-98.4%
-
-### Governance Status
-
-Certified / Review Required / Action Required
-
-All figures are examples unless connected to approved live data.
-
----
-
-# 66. RISK
-
-Potential views:
-
-* Geographic risk
-* Flood exposure
-* Subsidence exposure
-* Claims concentration
-* Regional loss ratio
-* Property concentration
-
----
-
-# 67. PARTICIPANT ANALYTICS
-
-Display:
-
-* New customers
-* Quote starts
-* Quote completion
-* Conversion
-* Retention
-* Coverage mix
-* Plan selection
-* Add-on adoption
-
----
-
-# 68. GOVERNANCE
-
-Display:
-
-* Sharia review status
-* Certificates
-* Audit information
-* Policy wording versions
-* Approval status
-* Review dates
-* Outstanding actions
-
----
-
-# 69. WAKALA & POOL MODEL
-
-The product can visually explain the contribution structure.
-
-Example:
-
-```text
-Customer Contribution
-        │
-        ├───────────────┐
-        ↓               ↓
-Tabarru Pool         Wakala
-Community           Operator
-Protection          Management
-```
-
-Example only:
-
-**£50 contribution**
-
-* £40.75 Community Pool
-* £9.25 Wakala
-
-The final allocation must reflect the approved financial model.
-
----
-
-# 70. SURPLUS MODEL
-
-Conceptual explanation:
-
-```text
-Eligible Pool Contributions
-        -
-Claims
-        -
-Approved Reserves
-        -
-Retakaful / Other Approved Costs
-        =
-Potential Surplus
-```
-
-If the approved rules permit distribution, eligible members may receive a proportionate distribution.
-
-The UI should never imply:
-
-**"You are guaranteed £18.40."**
-
-Instead:
-
-**"Estimated surplus: £18.40"**
-
----
-
-# 71. PROJECT PHASES
-
-# PHASE 01 — FOUNDATION
-
-### Public Experience
-
-* Home
-* About
-* Takaful explanation
-* Coverage
-* FAQs
-* Contact
-
-### Design
-
-* Brand system
-* Typography
-* Components
-* Responsive rules
-* Interaction patterns
-
----
-
-# PHASE 02 — GET QUOTE
-
-Build the complete:
-
-* Postcode journey
-* Property questions
-* Coverage selection
-* Risk questions
-* Contents
-* Claims
-* Occupancy
-* Optional covers
-* Excess
-* Review
-* Quote
-
----
-
-# PHASE 03 — PLAN & CONVERSION
-
-* Compare plans
-* Select plan
-* Payment
-* Confirmation
-* Policy documents
-
----
-
-# PHASE 04 — PARTICIPANT EXPERIENCE
-
-* Dashboard
-* My Cover
-* Contributions
-* Claims
-* Documents
-* Pool
-
----
-
-# PHASE 05 — CLAIMS OPERATIONS
-
-* Claims dashboard
-* Queue
-* Claim detail
-* Evidence
-* Assessment
-* Settlement
-* Status tracking
-
----
-
-# PHASE 06 — FINANCE
-
-* Finance dashboard
-* Pool
-* Contributions
-* Payments
-* Transactions
-* Reporting
-
----
-
-# PHASE 07 — MANAGEMENT & GOVERNANCE
-
-* Executive dashboard
-* Risk
-* Analytics
-* Governance
-* Certificates
-* Reporting
-
----
-
-# PHASE 08 — OPTIMISATION
-
-Potential future features:
-
-* Advanced analytics
-* Claims assistance
-* Automated document processing
-* Risk insights
-* Personalised protection
-* Mobile application
-* Additional integrations
-
----
-
-# 72. PRODUCT SUCCESS METRICS
-
-## Acquisition
-
-* Website visitors
-* Quote starts
-* Quote completion
-* Plan selection
-* Payment completion
-* Policy activation
-
-## Customer
-
-* Customer satisfaction
-* Self-service rate
-* Dashboard engagement
-* Document downloads
-
-## Claims
-
-* Digital claim rate
-* First response time
-* Average resolution time
-* SLA performance
-* Claim satisfaction
-
-## Business
-
-* Active policies
-* Growth
-* Retention
-* Contribution volume
-* Claims ratio
-
----
-
-# 73. UX PRINCIPLES
-
-## 01 — Simple
-
-Never make the user understand insurance terminology before completing an action.
-
-## 02 — Transparent
-
-Explain pricing, coverage and contribution allocation clearly.
-
-## 03 — Progressive
-
-Ask only what is necessary at each stage.
-
-## 04 — Responsive
-
-The quote experience must work naturally on:
-
-* Desktop
-* Tablet
-* Mobile
-
-## 05 — Reassuring
-
-The user should always know:
-
-**Where am I?**
-
-**What am I answering?**
-
-**Why are you asking?**
-
-**What happens next?**
-
-## 06 — Human
-
-Use clear language instead of complicated financial or insurance terminology.
-
----
-
-# 74. GET QUOTE DEVELOPER CHECKLIST
-
-The developer should verify that:
-
-### Form
-
-* [ ] All required questions are available
-* [ ] All answer choices are implemented
-* [ ] Required fields are validated
-* [ ] Optional fields are clearly identified
-* [ ] Back navigation works
-* [ ] User answers are preserved
-
-### Conditional Logic
-
-* [ ] Buildings questions appear only when Buildings is selected
-* [ ] Contents questions appear only when Contents is selected
-* [ ] Flat-specific questions appear only for Flats
-* [ ] Business questions appear only when business use is selected
-* [ ] Claim history appears only when previous claims are selected
-* [ ] High-value item fields appear only when applicable
-* [ ] Extension questions appear only when applicable
-* [ ] Mortgage questions appear only when applicable
-* [ ] Tenant questions appear only when applicable
-* [ ] Optional cover questions appear only when selected
-
-### Quote
-
-* [ ] Summary displays all selected answers
-* [ ] User can edit answers
-* [ ] Quote updates after relevant changes
-* [ ] Excess changes update the displayed contribution
-* [ ] Optional covers update the displayed contribution
-* [ ] Monthly/annual payment choice is reflected correctly
-
-### UX States
-
-* [ ] Loading state
-* [ ] Validation state
-* [ ] Error state
-* [ ] Success state
-* [ ] Ineligible state
-* [ ] Empty states where relevant
-
----
-
-# 75. FINAL PRODUCT STRUCTURE
-
-The complete Takaful UK experience can be understood as:
-
-```text
-                    TAKAFUL UK
-                        │
-        ┌───────────────┼────────────────┐
-        ↓               ↓                ↓
-     PUBLIC          GET QUOTE       DASHBOARDS
-     WEBSITE             │                │
-                         ↓          ┌─────┼─────┐
-                    COMPARE PLANS    ↓     ↓     ↓
-                         │        MEMBER CLAIMS FINANCE
-                         ↓                    │
-                      PAYMENT                 ↓
-                         │              MANAGEMENT
-                         ↓
-                    ACTIVE POLICY
-                         │
-                    MEMBER PORTAL
-                         │
-              ┌──────────┼──────────┐
-              ↓          ↓          ↓
-            COVER      CLAIMS    CONTRIBUTIONS
-                         │
-                         ↓
-                     POOL / SURPLUS
-```
-
----
-
-# 76. DOCUMENT STATUS
-
-**Document:** Takaful UK Product & UX Specification  
-**Revision:** 3.0  
-**Status:** Working Product Blueprint  
-**Updated:** September 2026  
-
-### Before production
-
-The following areas require final business approval:
-
-* Pricing
-* Underwriting rules
-* Exact contribution allocation
-* Wakala percentage
-* Surplus distribution rules
-* Claim rules
-* Coverage limits
-* Exclusions
-* Payment process
-* Regulatory wording
-* Sharia governance wording
-* Customer-facing legal content
-
-Numerical examples in this document should be treated as **UI/product examples rather than confirmed commercial values** until formally approved.
+*Takaful UK — Last updated September 2026*
