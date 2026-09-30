@@ -1,1381 +1,1225 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import {
-  Shield, Layers, LayoutDashboard, CheckCircle2,
-  Sliders, FileText, ArrowRight, ExternalLink,
-  ChevronRight, Search, Copy, Check, Users,
-  CreditCard, PieChart, ClipboardList, Banknote,
-  ShieldAlert, Home, ArrowUpRight, Folder, Bell, Settings,
-  Activity, Sparkles, AlertCircle, Info, Lock,
-  ChevronDown, CheckCheck, Play, HelpCircle,
-  Building, RefreshCw, BarChart3, Clock, Compass,
-  Scale, Award, Landmark, FileCheck, ArrowDown,
-  CheckSquare, Square, Eye, Sparkle
+  Shield,
+  Search,
+  CheckCircle2,
+  FileText,
+  ExternalLink,
+  Users,
+  PieChart,
+  ClipboardList,
+  Banknote,
+  Bell,
+  Settings,
+  ArrowUpRight,
+  Check,
+  Copy,
+  Printer,
+  Home
 } from 'lucide-react';
 
-/* ─── Navigation Master Index for Specification Revision 3.0 ──────────────── */
-interface NavItem {
-  id: string;
-  num: string;
-  label: string;
-  category: string;
-  badge?: string;
-}
-
-const SPEC_NAV: NavItem[] = [
-  // 1. Overview & Vision
-  { id: 'doc-purpose', num: '01', label: 'Document Purpose', category: 'Overview & Vision' },
-  { id: 'product-overview', num: '02', label: 'Product Overview', category: 'Overview & Vision' },
-  { id: 'product-vision', num: '03', label: 'Product Vision', category: 'Overview & Vision' },
-  { id: 'core-principles', num: '04', label: 'Core Takaful Principles', category: 'Overview & Vision', badge: '5 Pillars' },
-  { id: 'business-value', num: '05', label: 'Business & Mutual Value', category: 'Overview & Vision' },
-
-  // 2. Customers & Ecosystem
-  { id: 'target-users', num: '06', label: 'Target User Personas', category: 'Target Users & Journey', badge: '3 Personas' },
-  { id: 'product-ecosystem', num: '07', label: 'Product Ecosystem', category: 'Target Users & Journey' },
-  { id: 'public-website', num: '08', label: 'Public Website Map', category: 'Target Users & Journey' },
-  { id: 'customer-journey', num: '09', label: 'End-to-End Customer Flow', category: 'Target Users & Journey', badge: 'Flow' },
-
-  // 3. Get Quote Specification
-  { id: 'get-quote-overview', num: '10', label: 'Get Quote Objective', category: 'Get Quote Functional Spec' },
-  { id: 'quote-step-01', num: '11', label: 'Step 01: Postcode & Address', category: 'Get Quote Functional Spec' },
-  { id: 'quote-step-02', num: '12', label: 'Step 02: Cover Scope', category: 'Get Quote Functional Spec' },
-  { id: 'quote-step-03', num: '13', label: 'Step 03: Property Type', category: 'Get Quote Functional Spec' },
-  { id: 'quote-step-04', num: '14', label: 'Step 04: Property Details', category: 'Get Quote Functional Spec' },
-  { id: 'quote-step-05', num: '15', label: 'Step 05: Construction & Roof', category: 'Get Quote Functional Spec' },
-  { id: 'quote-security', num: '18', label: 'Security & Door Locks', category: 'Get Quote Functional Spec' },
-  { id: 'quote-use-occupancy', num: '23', label: 'Property Use & Occupancy', category: 'Get Quote Functional Spec' },
-  { id: 'quote-buildings-contents', num: '27', label: 'Buildings & Contents Valuation', category: 'Get Quote Functional Spec' },
-  { id: 'quote-high-value', num: '30', label: 'High-Value Items & Riders', category: 'Get Quote Functional Spec' },
-  { id: 'quote-claims-history', num: '33', label: 'Claims History & Ownership', category: 'Get Quote Functional Spec' },
-  { id: 'quote-optional-excess', num: '36', label: 'Optional Cover & Excess', category: 'Get Quote Functional Spec' },
-  { id: 'quote-conditional-logic', num: '39', label: 'Conditional Logic Matrix', category: 'Get Quote Functional Spec', badge: 'Rules' },
-  { id: 'quote-ux-rules', num: '40', label: 'Form UX & Review Summary', category: 'Get Quote Functional Spec' },
-
-  // 4. Plans & Conversion
-  { id: 'plan-comparison', num: '43', label: 'Plan Comparison Matrix', category: 'Plans & Conversion', badge: '3 Tiers' },
-  { id: 'quote-transparency', num: '44', label: 'Contribution Transparency', category: 'Plans & Conversion' },
-  { id: 'payment-journey', num: '45', label: 'Payment & Policy Binding', category: 'Plans & Conversion' },
-
-  // 5. Operational Dashboards
-  { id: 'dashboards-participant', num: '47', label: 'Participant Member Portal', category: 'Operational Dashboards', badge: 'Member' },
-  { id: 'dashboards-claims', num: '55', label: 'Claims Adjuster Console', category: 'Operational Dashboards', badge: 'Ops' },
-  { id: 'dashboards-finance', num: '59', label: 'Treasury & Finance Portal', category: 'Operational Dashboards', badge: 'Finance' },
-  { id: 'dashboards-management', num: '64', label: 'Executive Governance Suite', category: 'Operational Dashboards', badge: 'C-Suite' },
-
-  // 6. Financial Models
-  { id: 'wakala-pool-model', num: '69', label: 'Wakala & Segregation Model', category: 'Actuarial & Governance' },
-  { id: 'surplus-model', num: '70', label: 'Surplus Distribution Model', category: 'Actuarial & Governance' },
-  { id: 'pricing-simulator', num: '70B', label: 'Actuarial Pricing Simulator', category: 'Actuarial & Governance', badge: 'Live Calc' },
-
-  // 7. Roadmap & Checklist
-  { id: 'project-phases', num: '71', label: 'Project Roadmap Phases', category: 'Governance & Verification' },
-  { id: 'success-metrics', num: '72', label: 'Product Success Metrics', category: 'Governance & Verification' },
-  { id: 'developer-checklist', num: '74', label: 'Get Quote Developer Checklist', category: 'Governance & Verification', badge: 'Checklist' },
-  { id: 'product-structure', num: '75', label: 'Final Architecture Map', category: 'Governance & Verification' },
+const SECTIONS = [
+  { id: 'what-is-takaful', title: 'What is Takaful UK?' },
+  { id: 'public-website', title: '1. Public Website' },
+  { id: 'authentication', title: '2. Authentication' },
+  { id: 'get-quote', title: '3. Get a Quote (7 Steps)' },
+  { id: 'compare-plans', title: '4. Compare Plans' },
+  { id: 'payment', title: '5. Payment' },
+  { id: 'participant-portal', title: '6. Participant Portal' },
+  { id: 'staff-dashboards', title: '7. Staff Dashboards' },
+  { id: 'notifications', title: '8. Notifications' },
+  { id: 'full-journey', title: '9. Full Journey' },
+  { id: 'key-things', title: '10. Key Things to Know' },
 ];
 
-export default function SpecificationV3Page() {
-  const [activeNav, setActiveNav] = useState('doc-purpose');
+export default function DocumentationPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [copiedSnippet, setCopiedSnippet] = useState<string | null>(null);
+  const [copiedLink, setCopiedLink] = useState(false);
 
-  // Developer Checklist Interactive State
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({
-    'form-required': true,
-    'form-choices': true,
-    'form-validation': true,
-    'form-optional': true,
-    'form-back': true,
-    'cond-buildings': true,
-    'cond-contents': true,
-    'cond-flat': true,
-    'cond-business': true,
-    'cond-claims': true,
-    'cond-highvalue': true,
-    'quote-summary': true,
-    'quote-excess': true,
-    'quote-frequency': true,
-    'ux-loading': true,
-    'ux-validation': true,
-  });
-
-  const toggleCheck = (id: string) => {
-    setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
+  const handleCopyLink = () => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(window.location.href);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    }
   };
 
-  // Interactive Pricing Engine State
-  const [calcCoverType, setCalcCoverType] = useState<'both' | 'buildings' | 'contents'>('both');
-  const [calcBedrooms, setCalcBedrooms] = useState<number>(3);
-  const [calcContentsValue, setCalcContentsValue] = useState<number>(40000);
-  const [calcExcess, setCalcExcess] = useState<number>(250);
-  const [calcAccidental, setCalcAccidental] = useState<boolean>(true);
-  const [calcLegal, setCalcLegal] = useState<boolean>(true);
-  const [calcEmergency, setCalcEmergency] = useState<boolean>(false);
-  const [calcAlarm, setCalcAlarm] = useState<boolean>(true);
-  const [calcCctv, setCalcCctv] = useState<boolean>(false);
+  const handlePrint = () => {
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
+  };
 
-  // Active section spy on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = SPEC_NAV.map(item => document.getElementById(item.id));
-      const scrollPosition = window.scrollY + 140;
-
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = sections[i];
-        if (section && section.offsetTop <= scrollPosition) {
-          setActiveNav(SPEC_NAV[i].id);
-          break;
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Filtered Navigation
-  const filteredNav = useMemo(() => {
-    if (!searchQuery.trim()) return SPEC_NAV;
-    const q = searchQuery.toLowerCase();
-    return SPEC_NAV.filter(item =>
-      item.label.toLowerCase().includes(q) ||
-      item.category.toLowerCase().includes(q) ||
-      item.num.includes(q) ||
-      (item.badge && item.badge.toLowerCase().includes(q))
-    );
-  }, [searchQuery]);
-
-  // Grouped Navigation
-  const groupedNav = useMemo(() => {
-    const groups: Record<string, NavItem[]> = {};
-    filteredNav.forEach(item => {
-      if (!groups[item.category]) groups[item.category] = [];
-      groups[item.category].push(item);
-    });
-    return groups;
-  }, [filteredNav]);
-
-  // Actuarial Calculator Logic
-  const calculatedContribution = useMemo(() => {
-    let base = calcCoverType === 'both' ? 35.00 : calcCoverType === 'buildings' ? 22.00 : 18.00;
-    let roomFactor = calcBedrooms * 3.00;
-    let contentsFactor = calcContentsValue > 50000 ? 12.00 : calcContentsValue > 30000 ? 8.00 : 0.00;
-    let excessDiscount = calcExcess >= 500 ? 5.00 : calcExcess >= 250 ? 2.50 : 0.00;
-    let addons = (calcAccidental ? 4.00 : 0.00) + (calcLegal ? 2.00 : 0.00) + (calcEmergency ? 3.00 : 0.00);
-    let securityDiscount = (calcAlarm ? 2.00 : 0.00) + (calcCctv ? 1.00 : 0.00);
-
-    const gross = Math.max(15.00, base + roomFactor + contentsFactor - excessDiscount + addons - securityDiscount);
-    const wakalaPortion = +(gross * 0.185).toFixed(2);
-    const tabarruPortion = +(gross - wakalaPortion).toFixed(2);
-
-    return {
-      gross: gross.toFixed(2),
-      wakalaPortion: wakalaPortion.toFixed(2),
-      tabarruPortion: tabarruPortion.toFixed(2),
-    };
-  }, [calcCoverType, calcBedrooms, calcContentsValue, calcExcess, calcAccidental, calcLegal, calcEmergency, calcAlarm, calcCctv]);
-
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedSnippet(id);
-    setTimeout(() => setCopiedSnippet(null), 2000);
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#f4f4f5] antialiased selection:bg-[#00c685]/20 selection:text-white font-sans text-sm">
-      
-      {/* ── Top Header Bar (OpenAI Developers Aesthetic) ─────────────────────── */}
-      <header className="sticky top-0 z-50 border-b border-[#27272a] bg-[#09090b]/95 backdrop-blur-md px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-3 group">
-            <img
-              src="/brand/logo-light.png"
-              alt="Takaful"
-              className="h-7 w-auto object-contain brightness-105"
-            />
-          </Link>
-          <div className="h-4 w-px bg-[#27272a] hidden md:block" />
-          <div className="hidden md:flex items-center gap-2 text-xs text-[#a1a1aa] font-mono">
-            <span>Documentation</span>
-            <span>/</span>
-            <span className="text-[#f4f4f5] font-semibold">Product & Get Quote Specification</span>
-            <span className="ml-2 px-1.5 py-0.5 rounded bg-[#00c685]/10 text-[#00c685] text-[10px] border border-[#00c685]/20">
-              Revision 3.0
-            </span>
+    <div className="min-h-screen bg-[#fafbfc] text-slate-900 font-sans antialiased selection:bg-emerald-100 selection:text-emerald-900">
+      {/* ── Top Header ────────────────────────────────────────────── */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all">
+        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2 hover:opacity-85 transition-opacity">
+              <img
+                src="/brand/logo-dark.png"
+                alt="Takaful UK"
+                className="h-7 w-auto object-contain"
+              />
+            </Link>
+            <span className="text-slate-300 font-light hidden sm:inline">|</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider hidden sm:inline">
+                Product Docs
+              </span>
+              <span className="text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                v4.0
+              </span>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="flex items-center gap-2.5">
+            <div className="relative hidden md:block w-52">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Filter guide..."
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              />
+            </div>
+
+            <button
+              onClick={handleCopyLink}
+              title="Copy URL"
+              className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors border border-transparent hover:border-slate-200 cursor-pointer"
+            >
+              {copiedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+            </button>
+
+            <button
+              onClick={handlePrint}
+              title="Print Documentation"
+              className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors border border-transparent hover:border-slate-200 hidden sm:block cursor-pointer"
+            >
+              <Printer className="w-4 h-4" />
+            </button>
+
+            <Link
+              href="/get-quote"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-xs transition-colors"
+            >
+              Try Get Quote
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-xs">
-          <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded border border-[#27272a] bg-[#121215] text-[#71717a] font-mono text-[11px]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00c685] animate-pulse" />
-            <span>Approved UX Blueprint</span>
+        {/* Horizontal Navigation Pills Bar (No side menu!) */}
+        <div className="border-t border-slate-100 bg-white">
+          <div className="max-w-4xl mx-auto px-6 py-2 overflow-x-auto no-scrollbar flex items-center gap-1.5 text-xs">
+            {SECTIONS.map((sec) => (
+              <button
+                key={sec.id}
+                onClick={() => scrollToSection(sec.id)}
+                className="whitespace-nowrap px-3 py-1.5 rounded-md font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                {sec.title}
+              </button>
+            ))}
           </div>
-          <Link
-            href="/portal"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#27272a] bg-[#18181b] hover:bg-[#27272a] text-[#f4f4f5] transition-colors"
-          >
-            <LayoutDashboard size={13} className="text-[#00c685]" />
-            <span>Open My Portal</span>
-            <ArrowUpRight size={12} className="text-[#71717a]" />
-          </Link>
-          <Link
-            href="/get-quote"
-            className="font-medium bg-[#00c685] hover:bg-[#00e299] text-black px-3 py-1.5 rounded-md transition-colors"
-          >
-            Launch Quote Flow
-          </Link>
         </div>
       </header>
 
-      {/* ── Main Layout Container ─────────────────────────────────────────────── */}
-      <div className="max-w-[1440px] mx-auto flex">
-        
-        {/* ── Left Sidebar Navigation (OpenAI Docs Style) ────────────────────── */}
-        <aside className="hidden lg:block w-72 shrink-0 border-r border-[#27272a] p-6 space-y-6 sticky top-[57px] h-[calc(100vh-57px)] overflow-y-auto custom-scrollbar">
-          
-          {/* Instant Search Filter */}
-          <div className="relative">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717a]" />
-            <input
-              type="text"
-              placeholder="Filter 76 spec sections..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#121215] border border-[#27272a] rounded-md pl-8 pr-3 py-1.5 text-xs text-[#f4f4f5] placeholder-[#71717a] focus:outline-none focus:border-[#00c685] transition-colors font-mono"
-            />
+      {/* ── Main Single-Column Document Container ────────────────── */}
+      <main className="max-w-4xl mx-auto px-6 py-12">
+        {/* Document Header */}
+        <div className="pb-10 border-b border-slate-200 mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium mb-4">
+            <FileText className="w-3.5 h-3.5 text-slate-500" />
+            Official Product Guide
           </div>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-950 mb-4">
+            Takaful UK — Complete Product Guide
+          </h1>
+          <p className="text-base text-slate-600 leading-relaxed mb-6">
+            A clear, non-technical overview of the Takaful UK digital home protection platform — covering what the product does, the public website, authentication, the 7-step quote journey, the member portal, and all internal staff dashboards.
+          </p>
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+            <span className="font-semibold text-slate-700">Version 4.0</span>
+            <span>•</span>
+            <span>Last Updated: September 2026</span>
+            <span>•</span>
+            <span>Platform: Takaful UK Digital Home Protection</span>
+            <span>•</span>
+            <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded">~10 min read</span>
+          </div>
+        </div>
 
-          {/* Nav Categories */}
-          <nav className="space-y-6">
-            {Object.entries(groupedNav).map(([category, items]) => (
-              <div key={category} className="space-y-1.5">
-                <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#71717a] px-2 py-0.5">
-                  {category}
+        {/* ── What is Takaful UK? ───────────────────────────────── */}
+        <section id="what-is-takaful" className="scroll-mt-28 mb-16">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-4 flex items-center gap-2.5">
+            <Shield className="w-6 h-6 text-emerald-600" />
+            What is Takaful UK?
+          </h2>
+          <div className="text-slate-700 leading-relaxed space-y-4">
+            <p className="text-base">
+              Takaful UK is a digital home protection platform built on the idea of <strong className="text-slate-900 font-semibold">mutual help</strong>. Instead of buying from a traditional insurance company, members contribute to a shared community pool. When someone has a loss, they get paid from that pool.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 my-6">
+              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900 mb-1 text-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  Simple
                 </div>
-                <ul className="space-y-0.5 text-xs">
-                  {items.map(item => {
-                    const isActive = activeNav === item.id;
-                    return (
-                      <li key={item.id}>
-                        <a
-                          href={`#${item.id}`}
-                          onClick={() => setActiveNav(item.id)}
-                          className={`flex items-center justify-between py-1.5 px-2.5 rounded-md transition-colors ${
-                            isActive
-                              ? 'bg-[#18181b] text-[#00c685] font-medium border-l-2 border-[#00c685]'
-                              : 'text-[#a1a1aa] hover:text-[#f4f4f5] hover:bg-[#121215]'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 truncate">
-                            <span className="text-[10px] font-mono text-[#71717a]">{item.num}</span>
-                            <span className="truncate">{item.label}</span>
-                          </div>
-                          {item.badge && (
-                            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded shrink-0 ${
-                              isActive ? 'bg-[#00c685]/20 text-[#00c685]' : 'bg-[#27272a] text-[#71717a]'
-                            }`}>
-                              {item.badge}
-                            </span>
-                          )}
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
+                <p className="text-xs text-slate-600 leading-normal">
+                  No confusing insurance jargon or hidden clauses. Everything is written in plain English.
+                </p>
               </div>
-            ))}
-          </nav>
 
-          {/* Quick Links */}
-          <div className="pt-6 border-t border-[#27272a] space-y-2 text-xs font-mono text-[#71717a]">
-            <div className="text-[10px] uppercase tracking-wider font-semibold">Live Consoles</div>
-            <div className="space-y-1">
-              <Link href="/portal" className="flex items-center justify-between hover:text-[#f4f4f5] py-1 px-2 rounded hover:bg-[#121215]">
-                <span>Member Portal</span>
-                <ArrowUpRight size={11} />
-              </Link>
-              <Link href="/dashboard/queue" className="flex items-center justify-between hover:text-[#f4f4f5] py-1 px-2 rounded hover:bg-[#121215]">
-                <span>Claims Queue</span>
-                <ArrowUpRight size={11} />
-              </Link>
-              <Link href="/dashboard/pool" className="flex items-center justify-between hover:text-[#f4f4f5] py-1 px-2 rounded hover:bg-[#121215]">
-                <span>Treasury & Pool</span>
-                <ArrowUpRight size={11} />
-              </Link>
+              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900 mb-1 text-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  Transparent
+                </div>
+                <p className="text-xs text-slate-600 leading-normal">
+                  You can see exactly where every pound goes between the community claims pool and the management fee.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900 mb-1 text-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  Fair & Ethical
+                </div>
+                <p className="text-xs text-slate-600 leading-normal">
+                  Structured to align with ethical and Islamic finance principles. Surplus belongs to the community pool.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900 mb-1 text-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  Fully Digital
+                </div>
+                <p className="text-xs text-slate-600 leading-normal">
+                  Manage quotes, documents, contributions, and claims entirely online without call centers.
+                </p>
+              </div>
+            </div>
+
+            <p className="text-sm text-slate-700 font-medium pt-2">
+              The platform has four main areas:
+            </p>
+            <ol className="list-decimal list-inside space-y-2 text-sm text-slate-700 pl-1">
+              <li><strong className="text-slate-900 font-semibold">Public Website</strong> — for people who want to learn about the product</li>
+              <li><strong className="text-slate-900 font-semibold">Get a Quote</strong> — for people who want to see how much cover costs</li>
+              <li><strong className="text-slate-900 font-semibold">Participant Portal</strong> — for existing members to manage their cover</li>
+              <li><strong className="text-slate-900 font-semibold">Staff Dashboards</strong> — for internal teams to manage claims, payments, and the business</li>
+            </ol>
+          </div>
+        </section>
+
+        <hr className="border-slate-200 my-12" />
+
+        {/* ── 1. The Public Website ─────────────────────────────── */}
+        <section id="public-website" className="scroll-mt-28 mb-16">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-4">
+            1. The Public Website
+          </h2>
+          <p className="text-base text-slate-700 leading-relaxed mb-6">
+            The public website is what visitors see before they sign up. Its job is to explain what Takaful UK is and encourage people to get a quote.
+          </p>
+
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Pages on the Website</h3>
+          <div className="border border-slate-200 rounded-xl overflow-hidden shadow-xs bg-white mb-8">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                <tr>
+                  <th className="py-3 px-4">Page</th>
+                  <th className="py-3 px-4">What It Does</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                <tr className="hover:bg-slate-50/60">
+                  <td className="py-3 px-4 font-semibold text-slate-900">
+                    <Link href="/" className="hover:text-emerald-600 inline-flex items-center gap-1">
+                      Home <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">The main landing page. Explains the product and prompts visitors to get a quote.</td>
+                </tr>
+                <tr className="hover:bg-slate-50/60">
+                  <td className="py-3 px-4 font-semibold text-slate-900">
+                    <Link href="/about" className="hover:text-emerald-600 inline-flex items-center gap-1">
+                      About <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">Explains the story behind Takaful UK and the mutual model.</td>
+                </tr>
+                <tr className="hover:bg-slate-50/60">
+                  <td className="py-3 px-4 font-semibold text-slate-900">
+                    <Link href="/how-it-works" className="hover:text-emerald-600 inline-flex items-center gap-1">
+                      How Takaful Works <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">A plain-English explanation of mutual contributions, the shared pool, and how members benefit.</td>
+                </tr>
+                <tr className="hover:bg-slate-50/60">
+                  <td className="py-3 px-4 font-semibold text-slate-900">
+                    <Link href="/get-quote" className="hover:text-emerald-600 inline-flex items-center gap-1">
+                      Get a Quote <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">Starts the 7-step quote form.</td>
+                </tr>
+                <tr className="hover:bg-slate-50/60">
+                  <td className="py-3 px-4 font-semibold text-slate-900">
+                    <Link href="/compare-plans" className="hover:text-emerald-600 inline-flex items-center gap-1">
+                      Compare Plans <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">Shows the available protection plans side by side.</td>
+                </tr>
+                <tr className="hover:bg-slate-50/60">
+                  <td className="py-3 px-4 font-semibold text-slate-900">
+                    <Link href="/contact" className="hover:text-emerald-600 inline-flex items-center gap-1">
+                      Contact <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">Contact information and a contact form.</td>
+                </tr>
+                <tr className="hover:bg-slate-50/60">
+                  <td className="py-3 px-4 font-semibold text-slate-900">
+                    <Link href="/privacy" className="hover:text-emerald-600 inline-flex items-center gap-1">
+                      Privacy Policy <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">Legal privacy notice.</td>
+                </tr>
+                <tr className="hover:bg-slate-50/60">
+                  <td className="py-3 px-4 font-semibold text-slate-900">
+                    <Link href="/terms" className="hover:text-emerald-600 inline-flex items-center gap-1">
+                      Terms & Conditions <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">Legal terms.</td>
+                </tr>
+                <tr className="hover:bg-slate-50/60">
+                  <td className="py-3 px-4 font-semibold text-slate-900">
+                    <Link href="/clauses" className="hover:text-emerald-600 inline-flex items-center gap-1">
+                      Policy Clauses <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">Detailed policy clauses for people who want the full detail.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">How the Home Page Works</h3>
+          <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 space-y-2">
+            <p>The home page opens with a bold headline and a clear <strong>Get a Quote</strong> button. Below that, it explains:</p>
+            <ul className="list-disc list-inside space-y-1.5 text-slate-600 pl-2">
+              <li>What Takaful is in simple terms</li>
+              <li>The three types of cover available (Buildings, Contents, Both)</li>
+              <li>How the community pool works</li>
+              <li>Why Takaful is different from regular insurance</li>
+              <li>Customer quotes and trust indicators</li>
+              <li>A final call to action to start a quote</li>
+            </ul>
+          </div>
+        </section>
+
+        <hr className="border-slate-200 my-12" />
+
+        {/* ── 2. Authentication ─────────────────────────────────── */}
+        <section id="authentication" className="scroll-mt-28 mb-16">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-4">
+            2. Authentication — How People Sign In
+          </h2>
+          <p className="text-base text-slate-700 leading-relaxed mb-6">
+            The platform uses a <strong>sign-up and login system</strong> to protect participant data and ensure that members and staff access their appropriate environments.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm mb-3">
+                1
+              </div>
+              <h3 className="text-base font-semibold text-slate-900 mb-2">Sign Up</h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-3">
+                New members create an account during or after the quote process. They provide:
+              </p>
+              <ul className="list-disc list-inside text-xs text-slate-600 space-y-1 pl-1">
+                <li>Their name</li>
+                <li>Email address</li>
+                <li>A secure password</li>
+              </ul>
+              <p className="text-xs text-slate-500 mt-3 pt-3 border-t border-slate-100">
+                After signing up, they receive a confirmation and can access their portal.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm mb-3">
+                2
+              </div>
+              <h3 className="text-base font-semibold text-slate-900 mb-2">Log In</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Existing members log in with their email and password to access their personal portal at any time to review policy details, submit claims, or check payments.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm mb-3">
+                3
+              </div>
+              <h3 className="text-base font-semibold text-slate-900 mb-2">Staff Access</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Internal staff (claim handlers, finance team, management, super admin) log in with staff credentials. Once logged in, the platform serves a tailored dashboard matching their exact role and authorization level.
+              </p>
             </div>
           </div>
-        </aside>
+        </section>
 
-        {/* ── Main Specification Content Area ─────────────────────────────────── */}
-        <main className="flex-1 min-w-0 px-6 sm:px-12 py-10 space-y-16 max-w-4xl">
-          
-          {/* Header Metadata */}
-          <div className="space-y-4 border-b border-[#27272a] pb-8">
-            <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-[#a1a1aa]">
-              <span className="text-[#00c685] font-semibold">TAKAFUL UK</span>
-              <span>•</span>
-              <span>System Revision 3.0</span>
-              <span>•</span>
-              <span className="text-[#71717a]">Updated September 2026</span>
+        <hr className="border-slate-200 my-12" />
+
+        {/* ── 3. Get a Quote — The 7-Step Form ─────────────────── */}
+        <section id="get-quote" className="scroll-mt-28 mb-16">
+          <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+                3. Get a Quote — The 7-Step Form
+              </h2>
+              <p className="text-sm text-slate-600 mt-1">
+                A step-by-step form asking questions one section at a time to calculate accurate pricing.
+              </p>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#f4f4f5]">
-              Product, UX & Get Quote Specification
-            </h1>
-            <div className="text-xs text-[#71717a] font-mono">
-              <strong>Audience:</strong> Executive Stakeholders · Product Team · UX/UI Designers · Developers · Underwriting · Claims · Finance · Governance
-            </div>
-            <p className="text-sm text-[#a1a1aa] leading-relaxed">
-              The central product and UX reference blueprint for the Takaful UK digital home protection platform, detailing the mutual business model, customer journeys, complete Get Quote functional field behaviour, plan comparison, and 4 operational consoles.
-            </p>
+            <Link
+              href="/get-quote"
+              className="text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1 transition-colors"
+            >
+              Open Live Form <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
-          {/* ── 01. DOCUMENT PURPOSE ─────────────────────────────────────────── */}
-          <section id="doc-purpose" className="space-y-4 scroll-mt-20">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTION 01 • DOCUMENT PURPOSE
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              01. Document Purpose
-            </h2>
-            <p className="text-[#d4d4d8] leading-relaxed">
-              This document is the central product reference for the Takaful UK platform. It explains what Takaful UK is, the business and mutual model, target customers, product objectives, customer journeys, Get Quote experience, quote form fields and conditional behaviour, plan comparison, payment journey, participant experience, claims operations, finance operations, management and governance dashboards, and product phases.
-            </p>
-            <div className="p-4 rounded-lg bg-[#121215] border border-[#27272a] text-xs space-y-1.5">
-              <div className="font-semibold text-[#f4f4f5]">Developer Functional Guidance:</div>
-              <p className="text-[#a1a1aa]">
-                For developers, the <strong>Get Quote section</strong> provides the functional behaviour required to reproduce the approved UX, including: fields, answer choices, required/optional states, conditional questions, what appears/disappears when an option is selected, quote summary behaviour, and dynamic pricing behaviour.
+          <div className="space-y-6 mt-8">
+            {/* Step 1 */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-900 text-white">
+                  Step 1
+                </span>
+                <h3 className="text-base font-bold text-slate-900">
+                  What You Want to Cover & Your Property
+                </h3>
+              </div>
+              <p className="text-xs font-medium text-emerald-700 bg-emerald-50/60 border border-emerald-100 px-3 py-1 rounded-md inline-block mb-4">
+                Goal: Understand what the customer owns and where they live.
               </p>
-              <p className="text-[#71717a] font-mono text-[11px]">
-                * This document intentionally does not define backend architecture, APIs, database schemas, or programming implementation.
+              <div className="space-y-3 text-xs text-slate-700">
+                <div>
+                  <strong className="text-slate-900 block mb-1">What do you want to cover?</strong>
+                  <ul className="list-disc list-inside pl-1 text-slate-600 space-y-0.5">
+                    <li><strong>Buildings only</strong> (for homeowners — covers the structure of the house)</li>
+                    <li><strong>Contents only</strong> (covers furniture, belongings, electronics)</li>
+                    <li><strong>Buildings & Contents</strong> (covers both)</li>
+                  </ul>
+                </div>
+                <div>
+                  <strong className="text-slate-900 block mb-1">What is your address?</strong>
+                  <p className="text-slate-600">The customer can type their postcode and find their address from a list, or type it manually.</p>
+                </div>
+                <div>
+                  <strong className="text-slate-900 block mb-1">What type of property is it?</strong>
+                  <p className="text-slate-600">House, Bungalow, Flat / Apartment, Maisonette.</p>
+                  <p className="text-slate-500 italic mt-0.5 ml-2">↳ If Flat: asks what floor (Basement, Ground, First, Second floor or higher).</p>
+                </div>
+                <div>
+                  <strong className="text-slate-900 block mb-1">How do you own it?</strong>
+                  <p className="text-slate-600">Owned outright (no mortgage), Owned with mortgage, Rented from private landlord, Rented from council.</p>
+                </div>
+                <div>
+                  <strong className="text-slate-900 block mb-1">Is it a listed building?</strong>
+                  <p className="text-slate-600">Grade I, Grade II*, Grade II, Not listed.</p>
+                </div>
+                <div>
+                  <strong className="text-slate-900 block mb-1">Is this your main home?</strong>
+                  <p className="text-slate-600">Yes or No.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-900 text-white">
+                  Step 2
+                </span>
+                <h3 className="text-base font-bold text-slate-900">
+                  The Property Itself
+                </h3>
+              </div>
+              <p className="text-xs font-medium text-emerald-700 bg-emerald-50/60 border border-emerald-100 px-3 py-1 rounded-md inline-block mb-4">
+                Goal: Understand what the building is made of and how it was built.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700">
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Wall Construction</strong>
+                  <span className="text-slate-600">Brick, Stone, Timber, Concrete, Other</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Roof Type</strong>
+                  <span className="text-slate-600">Pitched tiles, Slate, Flat, Mixed (Flat roof % if applicable)</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Year Built & Size</strong>
+                  <span className="text-slate-600">Year constructed, approximate square footage</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Bedrooms & Bathrooms</strong>
+                  <span className="text-slate-600">Total count of bedrooms and bathrooms</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Heating System</strong>
+                  <span className="text-slate-600">Gas central, Electric, Oil, Heat pump, Solid fuel, None</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Extensions</strong>
+                  <span className="text-slate-600">Rear, Side, Loft, Garage, Conservatory, None</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Tree Hazard</strong>
+                  <span className="text-slate-600">Trees within 7 metres of the property (Yes / No)</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Flood & Subsidence</strong>
+                  <span className="text-slate-600">Any past history of flooding or subsidence (Yes / No)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-900 text-white">
+                  Step 3
+                </span>
+                <h3 className="text-base font-bold text-slate-900">
+                  Who Lives There & How It Is Used
+                </h3>
+              </div>
+              <p className="text-xs font-medium text-emerald-700 bg-emerald-50/60 border border-emerald-100 px-3 py-1 rounded-md inline-block mb-4">
+                Goal: Understand occupancy and daily usage patterns.
+              </p>
+              <div className="space-y-2 text-xs text-slate-700">
+                <p>• <strong>Unoccupied period:</strong> Less than 30 days, 30–60 days, 60–90 days, More than 90 days</p>
+                <p>• <strong>Adult & child occupants:</strong> Count of adults and children residing</p>
+                <p>• <strong>Business use:</strong> No business, desk work only (no visitors), clients/visitors come to property, other</p>
+                <p className="text-slate-500 italic pl-3">↳ If visitors come: Never, Occasionally, Monthly, Weekly, Daily</p>
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-900 text-white">
+                  Step 4
+                </span>
+                <h3 className="text-base font-bold text-slate-900">
+                  Security & Safety
+                </h3>
+              </div>
+              <p className="text-xs font-medium text-emerald-700 bg-emerald-50/60 border border-emerald-100 px-3 py-1 rounded-md inline-block mb-4">
+                Goal: Understand physical security measures affecting risk.
+              </p>
+              <div className="space-y-2 text-xs text-slate-700">
+                <p>• <strong>External door locks:</strong> 5-lever BS 3621 (highest security), 5-lever standard, Multi-point locking, Yale spring-latch, Smart lock</p>
+                <p>• <strong>Window locks:</strong> Key-operated locks on ground floor and accessible windows (Yes / No)</p>
+                <p>• <strong>Burglar alarm:</strong> None, Standard siren alarm, Smart or professionally monitored alarm</p>
+                <p>• <strong>Smoke alarms & CCTV:</strong> Smoke alarm coverage and external CCTV cameras</p>
+              </div>
+            </div>
+
+            {/* Step 5 */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-900 text-white">
+                  Step 5
+                </span>
+                <h3 className="text-base font-bold text-slate-900">
+                  Valuables & Optional Extras
+                </h3>
+              </div>
+              <p className="text-xs font-medium text-emerald-700 bg-emerald-50/60 border border-emerald-100 px-3 py-1 rounded-md inline-block mb-4">
+                Goal: Identify high-value items and configure optional cover add-ons.
+              </p>
+              <div className="text-xs text-slate-700 space-y-3">
+                <p>
+                  <strong>High-Value Items:</strong> Single items worth over £1,500 (Jewellery, Art, Electronics, Instruments, Watches, etc.) declared individually with values.
+                </p>
+                <p>
+                  <strong>Personal Belongings Away from Home:</strong> Optional cover for valuables carried outside the house.
+                </p>
+
+                <div className="border border-slate-200 rounded-lg overflow-hidden mt-3">
+                  <table className="w-full text-left">
+                    <thead className="bg-slate-50 text-[11px] font-semibold text-slate-600 border-b border-slate-200">
+                      <tr>
+                        <th className="py-2 px-3">Add-on</th>
+                        <th className="py-2 px-3">What It Covers</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      <tr>
+                        <td className="py-2 px-3 font-semibold text-slate-900">Accidental Damage</td>
+                        <td className="py-2 px-3 text-slate-600">Spilling wine on laptop, dropping a phone, drilling into a hidden pipe</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2 px-3 font-semibold text-slate-900">Home Emergency</td>
+                        <td className="py-2 px-3 text-slate-600">Urgent repairs like boiler breakdown, burst pipe, or storm roof damage</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2 px-3 font-semibold text-slate-900">Legal Protection</td>
+                        <td className="py-2 px-3 text-slate-600">Legal costs for property boundary disputes, contractor conflicts, etc.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 6 */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-900 text-white">
+                  Step 6
+                </span>
+                <h3 className="text-base font-bold text-slate-900">
+                  Claims History
+                </h3>
+              </div>
+              <p className="text-xs font-medium text-emerald-700 bg-emerald-50/60 border border-emerald-100 px-3 py-1 rounded-md inline-block mb-4">
+                Goal: Check claims over an exact 5-year lookback period.
+              </p>
+              <div className="text-xs text-slate-700 space-y-2">
+                <p>• <strong>Claims count:</strong> None, 1 claim, 2 claims, 3 or more claims in the past 5 years.</p>
+                <p>• <strong>For each declared claim:</strong> Type of incident (storm, fire, theft, water), year it happened, and payout amount.</p>
+                <p className="text-slate-500 italic">
+                  Note: The system strictly reviews claims within the last 5 years from today. Anything older does not need declaration.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 7 */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-900 text-white">
+                  Step 7
+                </span>
+                <h3 className="text-base font-bold text-slate-900">
+                  Personal Details & Confirmation
+                </h3>
+              </div>
+              <p className="text-xs font-medium text-emerald-700 bg-emerald-50/60 border border-emerald-100 px-3 py-1 rounded-md inline-block mb-4">
+                Goal: Collect applicant details and secure policy confirmation.
+              </p>
+              <div className="text-xs text-slate-700 space-y-2">
+                <p>• <strong>Applicant details:</strong> Title, First & Last name, Date of birth, Phone number, Email address, Cover start date.</p>
+                <p>• <strong>Preferences:</strong> Marketing opt-in/opt-out.</p>
+                <p>• <strong>Declaration:</strong> Formal confirmation that all details provided are truthful and accurate.</p>
+                <p className="text-emerald-700 font-semibold pt-1">
+                  Clicking "Submit" recalculates the live contribution and routes to Plan Comparison.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <hr className="border-slate-200 my-12" />
+
+        {/* ── 4. Compare Plans ──────────────────────────────────── */}
+        <section id="compare-plans" className="scroll-mt-28 mb-16">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-4">
+            4. Compare Plans
+          </h2>
+          <p className="text-base text-slate-700 leading-relaxed mb-6">
+            After completing the 7-step form, the customer sees a side-by-side comparison of three available protection plans.
+          </p>
+
+          <div className="border border-slate-200 rounded-xl overflow-hidden shadow-xs bg-white mb-6">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                <tr>
+                  <th className="py-3 px-4">Plan</th>
+                  <th className="py-3 px-4">Summary</th>
+                  <th className="py-3 px-4">Best For</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
+                <tr className="hover:bg-slate-50/60">
+                  <td className="py-3 px-4 font-bold text-slate-900">Essential</td>
+                  <td className="py-3 px-4 text-slate-600">Basic cover at a lower price point</td>
+                  <td className="py-3 px-4 text-slate-600">Budget-conscious homeowners and tenants</td>
+                </tr>
+                <tr className="hover:bg-slate-50/60 bg-emerald-50/20">
+                  <td className="py-3 px-4 font-bold text-emerald-800 flex items-center gap-1.5">
+                    Standard <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">Popular</span>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">Balanced protection with core extras included</td>
+                  <td className="py-3 px-4 text-slate-600">Most UK families and standard properties</td>
+                </tr>
+                <tr className="hover:bg-slate-50/60">
+                  <td className="py-3 px-4 font-bold text-slate-900">Comprehensive</td>
+                  <td className="py-3 px-4 text-slate-600">Broadest cover with most add-ons included</td>
+                  <td className="py-3 px-4 text-slate-600">High-value properties needing maximum peace of mind</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1.5">
+            <p><strong>Interactive toggles:</strong> Customers can toggle between <strong>Monthly</strong> and <strong>Annual</strong> payments with instantaneous price updates.</p>
+            <p><strong>What is displayed:</strong> Exact monthly/annual contribution, buildings cover limit, contents cover limit, voluntary excess options, and clear inclusion/exclusion checkmarks.</p>
+          </div>
+        </section>
+
+        <hr className="border-slate-200 my-12" />
+
+        {/* ── 5. Payment ────────────────────────────────────────── */}
+        <section id="payment" className="scroll-mt-28 mb-16">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-4">
+            5. Payment
+          </h2>
+          <p className="text-base text-slate-700 leading-relaxed mb-6">
+            After selecting a plan, the customer completes their payment setup in 5 structured steps:
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 mb-6">
+            <div className="p-3.5 rounded-lg bg-white border border-slate-200 text-center">
+              <span className="text-xs font-bold text-slate-400 block mb-1">01</span>
+              <p className="text-xs font-semibold text-slate-800">Review Plan</p>
+            </div>
+            <div className="p-3.5 rounded-lg bg-white border border-slate-200 text-center">
+              <span className="text-xs font-bold text-slate-400 block mb-1">02</span>
+              <p className="text-xs font-semibold text-slate-800">Enter Payment Details</p>
+            </div>
+            <div className="p-3.5 rounded-lg bg-white border border-slate-200 text-center">
+              <span className="text-xs font-bold text-slate-400 block mb-1">03</span>
+              <p className="text-xs font-semibold text-slate-800">Confirm Start Date</p>
+            </div>
+            <div className="p-3.5 rounded-lg bg-white border border-slate-200 text-center">
+              <span className="text-xs font-bold text-slate-400 block mb-1">04</span>
+              <p className="text-xs font-semibold text-slate-800">Review Everything</p>
+            </div>
+            <div className="p-3.5 rounded-lg bg-white border border-slate-200 text-center">
+              <span className="text-xs font-bold text-slate-400 block mb-1">05</span>
+              <p className="text-xs font-semibold text-slate-800">Confirm & Bind</p>
+            </div>
+          </div>
+
+          <div className="p-5 rounded-xl bg-emerald-50/60 border border-emerald-200/80 text-xs text-emerald-950 space-y-2">
+            <strong className="block text-sm font-bold text-emerald-900">Policy Confirmation Screen</strong>
+            <p>Once payment is confirmed, an instant policy confirmation is displayed containing:</p>
+            <ul className="list-disc list-inside space-y-1 pl-1 text-emerald-900/90">
+              <li>A unique policy & certificate number (e.g., <code>TK-2024-8841</code>)</li>
+              <li>The insured property address</li>
+              <li>Scope of cover (Buildings, Contents, Add-ons)</li>
+              <li>Agreed contribution schedule (monthly Direct Debit or annual payment)</li>
+              <li>Effective start date</li>
+            </ul>
+            <p className="pt-2">A direct button allows immediate transition into the Participant Portal.</p>
+          </div>
+        </section>
+
+        <hr className="border-slate-200 my-12" />
+
+        {/* ── 6. Participant Portal — Member Dashboard ─────────── */}
+        <section id="participant-portal" className="scroll-mt-28 mb-16">
+          <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+                6. Participant Portal — The Member Dashboard
+              </h2>
+              <p className="text-sm text-slate-600 mt-1">
+                Where active members manage their cover, view contributions, submit claims, and download documents.
               </p>
             </div>
-          </section>
+            <Link
+              href="/portal/cover"
+              className="text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1 shadow-xs transition-colors"
+            >
+              Open Member Portal <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
+            </Link>
+          </div>
 
-          {/* ── 02. PRODUCT OVERVIEW & 03. VISION ────────────────────────────── */}
-          <section id="product-overview" className="space-y-4 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTION 02 & 03 • PRODUCT OVERVIEW & VISION
+          <div className="p-4 rounded-xl bg-slate-900 text-white text-xs mb-8 flex items-center justify-between">
+            <div>
+              <span className="font-semibold block text-slate-100">Active Demo Persona: Fatima Al-Rashid</span>
+              <span className="text-slate-400">Policy TK-2024-0089 • 14 Oakridge Avenue, London NW3 2QJ</span>
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              02. Product Overview & 03. Vision
-            </h2>
-            <p className="text-[#d4d4d8] leading-relaxed">
-              <strong>Takaful UK</strong> is a digital home protection platform built around the principles of mutual cooperation and Sharia-compliant financial structures. The experience is designed to provide customers with simple digital protection, transparent contributions, clear coverage, digital claims, accessible policy documents, and visibility into the mutual pool—serving as a modern alternative to traditional insurance.
-            </p>
+            <span className="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-medium border border-emerald-500/30">
+              Active Member
+            </span>
+          </div>
 
-            <div id="product-vision" className="p-4 rounded-lg bg-[#18181b] border border-[#27272a] space-y-2">
-              <div className="text-xs font-mono text-[#00c685] font-semibold uppercase">Platform Vision (11 Core Capabilities)</div>
-              <ol className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#a1a1aa]">
-                <li>1. Discover their eligibility.</li>
-                <li>2. Get a transparent quote.</li>
-                <li>3. Compare protection options.</li>
-                <li>4. Complete their application.</li>
-                <li>5. Set up payment securely.</li>
-                <li>6. Receive policy documentation.</li>
-                <li>7. Manage their active protection.</li>
-                <li>8. Submit and track claims.</li>
-                <li>9. Understand their contributions.</li>
-                <li>10. Understand the mutual pool.</li>
-                <li className="sm:col-span-2 text-[#00c685]">11. View eligible surplus information where applicable.</li>
-              </ol>
+          <div className="space-y-4">
+            <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <h3 className="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+                <Home className="w-4 h-4 text-emerald-600" />
+                Portal — My Cover
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-3">
+                Gives the member a complete picture of what protection they have:
+              </p>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600">
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Insured property address</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Cover type (Buildings, Contents, Both)</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Buildings limit (£350,000) & Contents limit (£50,000)</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Policy certificate number & renewal dates</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Excess amount breakdown</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Active add-ons & key exclusions list</li>
+              </ul>
             </div>
-          </section>
 
-          {/* ── 04. CORE TAKAFUL PRINCIPLES ──────────────────────────────────── */}
-          <section id="core-principles" className="space-y-4 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTION 04 • CORE TAKAFUL PRINCIPLES
+            <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <h3 className="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+                <ClipboardList className="w-4 h-4 text-blue-600" />
+                Portal — My Claims
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-3">
+                Where members submit new claims and track live claim progress end-to-end.
+              </p>
+              <div className="p-3 rounded-lg bg-slate-50 border border-slate-100 text-xs text-slate-700 mb-3 space-y-1">
+                <span className="font-semibold block text-slate-900">7-Step Claim Submission Flow:</span>
+                <p>1. Start Claim ➔ 2. Select Incident Type (Fire, Water, Storm, Theft, etc.) ➔ 3. Incident Date ➔ 4. Plain-English Description ➔ 5. Upload Evidence/Photos ➔ 6. Review ➔ 7. Submit.</p>
+              </div>
+              <div className="p-3 rounded-lg bg-slate-50 border border-slate-100 text-xs text-slate-700">
+                <span className="font-semibold block text-slate-900 mb-1">Live Claim Tracking Lifecycle:</span>
+                <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono font-medium text-slate-700">
+                  <span className="px-2 py-0.5 bg-slate-200 rounded">Submitted</span>
+                  <span>→</span>
+                  <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded">Under Review</span>
+                  <span>→</span>
+                  <span className="px-2 py-0.5 bg-amber-100 text-amber-800 rounded">Assessment</span>
+                  <span>→</span>
+                  <span className="px-2 py-0.5 bg-purple-100 text-purple-800 rounded">Decision</span>
+                  <span>→</span>
+                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded">Payment</span>
+                  <span>→</span>
+                  <span className="px-2 py-0.5 bg-slate-800 text-white rounded">Completed</span>
+                </div>
+              </div>
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              04. Core Takaful Principles
-            </h2>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-1.5">
-                <div className="font-mono text-xs font-bold text-[#00c685]">4.1 Ta'awun — Mutual Cooperation</div>
-                <p className="text-xs text-[#a1a1aa]">Members participate in a structure designed around mutual assistance and shared responsibility.</p>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-1.5">
-                <div className="font-mono text-xs font-bold text-[#00c685]">4.2 Tabarru — Mutual Contribution</div>
-                <p className="text-xs text-[#a1a1aa]">An agreed portion of contributions is allocated to the mutual pool to support eligible claims and approved obligations.</p>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-1.5">
-                <div className="font-mono text-xs font-bold text-[#00c685]">4.3 Wakala — Agency Arrangement</div>
-                <p className="text-xs text-[#a1a1aa]">The operator receives an agreed, transparent management fee for operating and administering the platform.</p>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-1.5">
-                <div className="font-mono text-xs font-bold text-[#00c685]">4.4 Sharia-Compliant Management</div>
-                <p className="text-xs text-[#a1a1aa]">Structured to avoid prohibited elements (Riba, Gharar, Maysir) under formal Sharia and legal supervisory approval.</p>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-1.5 sm:col-span-2">
-                <div className="font-mono text-xs font-bold text-[#00c685]">4.5 Mutual Surplus (Important UX Rule)</div>
-                <p className="text-xs text-[#a1a1aa]">
-                  Where the approved financial model allows, eligible surplus is distributed according to predefined rules. <strong>The customer interface must clearly distinguish "Estimated surplus" from "Final approved distribution." A surplus must never be presented as guaranteed.</strong>
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* ── 05. BUSINESS VALUE ───────────────────────────────────────────── */}
-          <section id="business-value" className="space-y-4 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTION 05 • BUSINESS VALUE
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              05. Business Value
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
-              <div className="p-3 rounded-lg bg-[#121215] border border-[#27272a] space-y-1">
-                <div className="font-bold text-[#00c685] font-mono">Transparency</div>
-                <p className="text-[#a1a1aa] text-[11px]">Customers see exactly where contributions go.</p>
-              </div>
-              <div className="p-3 rounded-lg bg-[#121215] border border-[#27272a] space-y-1">
-                <div className="font-bold text-[#00c685] font-mono">Simplicity</div>
-                <p className="text-[#a1a1aa] text-[11px]">Removes insurance complexity and jargon.</p>
-              </div>
-              <div className="p-3 rounded-lg bg-[#121215] border border-[#27272a] space-y-1">
-                <div className="font-bold text-[#00c685] font-mono">Self-Service</div>
-                <p className="text-[#a1a1aa] text-[11px]">100% digital management without call centers.</p>
-              </div>
-              <div className="p-3 rounded-lg bg-[#121215] border border-[#27272a] space-y-1">
-                <div className="font-bold text-[#00c685] font-mono">Mutuality</div>
-                <p className="text-[#a1a1aa] text-[11px]">Explains the shared pool relationship.</p>
-              </div>
-              <div className="p-3 rounded-lg bg-[#121215] border border-[#27272a] space-y-1 col-span-2 sm:col-span-1">
-                <div className="font-bold text-[#00c685] font-mono">Trust</div>
-                <p className="text-[#a1a1aa] text-[11px]">Audited claims and governance clarity.</p>
-              </div>
-            </div>
-          </section>
-
-          {/* ── 06. TARGET USERS & PERSONAS ──────────────────────────────────── */}
-          <section id="target-users" className="space-y-4 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTION 06 • TARGET USERS & PERSONAS
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              06. Target User Personas
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Persona 1 */}
-              <div className="p-5 rounded-xl bg-[#121215] border border-[#27272a] space-y-3">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-[#00c685] font-bold">PERSONA 01 — HOMEOWNER</span>
-                  <span className="text-[#71717a]">Ages 34 & 31</span>
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-[#f4f4f5]">Tariq & Amina</h3>
-                  <div className="text-xs text-[#a1a1aa]">Birmingham • 3-bed semi-detached house</div>
-                </div>
-                <p className="text-xs text-[#a1a1aa]">Purchasing home via an Islamic home purchase plan (HPP).</p>
-                <div className="text-xs space-y-1 text-[#a1a1aa] pt-2 border-t border-[#27272a]">
-                  <div className="font-semibold text-[#f4f4f5]">Needs:</div>
-                  <div>• Buildings protection & mortgage docs</div>
-                  <div>• Simple quote & clear exclusions</div>
-                  <div>• Digital policy documents & easy claims</div>
-                  <div className="text-[#00c685] pt-1">UX Opportunity: Fast, transparent journey from postcode to lender-ready certificate.</div>
-                </div>
-              </div>
-
-              {/* Persona 2 */}
-              <div className="p-5 rounded-xl bg-[#121215] border border-[#27272a] space-y-3">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-blue-400 font-bold">PERSONA 02 — RENTER</span>
-                  <span className="text-[#71717a]">Age 27</span>
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-[#f4f4f5]">Zayd</h3>
-                  <div className="text-xs text-[#a1a1aa]">London • 1-bedroom flat</div>
-                </div>
-                <p className="text-xs text-[#a1a1aa]">Owns valuable electronics, cameras, and personal tech.</p>
-                <div className="text-xs space-y-1 text-[#a1a1aa] pt-2 border-t border-[#27272a]">
-                  <div className="font-semibold text-[#f4f4f5]">Needs:</div>
-                  <div>• Contents & high-value item protection</div>
-                  <div>• Mobile-first experience</div>
-                  <div>• Digital claims & simple monthly payment</div>
-                </div>
-              </div>
-
-              {/* Persona 3 */}
-              <div className="p-5 rounded-xl bg-[#121215] border border-[#27272a] space-y-3">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-amber-400 font-bold">PERSONA 03 — ETHICAL</span>
-                  <span className="text-[#71717a]">Ages 48 & 46</span>
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-[#f4f4f5]">David & Eleanor</h3>
-                  <div className="text-xs text-[#a1a1aa]">Bristol • Homeowners</div>
-                </div>
-                <p className="text-xs text-[#a1a1aa]">Interested in cooperative and ethical financial models.</p>
-                <div className="text-xs space-y-1 text-[#a1a1aa] pt-2 border-t border-[#27272a]">
-                  <div className="font-semibold text-[#f4f4f5]">Needs:</div>
-                  <div>• Transparent fees & pool visibility</div>
-                  <div>• Clear governance & ethical claims</div>
-                  <div>• Understanding of surplus distribution</div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* ── 07 - 09. ECOSYSTEM & JOURNEY ─────────────────────────────────── */}
-          <section id="product-ecosystem" className="space-y-4 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTION 07 - 09 • ECOSYSTEM & CUSTOMER JOURNEY
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              07. Product Ecosystem & 09. Customer Journey
-            </h2>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div id="public-website" className="p-3 rounded-lg bg-[#121215] border border-[#27272a]">
-                <div className="font-mono text-[10px] text-[#71717a]">01</div>
-                <div className="font-bold text-[#f4f4f5]">08. Public Website</div>
-                <div className="text-[#a1a1aa] text-[11px] mt-1">Discovery & education</div>
-                <div className="text-[10px] font-mono text-[#71717a] mt-2 pt-2 border-t border-[#27272a]">
-                  Home · About · How It Works · Protection · Claims · Transparency · FAQs · Contact · Get Quote
-                </div>
-              </div>
-              <div className="p-3 rounded-lg bg-[#121215] border border-[#27272a]">
-                <div className="font-mono text-[10px] text-[#71717a]">02</div>
-                <div className="font-bold text-[#00c685]">Get Quote Flow</div>
-                <div className="text-[#a1a1aa] text-[11px] mt-1">Acquisition & conversion</div>
-              </div>
-              <div className="p-3 rounded-lg bg-[#121215] border border-[#27272a]">
-                <div className="font-mono text-[10px] text-[#71717a]">03</div>
-                <div className="font-bold text-[#f4f4f5]">Participant Portal</div>
-                <div className="text-[#a1a1aa] text-[11px] mt-1">Customer self-service</div>
-              </div>
-              <div className="p-3 rounded-lg bg-[#121215] border border-[#27272a]">
-                <div className="font-mono text-[10px] text-[#71717a]">04</div>
-                <div className="font-bold text-[#f4f4f5]">Operational Consoles</div>
-                <div className="text-[#a1a1aa] text-[11px] mt-1">Claims, Finance, Governance</div>
-              </div>
-            </div>
-
-            {/* Journey Diagram */}
-            <div id="customer-journey" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] font-mono text-xs space-y-2">
-              <div className="text-[#71717a] text-[11px] uppercase">End-to-End Customer Journey Pipeline</div>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-[#d4d4d8]">
-                <span className="bg-[#18181b] px-2.5 py-1 rounded border border-[#27272a]">DISCOVER</span>
-                <span>→</span>
-                <span className="bg-[#18181b] px-2.5 py-1 rounded border border-[#27272a]">UNDERSTAND</span>
-                <span>→</span>
-                <span className="bg-[#00c685]/10 text-[#00c685] border border-[#00c685]/30 px-2.5 py-1 rounded">GET QUOTE</span>
-                <span>→</span>
-                <span className="bg-[#18181b] px-2.5 py-1 rounded border border-[#27272a]">ANSWER QUESTIONS</span>
-                <span>→</span>
-                <span className="bg-[#18181b] px-2.5 py-1 rounded border border-[#27272a]">COMPARE PLANS</span>
-                <span>→</span>
-                <span className="bg-[#18181b] px-2.5 py-1 rounded border border-[#27272a]">PAYMENT</span>
-                <span>→</span>
-                <span className="bg-[#18181b] px-2.5 py-1 rounded border border-[#27272a]">POLICY CREATED</span>
-                <span>→</span>
-                <span className="bg-[#18181b] px-2.5 py-1 rounded border border-[#27272a]">MEMBER DASHBOARD</span>
-              </div>
-            </div>
-          </section>
-
-          {/* ── 10 - 22. GET QUOTE FUNCTIONAL SPECIFICATION ──────────────────── */}
-          <section id="get-quote-overview" className="space-y-6 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTIONS 10 - 22 • GET QUOTE FUNCTIONAL SPECIFICATION
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              Get Quote Experience & Question Flows
-            </h2>
-            <p className="text-[#a1a1aa] leading-relaxed">
-              The Get Quote experience must be fast, clear, mobile-friendly, progressive, easy to understand, transparent, and validated. <strong>The user should not see every question at once; questions appear conditionally based on previous answers.</strong>
-            </p>
-
-            {/* Step 01 to 05 Breakdown */}
-            <div className="space-y-4">
-              
-              {/* Step 01 */}
-              <div id="quote-step-01" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-[#00c685]">STEP 01: POSTCODE & ADDRESS</span>
-                  <span className="text-[10px] font-mono text-[#71717a]">ROYAL MAIL PAF</span>
-                </div>
-                <div className="text-xs text-[#d4d4d8]"><strong>Question:</strong> "What's your postcode?" (e.g. <code>B13 9EG</code>)</div>
-                <div className="text-xs text-[#a1a1aa]"><strong>Actions:</strong> "Find my address" → displays dropdown list of matching addresses.</div>
-                <div className="text-xs text-[#a1a1aa]"><strong>Alternative:</strong> "Enter my address manually" (Address line 1, Line 2, Town/City, County, Postcode).</div>
-              </div>
-
-              {/* Step 02 */}
-              <div id="quote-step-02" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-[#00c685]">STEP 02: WHAT DO YOU WANT TO PROTECT?</span>
-                  <span className="text-[10px] font-mono text-[#71717a]">COVER SCOPE</span>
-                </div>
-                <div className="text-xs text-[#d4d4d8]"><strong>Question:</strong> "What would you like to cover?"</div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs pt-1">
-                  <div className="p-2.5 rounded bg-[#18181b] border border-[#27272a]">
-                    <div className="font-semibold text-[#f4f4f5]">Buildings & Contents</div>
-                    <div className="text-[11px] text-[#a1a1aa]">Shows both Buildings and Contents questions.</div>
-                  </div>
-                  <div className="p-2.5 rounded bg-[#18181b] border border-[#27272a]">
-                    <div className="font-semibold text-[#f4f4f5]">Buildings Only</div>
-                    <div className="text-[11px] text-[#a1a1aa]">Shows Buildings questions; hides Contents questions.</div>
-                  </div>
-                  <div className="p-2.5 rounded bg-[#18181b] border border-[#27272a]">
-                    <div className="font-semibold text-[#f4f4f5]">Contents Only</div>
-                    <div className="text-[11px] text-[#a1a1aa]">Shows Contents questions; hides Buildings questions.</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Step 03 */}
-              <div id="quote-step-03" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-[#00c685]">STEP 03: PROPERTY TYPE</span>
-                  <span className="text-[10px] font-mono text-[#71717a]">CONDITIONAL LOGIC</span>
-                </div>
-                <div className="text-xs text-[#d4d4d8]"><strong>Choices:</strong> House, Flat, Bungalow, Town house, Bedsit, Maisonette, Farm house, Other.</div>
-                <div className="p-3 rounded bg-[#18181b] border border-[#27272a] text-xs space-y-1">
-                  <div className="text-[#00c685] font-semibold">If "Flat" is selected:</div>
-                  <div className="text-[#a1a1aa]">• <strong>Floor:</strong> Ground floor, 1st, 2nd, 3rd, 4th, 5th+, Other.</div>
-                  <div className="text-[#a1a1aa]">• <strong>Self-contained?</strong> Yes / No.</div>
-                </div>
-              </div>
-
-              {/* Step 04 */}
-              <div id="quote-step-04" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-[#00c685]">STEP 04: PROPERTY DETAILS & ROOM COUNTS</span>
-                  <span className="text-[10px] font-mono text-[#71717a]">RISK FACTORS</span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
-                  <div className="p-2 rounded bg-[#18181b] border border-[#27272a]">
-                    <span className="text-[#71717a]">Bedrooms:</span> <span className="text-[#f4f4f5] font-bold">1 to 10+</span>
-                  </div>
-                  <div className="p-2 rounded bg-[#18181b] border border-[#27272a]">
-                    <span className="text-[#71717a]">Bathrooms:</span> <span className="text-[#f4f4f5] font-bold">1 to 5+</span>
-                  </div>
-                  <div className="p-2 rounded bg-[#18181b] border border-[#27272a]">
-                    <span className="text-[#71717a]">Living Rooms:</span> <span className="text-[#f4f4f5] font-bold">0 to 3+</span>
-                  </div>
-                  <div className="p-2 rounded bg-[#18181b] border border-[#27272a]">
-                    <span className="text-[#71717a]">Kitchens:</span> <span className="text-[#f4f4f5] font-bold">1 to 3+</span>
-                  </div>
-                  <div className="p-2 rounded bg-[#18181b] border border-[#27272a] col-span-2 sm:col-span-1">
-                    <span className="text-[#71717a]">Other Rooms:</span> <span className="text-[#f4f4f5] font-bold">0 to 10+</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Step 05 & Construction */}
-              <div id="quote-step-05" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-[#00c685]">STEP 05: CONSTRUCTION, ROOF & HEATING</span>
-                  <span className="text-[10px] font-mono text-[#71717a]">UNDERWRITING</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                  <div className="p-2.5 rounded bg-[#18181b] border border-[#27272a] space-y-1">
-                    <div className="font-semibold text-[#f4f4f5]">Walls & Year</div>
-                    <div className="text-[11px] text-[#a1a1aa]">Brick, Stone, Concrete, Timber, Other. Year Built input.</div>
-                  </div>
-                  <div className="p-2.5 rounded bg-[#18181b] border border-[#27272a] space-y-1">
-                    <div className="font-semibold text-[#f4f4f5]">Roof Construction</div>
-                    <div className="text-[11px] text-[#a1a1aa]">Tile, Slate, Flat roof. If Flat Roof: % flat (0% up to 100%).</div>
-                  </div>
-                  <div className="p-2.5 rounded bg-[#18181b] border border-[#27272a] space-y-1">
-                    <div className="font-semibold text-[#f4f4f5]">Heating System</div>
-                    <div className="text-[11px] text-[#a1a1aa]">Gas central heating, Electric, Oil, Heat pump, Other.</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Security & Locks */}
-              <div id="quote-security" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-[#00c685]">SECURITY, LOCKS & ALARMS</span>
-                  <span className="text-[10px] font-mono text-[#71717a]">DISCOUNT MITIGATION</span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                  <div className="p-2 rounded bg-[#18181b] border border-[#27272a]">
-                    <div className="text-[10px] text-[#71717a]">DOOR LOCKS</div>
-                    <div className="font-medium text-[#f4f4f5]">5-lever mortice / Multi-point</div>
-                  </div>
-                  <div className="p-2 rounded bg-[#18181b] border border-[#27272a]">
-                    <div className="text-[10px] text-[#71717a]">WINDOWS</div>
-                    <div className="font-medium text-[#f4f4f5]">Key-operated locks</div>
-                  </div>
-                  <div className="p-2 rounded bg-[#18181b] border border-[#27272a]">
-                    <div className="text-[10px] text-[#71717a]">BURGLAR ALARM</div>
-                    <div className="font-medium text-[#f4f4f5]">Professional / None</div>
-                  </div>
-                  <div className="p-2 rounded bg-[#18181b] border border-[#27272a]">
-                    <div className="text-[10px] text-[#71717a]">DOORS</div>
-                    <div className="font-medium text-[#f4f4f5]">Patio / French / Bi-fold</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Use & Occupancy */}
-              <div id="quote-use-occupancy" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-[#00c685]">PROPERTY USE & OCCUPANCY</span>
-                  <span className="text-[10px] font-mono text-[#71717a]">RISK EXCLUSIONS</span>
-                </div>
-                <div className="text-xs text-[#a1a1aa] space-y-1">
-                  <div>• <strong>Main residence?</strong> Yes / No. <strong>Occupants:</strong> Alone, Partner/family, Tenants, Other.</div>
-                  <div>• <strong>Unoccupied 30+ days?</strong> If Yes → trigger frequency and longest duration questions.</div>
-                  <div>• <strong>Business use?</strong> No, Clerical/home office work, or Customers/visitors come to property (triggers visitor details).</div>
-                </div>
-              </div>
-
-            </div>
-          </section>
-
-          {/* ── 27 - 38. VALUATION, RIDERS, CLAIMS & EXCESS ─────────────────── */}
-          <section id="quote-buildings-contents" className="space-y-4 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTIONS 27 - 38 • VALUATION, RIDERS & CLAIMS
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              Valuation, High-Value Items & Claim History
-            </h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="font-bold text-[#00c685] font-mono">27. Rebuild Cost & Extensions</div>
-                <p className="text-[#a1a1aa]">Estimated rebuild cost (not market value). If extended → capture extension type, size, and completion year.</p>
-              </div>
-
-              <div id="quote-high-value" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="font-bold text-[#00c685] font-mono">30. High-Value Items (&gt;£1,000)</div>
-                <p className="text-[#a1a1aa]">Multi-select: Jewellery, Watches, Electronics, Cameras, Art, Instruments. Includes "Add Item" fields: Type, Description, Value, Purchase Date, Photo.</p>
-              </div>
-
-              <div id="quote-claims-history" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="font-bold text-[#00c685] font-mono">33. 5-Year Claim History</div>
-                <p className="text-[#a1a1aa]">If Yes → specify incident count (1-5+), dates, incident types, estimated loss, amount paid, and status.</p>
-              </div>
-
-              <div id="quote-optional-excess" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="font-bold text-[#00c685] font-mono">37. Voluntary Excess & Recalculation</div>
-                <p className="text-[#a1a1aa]">Options: £0, £150, £250, £400. Recalculates dynamically without forcing the user to restart the quote.</p>
-              </div>
-            </div>
-          </section>
-
-          {/* ── 39. CONDITIONAL LOGIC MATRIX ─────────────────────────────────── */}
-          <section id="quote-conditional-logic" className="space-y-4 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTION 39 • CONDITIONAL LOGIC RULES
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              39. Get Quote Conditional Logic Matrix
-            </h2>
-            <div className="border border-[#27272a] rounded-lg overflow-hidden">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-[#18181b] text-[#71717a] font-mono text-[11px] uppercase border-b border-[#27272a]">
-                  <tr>
-                    <th className="p-3">User Selection</th>
-                    <th className="p-3 text-[#00c685]">Additional Questions Displayed</th>
-                    <th className="p-3 text-[#71717a]">Hidden / Removed Questions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#27272a] text-[#d4d4d8] font-sans">
-                  <tr className="hover:bg-[#121215]/50">
-                    <td className="p-3 font-mono font-medium text-[#f4f4f5]">Buildings & Contents</td>
-                    <td className="p-3 text-[#00c685]">Buildings + Contents sections</td>
-                    <td className="p-3 text-[#71717a]">None</td>
-                  </tr>
-                  <tr className="hover:bg-[#121215]/50">
-                    <td className="p-3 font-mono font-medium text-[#f4f4f5]">Buildings Only</td>
-                    <td className="p-3 text-[#00c685]">Buildings section only</td>
-                    <td className="p-3 text-[#71717a]">Contents questions hidden</td>
-                  </tr>
-                  <tr className="hover:bg-[#121215]/50">
-                    <td className="p-3 font-mono font-medium text-[#f4f4f5]">Contents Only</td>
-                    <td className="p-3 text-[#00c685]">Contents section only</td>
-                    <td className="p-3 text-[#71717a]">Buildings questions hidden</td>
-                  </tr>
-                  <tr className="hover:bg-[#121215]/50">
-                    <td className="p-3 font-mono font-medium text-[#f4f4f5]">Flat</td>
-                    <td className="p-3 text-[#00c685]">Floor number + Self-contained toggle</td>
-                    <td className="p-3 text-[#71717a]">Standard house exterior options</td>
-                  </tr>
-                  <tr className="hover:bg-[#121215]/50">
-                    <td className="p-3 font-mono font-medium text-[#f4f4f5]">Flat Roof</td>
-                    <td className="p-3 text-[#00c685]">Flat roof percentage (0-100%)</td>
-                    <td className="p-3 text-[#71717a]">N/A</td>
-                  </tr>
-                  <tr className="hover:bg-[#121215]/50">
-                    <td className="p-3 font-mono font-medium text-[#f4f4f5]">Business Use</td>
-                    <td className="p-3 text-[#00c685]">Business type & visitor volume questions</td>
-                    <td className="p-3 text-[#71717a]">None</td>
-                  </tr>
-                  <tr className="hover:bg-[#121215]/50">
-                    <td className="p-3 font-mono font-medium text-[#f4f4f5]">Previous Claims</td>
-                    <td className="p-3 text-[#00c685]">5-year claim incident breakdown</td>
-                    <td className="p-3 text-[#71717a]">Hidden if "No" selected</td>
-                  </tr>
-                  <tr className="hover:bg-[#121215]/50">
-                    <td className="p-3 font-mono font-medium text-[#f4f4f5]">High-Value Items</td>
-                    <td className="p-3 text-[#00c685]">Item type, valuation, photo upload</td>
-                    <td className="p-3 text-[#71717a]">Hidden if "No" selected</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          {/* ── 40 - 42. UX RULES, FORM SUMMARY & CALCULATION ────────────────── */}
-          <section id="quote-ux-rules" className="space-y-4 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTIONS 40 - 42 • FORM UX RULES & SUMMARY
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              40. Form UX Rules & 41. Review Summary
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="font-bold text-[#f4f4f5]">Progressive Disclosure & Back Navigation</div>
-                <p className="text-[#a1a1aa] leading-relaxed">
-                  Only show questions relevant to the user's situation. If the user changes an earlier answer (e.g. from Buildings & Contents to Contents Only), dependent questions must immediately disappear and state must be cleaned up without jarring reload.
+              <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+                <h3 className="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+                  <Banknote className="w-4 h-4 text-emerald-600" />
+                  Portal — My Contributions
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Shows payment history, upcoming payment schedule, Direct Debit status, and the clear breakdown between the Community Claims Pool and the Operator Wakala fee.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="font-bold text-[#f4f4f5]">Form Summary Review Screen</div>
-                <p className="text-[#a1a1aa] leading-relaxed">
-                  Before generating final quote plans, display a clear review summary: Property type & location, Cover type, Buildings limit (£350k), Contents limit (£50k), Voluntary excess (£250), and Add-ons.
+              <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+                <h3 className="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-indigo-600" />
+                  Portal — My Documents
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Digital vault containing policy schedules, insurance certificates, full policy wording, assessor reports, and contribution statements — all downloadable as PDF.
                 </p>
               </div>
             </div>
-          </section>
 
-          {/* ── 43 - 46. PLAN COMPARISON & PAYMENT ───────────────────────────── */}
-          <section id="plan-comparison" className="space-y-4 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTIONS 43 - 46 • PLAN COMPARISON & PAYMENT
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              43. Plan Comparison Matrix & 44. Transparency Breakdown
-            </h2>
-
-            {/* Plan Comparison Table */}
-            <div className="border border-[#27272a] rounded-lg overflow-hidden">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-[#18181b] text-[#71717a] font-mono text-[11px] uppercase border-b border-[#27272a]">
-                  <tr>
-                    <th className="p-3">Protection Feature</th>
-                    <th className="p-3 text-center">Essential</th>
-                    <th className="p-3 text-center text-[#00c685]">Standard (Popular)</th>
-                    <th className="p-3 text-center">Comprehensive</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#27272a] text-[#d4d4d8]">
-                  <tr>
-                    <td className="p-3 font-mono">Buildings Cover</td>
-                    <td className="p-3 text-center text-[#00c685]">✓</td>
-                    <td className="p-3 text-center text-[#00c685]">✓</td>
-                    <td className="p-3 text-center text-[#00c685]">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-mono">Contents Cover</td>
-                    <td className="p-3 text-center text-[#00c685]">✓</td>
-                    <td className="p-3 text-center text-[#00c685]">✓</td>
-                    <td className="p-3 text-center text-[#00c685]">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-mono">Accidental Damage</td>
-                    <td className="p-3 text-center text-[#71717a]">—</td>
-                    <td className="p-3 text-center text-[#a1a1aa]">Optional (+£4)</td>
-                    <td className="p-3 text-center text-[#00c685]">✓ Included</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-mono">Legal Protection</td>
-                    <td className="p-3 text-center text-[#71717a]">—</td>
-                    <td className="p-3 text-center text-[#00c685]">✓ Included</td>
-                    <td className="p-3 text-center text-[#00c685]">✓ Included</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-mono">Home Emergency</td>
-                    <td className="p-3 text-center text-[#71717a]">—</td>
-                    <td className="p-3 text-center text-[#a1a1aa]">Optional (+£3)</td>
-                    <td className="p-3 text-center text-[#00c685]">✓ Included</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            {/* Transparency Callout */}
-            <div id="quote-transparency" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-              <div className="flex items-center justify-between font-mono text-xs text-[#00c685] font-bold">
-                <span>44. CONTRIBUTION TRANSPARENCY BREAKDOWN</span>
-                <span>MUTUAL ALLOCATION</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+                <h3 className="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+                  <PieChart className="w-4 h-4 text-teal-600" />
+                  Portal — Takaful Pool
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Total community contributions collected, claims paid out, current pool balance, and potential surplus (transparently designated as an actuarial estimate).
+                </p>
               </div>
-              <p className="text-xs text-[#a1a1aa]">
-                Example monthly contribution of £50.00 is visibly partitioned into £40.75 allocated to the Community Tabarru Claims Pool and £9.25 for the fixed Wakala management fee.
+
+              <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+                <h3 className="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+                  <Settings className="w-4 h-4 text-slate-600" />
+                  Portal — Support & Settings
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Live support ticketing, knowledge base FAQs, profile details, password security, and communication notifications.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <hr className="border-slate-200 my-12" />
+
+        {/* ── 7. Staff Dashboards ──────────────────────────────── */}
+        <section id="staff-dashboards" className="scroll-mt-28 mb-16">
+          <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+                7. Staff Dashboards
+              </h2>
+              <p className="text-sm text-slate-600 mt-1">
+                Internal management system with four dedicated role views and a top-bar role switcher.
               </p>
             </div>
+            <Link
+              href="/dashboard/claims"
+              className="text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1 shadow-xs transition-colors"
+            >
+              Open Staff Dashboard <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
+            </Link>
+          </div>
 
-            {/* Payment Journey & Confirmation */}
-            <div id="payment-journey" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-              <div className="flex items-center justify-between font-mono text-xs text-[#00c685] font-bold">
-                <span>45. PAYMENT JOURNEY & 46. POLICY CONFIRMATION</span>
-                <span>DIRECT DEBIT BINDING</span>
-              </div>
-              <div className="text-xs text-[#d4d4d8] font-mono">
-                Selected Plan → Customer Details → Payment Setup → Review → Confirmation → Policy Created
-              </div>
-              <p className="text-xs text-[#a1a1aa] pt-1">
-                Upon mandate authorization, the policy status switches to <strong>Active</strong>, generating a cryptographic Policy ID (e.g. <code>TK-784912</code>) and enabling immediate download of mortgage-ready schedules.
-              </p>
-            </div>
-          </section>
-
-          {/* ── 47 - 68. THE 4 OPERATIONAL DASHBOARDS ─────────────────────────── */}
-          <section id="dashboards-participant" className="space-y-6 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTIONS 47 - 68 • THE 4 OPERATIONAL DASHBOARDS
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              Operational Console Specifications
-            </h2>
-
-            {/* 1. Participant Portal */}
-            <div className="p-5 rounded-xl bg-[#121215] border border-[#27272a] space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-[#f4f4f5]">47. Participant Member Portal</h3>
-                  <div className="text-xs text-[#a1a1aa]">Central customer self-service area</div>
-                </div>
-                <Link href="/portal" className="text-xs font-mono text-[#00c685] hover:underline flex items-center gap-1">
-                  <span>Open Console</span>
-                  <ArrowUpRight size={12} />
-                </Link>
-              </div>
-              <div className="text-xs text-[#a1a1aa] space-y-1">
-                <div><strong>Main Navigation:</strong> Overview · My Cover · Contributions · Claims · Documents · Takaful Pool · Profile · Support</div>
-                <div><strong>Overview Displays:</strong> Active Coverage (Buildings & Contents), Limits (£350k / £50k), Monthly contribution (£42.00/mo), Excess (£250), Estimated Surplus (£18.40).</div>
-                <div><strong>Claim Status Tracker:</strong> Submitted → Under Review → Assessment → Additional Information → Decision → Settlement → Completed.</div>
-              </div>
-            </div>
-
-            {/* 2. Claims Handler Dashboard */}
-            <div id="dashboards-claims" className="p-5 rounded-xl bg-[#121215] border border-[#27272a] space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-[#f4f4f5]">55. Claims Handler Console</h3>
-                  <div className="text-xs text-[#a1a1aa]">Operational desk for incident triage, evidence auditing, and payouts</div>
-                </div>
-                <Link href="/dashboard/queue" className="text-xs font-mono text-blue-400 hover:underline flex items-center gap-1">
-                  <span>Open Queue</span>
-                  <ArrowUpRight size={12} />
-                </Link>
-              </div>
-              <div className="text-xs text-[#a1a1aa] space-y-1">
-                <div><strong>Main Navigation:</strong> Overview · Queue · Claims · Participants · Evidence · Reports</div>
-                <div><strong>Queue Filters:</strong> New, In review, Awaiting evidence, Assessment, Approved, Declined, Paid, Closed.</div>
-                <div><strong>Claim Detail View:</strong> Member details, Incident description & damage estimate, Photo/video evidence vault, Contractor estimates, Assessment notes.</div>
-              </div>
-            </div>
-
-            {/* 3. Finance Dashboard */}
-            <div id="dashboards-finance" className="p-5 rounded-xl bg-[#121215] border border-[#27272a] space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-[#f4f4f5]">59. Treasury & Finance Dashboard</h3>
-                  <div className="text-xs text-[#a1a1aa]">Financial control over contributions, pool funds, and claims releases</div>
-                </div>
-                <Link href="/dashboard/pool" className="text-xs font-mono text-purple-400 hover:underline flex items-center gap-1">
-                  <span>Open Treasury</span>
-                  <ArrowUpRight size={12} />
-                </Link>
-              </div>
-              <div className="text-xs text-[#a1a1aa] space-y-1">
-                <div><strong>Main Navigation:</strong> Overview · Pool · Contributions · Claims Payments · Transactions · Reports</div>
-                <div><strong>Pool Transparency:</strong> Segregation between mutual Tabarru funds and Wakala operator fees.</div>
-                <div><strong>Transactions Log:</strong> Immutable audit trail of banking movements, BACS direct debits, and contractor payments.</div>
-              </div>
-            </div>
-
-            {/* 4. Management & Governance */}
-            <div id="dashboards-management" className="p-5 rounded-xl bg-[#121215] border border-[#27272a] space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-[#f4f4f5]">64. Management & Governance Suite</h3>
-                  <div className="text-xs text-[#a1a1aa]">Executive-level visibility into platform risk, growth, and compliance</div>
-                </div>
-                <Link href="/dashboard/risk" className="text-xs font-mono text-amber-400 hover:underline flex items-center gap-1">
-                  <span>Open Governance</span>
-                  <ArrowUpRight size={12} />
-                </Link>
-              </div>
-              <div className="text-xs text-[#a1a1aa] space-y-1">
-                <div><strong>Main Navigation:</strong> Overview · Risk · Participants · Financial Performance · Governance · Certificates · Settings</div>
-                <div><strong>Executive KPIs:</strong> Active Policies (14,280), MoM Growth (+14.2%), Portfolio Loss Ratio (41.2% YTD), Retention (98.4%).</div>
-                <div><strong>Risk Views:</strong> Flood exposure heatmaps, subsidence peril clustering, postcode accumulation limits, Sharia board audit logs.</div>
-              </div>
-            </div>
-          </section>
-
-          {/* ── 69 - 70. WAKALA & SURPLUS MODELS + CALCULATOR ────────────────── */}
-          <section id="wakala-pool-model" className="space-y-6 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTIONS 69 - 70 • WAKALA & SURPLUS FINANCIAL MODELS
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              69. Wakala Segregation & 70. Surplus Distribution Models
-            </h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="font-mono text-xs font-bold text-[#00c685]">Contribution Bifurcation</div>
-                <pre className="p-3 rounded bg-[#18181b] text-[11px] font-mono text-[#a1a1aa]">
-{`Customer Contribution
-        │
-   ┌────┴────────┐
-   ↓             ↓
-Tabarru Pool   Wakala Fee
-Community      Operator
-Protection     Management`}
-                </pre>
-              </div>
-
-              <div id="surplus-model" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2">
-                <div className="font-mono text-xs font-bold text-[#00c685]">Surplus Distribution Formula</div>
-                <pre className="p-3 rounded bg-[#18181b] text-[11px] font-mono text-[#a1a1aa]">
-{`Eligible Pool Inflows
-       - Claims Settled
-       - Approved Reserves (IBNR)
-       - Retakaful Reinsurance
-       = Potential Surplus`}
-                </pre>
-              </div>
-            </div>
-
-            {/* Live Interactive Pricing Simulator */}
-            <div id="pricing-simulator" className="border border-[#27272a] bg-[#121215] rounded-xl p-6 space-y-6">
-              <div className="flex items-center justify-between border-b border-[#27272a] pb-3">
-                <div className="font-mono text-xs font-bold text-[#00c685] uppercase">
-                  Live Actuarial Contribution Simulator
-                </div>
-                <span className="text-[10px] font-mono text-[#71717a]">INTERACTIVE ENGINE</span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Controls */}
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono text-[#71717a] uppercase">Cover Scope</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { id: 'both', label: 'Combined' },
-                        { id: 'buildings', label: 'Buildings' },
-                        { id: 'contents', label: 'Contents' },
-                      ].map(t => (
-                        <button
-                          key={t.id}
-                          onClick={() => setCalcCoverType(t.id as any)}
-                          className={`py-1.5 px-2 rounded font-mono text-xs border transition-colors ${
-                            calcCoverType === t.id
-                              ? 'bg-[#18181b] border-[#00c685] text-[#00c685] font-bold'
-                              : 'bg-[#18181b]/50 border-[#27272a] text-[#a1a1aa] hover:text-white'
-                          }`}
-                        >
-                          {t.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs font-mono">
-                      <span className="text-[#71717a]">Bedrooms</span>
-                      <span className="text-[#f4f4f5] font-bold">{calcBedrooms} Bedrooms</span>
-                    </div>
-                    <input
-                      type="range"
-                      min={1}
-                      max={5}
-                      step={1}
-                      value={calcBedrooms}
-                      onChange={(e) => setCalcBedrooms(Number(e.target.value))}
-                      className="w-full accent-[#00c685]"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs font-mono">
-                      <span className="text-[#71717a]">Contents Valuation</span>
-                      <span className="text-[#f4f4f5] font-bold">£{calcContentsValue.toLocaleString()}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min={10000}
-                      max={80000}
-                      step={5000}
-                      value={calcContentsValue}
-                      onChange={(e) => setCalcContentsValue(Number(e.target.value))}
-                      className="w-full accent-[#00c685]"
-                    />
-                  </div>
-                </div>
-
-                {/* Live Output */}
-                <div className="border border-[#27272a] bg-[#18181b] rounded-xl p-5 flex flex-col justify-between space-y-4">
-                  <div className="space-y-1">
-                    <div className="text-xs font-mono text-[#71717a] uppercase">Simulated Contribution</div>
-                    <div className="text-3xl font-extrabold text-[#00c685] font-mono">
-                      £{calculatedContribution.gross} <span className="text-xs text-[#a1a1aa] font-normal">/ mo</span>
-                    </div>
-                  </div>
-                  <div className="border-t border-[#27272a] pt-3 space-y-2 text-xs font-mono">
-                    <div className="flex justify-between">
-                      <span className="text-[#a1a1aa]">Community Claims Reserve (81.5%):</span>
-                      <span className="text-[#f4f4f5] font-bold">£{calculatedContribution.tabarruPortion}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#a1a1aa]">Wakala Agency Fee (18.5%):</span>
-                      <span className="text-[#00c685] font-bold">£{calculatedContribution.wakalaPortion}</span>
-                    </div>
-                    <div className="flex justify-between pt-2 border-t border-[#27272a] text-[#71717a]">
-                      <span>Estimated Member Surplus Share:</span>
-                      <span className="text-emerald-400 font-semibold">~£18.40 / yr</span>
-                    </div>
-                  </div>
-                  <Link
-                    href="/get-quote"
-                    className="w-full text-center py-2 px-3 rounded-md bg-[#00c685] hover:bg-[#00e299] text-black font-semibold text-xs font-mono transition-colors"
-                  >
-                    Test Live in Get Quote Flow
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* ── 71 - 76. ROADMAP & DEVELOPER CHECKLIST ───────────────────────── */}
-          <section id="project-phases" className="space-y-6 scroll-mt-20 pt-6 border-t border-[#27272a]">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-mono text-[#00c685] bg-[#00c685]/10 border border-[#00c685]/20 font-semibold">
-              SECTIONS 71 - 76 • ROADMAP, METRICS & CHECKLIST
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-[#f4f4f5]">
-              71. Project Phases & 74. Developer Checklist
-            </h2>
-
-            {/* Phases Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-              {[
-                { phase: '01', title: 'Foundation', desc: 'Brand, public pages, tokens' },
-                { phase: '02', title: 'Get Quote', desc: 'Postcode, stepper, logic' },
-                { phase: '03', title: 'Plan & Pay', desc: 'Comparison, Direct Debit' },
-                { phase: '04', title: 'Participant', desc: 'Cover, claims, pool' },
-                { phase: '05', title: 'Claims Ops', desc: 'Queue, triage, settlements' },
-                { phase: '06', title: 'Finance', desc: 'Pool, batches, audit' },
-                { phase: '07', title: 'Executive', desc: 'Risk, analytics, Sharia' },
-                { phase: '08', title: 'Optimisation', desc: 'Mobile app, automation' },
-              ].map(p => (
-                <div key={p.phase} className="p-3 rounded-lg bg-[#121215] border border-[#27272a] space-y-1">
-                  <div className="font-mono text-[10px] text-[#00c685]">PHASE {p.phase}</div>
-                  <div className="font-bold text-[#f4f4f5]">{p.title}</div>
-                  <div className="text-[11px] text-[#a1a1aa]">{p.desc}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* 72. Product Success Metrics */}
-            <div id="success-metrics" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-3">
-              <div className="font-mono text-xs font-bold text-[#00c685] uppercase">
-                72. Product Success Metrics & KPIs
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-                <div className="p-2.5 rounded bg-[#18181b] border border-[#27272a] space-y-1">
-                  <div className="font-semibold text-[#f4f4f5]">Acquisition</div>
-                  <div className="text-[11px] text-[#a1a1aa]">Website visitors, Quote starts, Quote completion, Plan selection, Payment activation.</div>
-                </div>
-                <div className="p-2.5 rounded bg-[#18181b] border border-[#27272a] space-y-1">
-                  <div className="font-semibold text-[#f4f4f5]">Customer</div>
-                  <div className="text-[11px] text-[#a1a1aa]">Customer CSAT, Self-service rate, Dashboard retention, Policy downloads.</div>
-                </div>
-                <div className="p-2.5 rounded bg-[#18181b] border border-[#27272a] space-y-1">
-                  <div className="font-semibold text-[#f4f4f5]">Claims</div>
-                  <div className="text-[11px] text-[#a1a1aa]">Digital claim rate, First response time, SLA performance (&lt; 48h), Settlement ratio.</div>
-                </div>
-                <div className="p-2.5 rounded bg-[#18181b] border border-[#27272a] space-y-1">
-                  <div className="font-semibold text-[#f4f4f5]">Business</div>
-                  <div className="text-[11px] text-[#a1a1aa]">Active policies (14.2k+), Growth (+14.2%), Retention (98.4%), Claims ratio (41.2%).</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Interactive Developer Verification Checklist */}
-            <div id="developer-checklist" className="p-5 rounded-xl bg-[#121215] border border-[#27272a] space-y-4">
-              <div className="flex items-center justify-between border-b border-[#27272a] pb-3">
-                <div>
-                  <h3 className="text-base font-bold text-[#f4f4f5] font-mono">74. Get Quote Developer Checklist</h3>
-                  <p className="text-xs text-[#a1a1aa]">Interactive functional verification checklist for developers and QA</p>
-                </div>
-                <span className="text-xs font-mono text-[#00c685]">
-                  {Object.values(checkedItems).filter(Boolean).length} of {Object.keys(checkedItems).length} Verified
+          <div className="space-y-6 mt-8">
+            {/* Role 1: Claim Handler */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                  Staff Role: Claim Handler
+                </h3>
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                  Operations & Adjusters
                 </span>
               </div>
-
-              <div className="space-y-4 text-xs">
-                <div>
-                  <div className="font-mono font-semibold text-[#71717a] uppercase text-[10px] mb-2">Form & Navigation Requirements</div>
-                  <div className="space-y-1.5">
-                    {[
-                      { id: 'form-required', text: 'All required questions are available' },
-                      { id: 'form-choices', text: 'All answer choices are implemented' },
-                      { id: 'form-validation', text: 'Required fields are validated' },
-                      { id: 'form-optional', text: 'Optional fields are clearly identified' },
-                      { id: 'form-back', text: 'Back navigation works and preserves user answers' },
-                    ].map(item => (
-                      <button
-                        key={item.id}
-                        onClick={() => toggleCheck(item.id)}
-                        className="flex items-center gap-2.5 w-full text-left p-1.5 rounded hover:bg-[#18181b] transition-colors"
-                      >
-                        {checkedItems[item.id] ? (
-                          <CheckSquare size={14} className="text-[#00c685] shrink-0" />
-                        ) : (
-                          <Square size={14} className="text-[#71717a] shrink-0" />
-                        )}
-                        <span className={checkedItems[item.id] ? 'text-[#f4f4f5]' : 'text-[#71717a]'}>{item.text}</span>
-                      </button>
-                    ))}
-                  </div>
+              <p className="text-xs text-slate-500 mb-4">
+                <strong>Who uses this:</strong> Claim handlers reviewing incident reports from participants.<br />
+                <strong>Why this exists:</strong> When a claim is submitted, handlers need dedicated tools to review evidence, communicate with members, establish reserves, make approvals, and prepare payments.
+              </p>
+              <div className="space-y-3 text-xs text-slate-700">
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Overview & SLA Metrics</strong>
+                  Open claims count, incoming daily volume, SLA timers, and high-priority escalation alerts.
                 </div>
-
-                <div className="pt-2 border-t border-[#27272a]">
-                  <div className="font-mono font-semibold text-[#71717a] uppercase text-[10px] mb-2">Conditional Logic Verification</div>
-                  <div className="space-y-1.5">
-                    {[
-                      { id: 'cond-buildings', text: 'Buildings questions appear only when Buildings is selected' },
-                      { id: 'cond-contents', text: 'Contents questions appear only when Contents is selected' },
-                      { id: 'cond-flat', text: 'Flat-specific questions appear only for Flats' },
-                      { id: 'cond-business', text: 'Business questions appear only when business use is selected' },
-                      { id: 'cond-claims', text: 'Claim history appears only when previous claims are selected' },
-                      { id: 'cond-highvalue', text: 'High-value item fields appear only when applicable' },
-                    ].map(item => (
-                      <button
-                        key={item.id}
-                        onClick={() => toggleCheck(item.id)}
-                        className="flex items-center gap-2.5 w-full text-left p-1.5 rounded hover:bg-[#18181b] transition-colors"
-                      >
-                        {checkedItems[item.id] ? (
-                          <CheckSquare size={14} className="text-[#00c685] shrink-0" />
-                        ) : (
-                          <Square size={14} className="text-[#71717a] shrink-0" />
-                        )}
-                        <span className={checkedItems[item.id] ? 'text-[#f4f4f5]' : 'text-[#71717a]'}>{item.text}</span>
-                      </button>
-                    ))}
-                  </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">My Queue & All Claims</strong>
+                  Filter claims by status (New, In Review, Awaiting Documents, Assessment, Decision, Paid, Closed), priority, and handler assignment.
                 </div>
-
-                <div className="pt-2 border-t border-[#27272a]">
-                  <div className="font-mono font-semibold text-[#71717a] uppercase text-[10px] mb-2">Quote Summary & Calculation</div>
-                  <div className="space-y-1.5">
-                    {[
-                      { id: 'quote-summary', text: 'Summary displays all selected answers and allows editing' },
-                      { id: 'quote-excess', text: 'Excess changes recalculate and update displayed contribution' },
-                      { id: 'quote-frequency', text: 'Monthly and annual payment choice is reflected correctly' },
-                      { id: 'ux-loading', text: 'Loading, validation, error, and eligible states implemented' },
-                    ].map(item => (
-                      <button
-                        key={item.id}
-                        onClick={() => toggleCheck(item.id)}
-                        className="flex items-center gap-2.5 w-full text-left p-1.5 rounded hover:bg-[#18181b] transition-colors"
-                      >
-                        {checkedItems[item.id] ? (
-                          <CheckSquare size={14} className="text-[#00c685] shrink-0" />
-                        ) : (
-                          <Square size={14} className="text-[#71717a] shrink-0" />
-                        )}
-                        <span className={checkedItems[item.id] ? 'text-[#f4f4f5]' : 'text-[#71717a]'}>{item.text}</span>
-                      </button>
-                    ))}
-                  </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Individual Claim Detail Console</strong>
+                  Comprehensive 6-part console: Member profile & policy limits, Incident facts, Photographic evidence viewer, Assessor report & payout estimates, Decision buttons (Approve / Request Docs / Decline), and Immutable audit activity log.
                 </div>
               </div>
             </div>
 
-            {/* 75. Final Architecture Map */}
-            <div id="product-structure" className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2 font-mono text-xs">
-              <div className="text-[#71717a] text-[11px] uppercase">75. Final Product Architecture Map</div>
-              <pre className="p-3 rounded bg-[#18181b] text-[11px] text-[#a1a1aa] overflow-x-auto">
-{`                    TAKAFUL UK
-                        │
-        ┌───────────────┼────────────────┐
-        ↓               ↓                ↓
-     PUBLIC          GET QUOTE       DASHBOARDS
-     WEBSITE             │                │
-                         ↓          ┌─────┼─────┐
-                    COMPARE PLANS    ↓     ↓     ↓
-                         │        MEMBER CLAIMS FINANCE
-                         ↓                    │
-                      PAYMENT                 ↓
-                         │              MANAGEMENT
-                         ↓
-                    ACTIVE POLICY
-                         │
-                    MEMBER PORTAL
-                         │
-              ┌──────────┼──────────┐
-              ↓          ↓          ↓
-            COVER      CLAIMS    CONTRIBUTIONS
-                         │
-                         ↓
-                     POOL / SURPLUS`}
-              </pre>
+            {/* Role 2: Finance Team */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                  Staff Role: Finance Team
+                </h3>
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  Treasury & Reconciliations
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mb-4">
+                <strong>Who uses this:</strong> Financial controllers and treasury managers.<br />
+                <strong>Why this exists:</strong> To supervise the community pool, execute approved claim disbursements, track monthly contribution collections, and audit the Wakala management fee.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700">
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Community Pool Health</strong>
+                  Total contributions, total payouts, reserve ratios, and segregated Wakala operational revenue.
+                </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Contributions Ledger</strong>
+                  Status of all monthly direct debits and card payments, failed transaction retries, and member receipts.
+                </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Claim Payment Processing</strong>
+                  Approved claims pending bank transfer disbursement, schedule batching, and payment proof.
+                </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Transaction Audit Trail</strong>
+                  Complete ledger of every pound in and out with category tags, authorizers, and banking references.
+                </div>
+              </div>
             </div>
-          </section>
 
-          {/* ── Document Footer ──────────────────────────────────────────────── */}
-          <footer className="border-t border-[#27272a] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#71717a]">
-            <div>
-              Takaful UK Specification Revision 3.0 • Working Product Blueprint
+            {/* Role 3: Management */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                  Staff Role: Management
+                </h3>
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+                  Executive Governance
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mb-4">
+                <strong>Who uses this:</strong> Senior leadership and governance officers.<br />
+                <strong>Why this exists:</strong> Provides high-level visibility across portfolio growth, loss ratios, member retention, risk hotspots, and policy certificates without needing micro-level records.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700">
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Portfolio Growth & Loss Ratio</strong>
+                  Active members, month-on-month growth, claims loss ratio, and renewal retention rate.
+                </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Risk Exposure Heatmaps</strong>
+                  Geographic risk concentrations, subsidence/flood zones, and repeat claimant analytics.
+                </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Policy Certificates Register</strong>
+                  Global registry of all active, expiring, and renewed certificates across the membership.
+                </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <strong className="text-slate-900 block mb-0.5">Team Performance & Support</strong>
+                  Claim handler SLA benchmarks, response speed, and customer satisfaction ratings.
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-4">
-              <Link href="/portal" className="hover:text-white transition-colors">My Portal</Link>
-              <Link href="/get-quote" className="hover:text-white transition-colors">Get Quote</Link>
-              <a href="#doc-purpose" className="hover:text-[#00c685] transition-colors">Back to Top ↑</a>
+
+            {/* Role 4: Super Admin */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-900"></span>
+                  Staff Role: Super Admin
+                </h3>
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 border border-slate-300">
+                  Full Platform Administration
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mb-4">
+                <strong>Who uses this:</strong> Platform directors and system administrators.<br />
+                <strong>Why this exists:</strong> Full access to all staff dashboards, staff role assignment, system security, compliance audit logs, and solvency monitoring.
+              </p>
+              <div className="space-y-2 text-xs text-slate-700">
+                <p>• <strong>Staff & Roles:</strong> Add staff, assign roles (Claim Handler, Finance, Management, Admin), suspend accounts, and manage permissions.</p>
+                <p>• <strong>Audit Ledger:</strong> Immutable record of every administrative action, configuration change, and payout authorization with before/after state.</p>
+                <p>• <strong>Risk & Solvency:</strong> High-level financial solvency ratios, statutory reserve adequacy, and Retakaful (reinsurance) provisions.</p>
+              </div>
             </div>
-          </footer>
-
-        </main>
-
-        {/* ── Right "On This Page" Outline (OpenAI Style) ───────────────────── */}
-        <aside className="hidden xl:block w-60 shrink-0 p-6 sticky top-[57px] h-[calc(100vh-57px)] overflow-y-auto">
-          <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#71717a] mb-3">
-            On this page
           </div>
-          <ul className="space-y-1.5 text-xs border-l border-[#27272a] pl-3">
-            {SPEC_NAV.map(item => (
-              <li key={item.id}>
-                <a
-                  href={`#${item.id}`}
-                  onClick={() => setActiveNav(item.id)}
-                  className={`block transition-colors truncate ${
-                    activeNav === item.id
-                      ? 'text-[#00c685] font-semibold -ml-[13px] pl-3 border-l border-[#00c685]'
-                      : 'text-[#71717a] hover:text-[#f4f4f5]'
-                  }`}
-                >
-                  <span className="font-mono text-[10px] text-[#71717a] mr-1.5">{item.num}</span>
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </aside>
+        </section>
 
-      </div>
+        <hr className="border-slate-200 my-12" />
+
+        {/* ── 8. Notifications (Floating Bell) ─────────────────── */}
+        <section id="notifications" className="scroll-mt-28 mb-16">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-4 flex items-center gap-2">
+            <Bell className="w-6 h-6 text-emerald-600" />
+            8. Notifications (Floating Bell — All Roles)
+          </h2>
+          <p className="text-base text-slate-700 leading-relaxed mb-6">
+            Both the participant portal and all staff dashboards feature a clean floating notification bell in the top navigation bar with a live green unread indicator dot.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <Users className="w-4 h-4 text-emerald-600" />
+                For Members (Participant Portal)
+              </h3>
+              <ul className="space-y-2 text-xs text-slate-600">
+                <li className="p-2 rounded bg-slate-50 border border-slate-100">
+                  "Your claim CLM-2024-0891 has been approved"
+                </li>
+                <li className="p-2 rounded bg-slate-50 border border-slate-100">
+                  "Payment of £1,600 has been sent to your bank account"
+                </li>
+                <li className="p-2 rounded bg-slate-50 border border-slate-100">
+                  "Your assessor visit is confirmed for Friday 25 July"
+                </li>
+                <li className="p-2 rounded bg-slate-50 border border-slate-100">
+                  "Your policy certificate TK-2024-0089 is now active"
+                </li>
+              </ul>
+            </div>
+
+            <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <Shield className="w-4 h-4 text-blue-600" />
+                For Staff (Dashboard Roles)
+              </h3>
+              <ul className="space-y-2 text-xs text-slate-600">
+                <li className="p-2 rounded bg-slate-50 border border-slate-100">
+                  "New claim submitted — CLM-2024-0889 (Water Escape)"
+                </li>
+                <li className="p-2 rounded bg-slate-50 border border-slate-100">
+                  "Direct debit failed for member Maryam Patel"
+                </li>
+                <li className="p-2 rounded bg-slate-50 border border-slate-100">
+                  "Assessor report received on CLM-2024-0891"
+                </li>
+                <li className="p-2 rounded bg-slate-50 border border-slate-100">
+                  "Certificate TK-2024-0098 is expiring in 14 days"
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <hr className="border-slate-200 my-12" />
+
+        {/* ── 9. The Full Journey — Start to Finish ────────────── */}
+        <section id="full-journey" className="scroll-mt-28 mb-16">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-4">
+            9. The Full Journey — Start to Finish
+          </h2>
+          <p className="text-base text-slate-700 leading-relaxed mb-6">
+            An end-to-end view of how someone discovers Takaful UK, becomes an active member, and interacts with the internal claims and governance team.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Customer Journey */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <h3 className="text-sm font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
+                The Customer Experience
+              </h3>
+              <div className="space-y-2.5 text-xs text-slate-700">
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
+                  <span>Visits the website and reads about mutual protection</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
+                  <span>Clicks "Get a Quote" and starts the 7-step journey</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
+                  <span>Completes property, occupancy, security, and claims history</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">4</span>
+                  <span>Views personalized pricing on the Compare Plans page</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">5</span>
+                  <span>Selects a plan (Essential, Standard, or Comprehensive)</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">6</span>
+                  <span>Completes direct debit or payment setup</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">7</span>
+                  <span>Receives instant policy confirmation and certificate</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">8</span>
+                  <span className="font-semibold text-emerald-900">Enters Participant Portal to manage cover, track pool, and submit claims</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Internal Processing */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <h3 className="text-sm font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
+                The Internal Processing Cycle
+              </h3>
+              <div className="space-y-2.5 text-xs text-slate-700">
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
+                  <span>Member submits claim with photos & report</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
+                  <span>Floating notification alerts Claim Handler</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
+                  <span>Handler verifies cover limits and evidence</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">4</span>
+                  <span>Handler records assessment and approves payout</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">5</span>
+                  <span>Finance team receives approval and disburses funds</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">6</span>
+                  <span>Member receives notification & bank credit</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">7</span>
+                  <span>Management tracks loss ratio & pool balance</span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">8</span>
+                  <span className="font-semibold text-slate-900">Super Admin audits immutable ledger & solvency position</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <hr className="border-slate-200 my-12" />
+
+        {/* ── 10. Key Things to Know ───────────────────────────── */}
+        <section id="key-things" className="scroll-mt-28 mb-16">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-4">
+            10. Key Things to Know
+          </h2>
+
+          <div className="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
+              <strong className="text-slate-900 block mb-1">The Community Pool</strong>
+              All member contributions go into a dedicated community pool. Claims are paid directly from this pool. Whatever funds remain after claims and operational costs may be returned to eligible members as a mutual surplus.
+            </div>
+
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
+              <strong className="text-slate-900 block mb-1">Surplus is Never Guaranteed</strong>
+              To remain compliant with both Shariah guidelines and UK insurance standards, surplus distributions are always presented as estimates until audited, confirmed, and approved at year-end.
+            </div>
+
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
+              <strong className="text-slate-900 block mb-1">The Wakala Fee</strong>
+              The Wakala fee is the transparent management fee taken by the platform operator to run the technology, underwriting, and claims management services. It is displayed clearly on every contribution breakdown.
+            </div>
+
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
+              <strong className="text-slate-900 block mb-1">Demo Values & Real-World Pricing</strong>
+              All numbers in the platform demo (pricing, limits, reserves) serve as illustrative examples. Production values are calibrated directly by the authorized actuarial pricing engine.
+            </div>
+
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
+              <strong className="text-slate-900 block mb-1">Fully Responsive on All Devices</strong>
+              The entire platform — from the public marketing site and 7-step quote flow to the participant portal and staff dashboards — is engineered to work seamlessly on desktop, tablet, and mobile browsers.
+            </div>
+          </div>
+        </section>
+
+        {/* Document Footer */}
+        <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <p>© 2026 Takaful UK. Last updated September 2026.</p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="text-slate-600 hover:text-slate-900 font-medium cursor-pointer inline-flex items-center gap-1"
+            >
+              Back to top ↑
+            </button>
+            <Link href="/" className="text-emerald-700 hover:text-emerald-800 font-medium">
+              Return to Website
+            </Link>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

@@ -60,7 +60,7 @@ export default function TransactionsPage() {
   );
 
   const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
-  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
+  const BG_PANEL = isLight ? '#ffffff' : '#1e2433';
   const TEXT_MAIN = isLight ? 'text-black/90' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/60' : 'text-white/45';
   const TEXT_MUTED = isLight ? 'text-black/40' : 'text-white/35';

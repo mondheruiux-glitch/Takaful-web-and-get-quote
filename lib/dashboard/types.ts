@@ -247,3 +247,64 @@ export interface ParticipantReport {
 }
 
 export type ParticipantAccountActionType = 'freeze' | 'suspend' | 'warn' | 'reinstate';
+
+/* ─── Support Ticket System ──────────────────────────────────────────────── */
+
+export type TicketCategory =
+  | 'Claim Inquiry'
+  | 'Contribution'
+  | 'Certificate'
+  | 'Technical'
+  | 'General';
+
+export type TicketStatus = 'Open' | 'In Progress' | 'Resolved' | 'Closed';
+export type TicketPriority = 'Low' | 'Medium' | 'High' | 'Critical';
+
+export interface TicketMessage {
+  id: string;
+  senderName: string;
+  senderRole: string;
+  senderUserId?: string;
+  avatar?: string;
+  text: string;
+  timestamp: string;
+  isStaff?: boolean;
+  attachments?: string[];
+}
+
+export interface SupportTicket {
+  id: string;
+  participantId: string;
+  participantName: string;
+  participantEmail: string;
+  subject: string;
+  category: TicketCategory;
+  priority: TicketPriority;
+  status: TicketStatus;
+  /** Auto-set from CATEGORY_ROUTING when ticket is created */
+  routedToRole: UserRole;
+  /** Staff member ID (e.g. 'STF-001') */
+  assignedToId: string;
+  /** Display name for assignee */
+  assignedTo: string;
+  /** SLA target in hours */
+  slaHours: number;
+  createdAt: string;
+  lastUpdated: string;
+  messages: TicketMessage[];
+  /** Optional link to a related claim */
+  relatedClaimId?: string;
+  /** Optional link to a related certificate */
+  relatedCertificateId?: string;
+}
+
+export interface RoutingRule {
+  routedToRole: UserRole;
+  defaultAssignee: string;
+  defaultAssigneeId: string;
+  slaHours: number;
+  icon: string;
+  description: string;
+  urgencyHint: string;
+  color: string;
+}

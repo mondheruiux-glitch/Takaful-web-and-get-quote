@@ -1375,7 +1375,7 @@ export default function ClaimDetailPage({ params }: Props) {
                       alt="Omar Hassan"
                       className="w-12 h-12 rounded-2xl object-cover border-2 border-[#00c685]/30 bg-[#00c685]/10 shadow-sm"
                     />
-                    <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#00c685] border-2 border-white dark:border-[#0a1a14]" />
+                    <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#00c685] border-2 border-white dark:border-[#131720]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
@@ -1546,7 +1546,7 @@ export default function ClaimDetailPage({ params }: Props) {
               onClick={e => e.stopPropagation()}
               className="w-full max-w-2xl rounded-2xl p-6 shadow-2xl space-y-5 my-8"
               style={{
-                background: isLight ? '#ffffff' : '#0d2117',
+                background: isLight ? '#ffffff' : '#1e2433',
                 border: `1px solid ${BORDER}`,
               }}
             >
@@ -1658,7 +1658,7 @@ export default function ClaimDetailPage({ params }: Props) {
                       className={`px-3 py-2 rounded-lg text-xs border outline-none cursor-pointer transition-all focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/60 ${
                         isLight
                           ? 'border-black/[0.10] text-gray-800 bg-white'
-                          : 'border-white/[0.10] text-gray-100 bg-[#0d2117]'
+                          : 'border-white/[0.10] text-gray-100 bg-[#1e2433]'
                       }`}
                     >
                       <option value="Evidence">Evidence</option>
@@ -1941,7 +1941,7 @@ export default function ClaimDetailPage({ params }: Props) {
               onClick={e => e.stopPropagation()}
               className="w-full max-w-3xl rounded-2xl p-6 shadow-2xl space-y-4 my-6"
               style={{
-                background: isLight ? '#ffffff' : '#0d2117',
+                background: isLight ? '#ffffff' : '#1e2433',
                 border: `1px solid ${BORDER}`,
               }}
             >
@@ -2454,7 +2454,7 @@ export default function ClaimDetailPage({ params }: Props) {
               onClick={e => e.stopPropagation()}
               className="w-full max-w-2xl rounded-2xl p-6 shadow-2xl space-y-4 my-8"
               style={{
-                background: isLight ? '#ffffff' : '#0d2117',
+                background: isLight ? '#ffffff' : '#1e2433',
                 border: `1px solid ${BORDER}`,
               }}
             >
@@ -2624,7 +2624,7 @@ export default function ClaimDetailPage({ params }: Props) {
               exit={{ scale: 0.96, opacity: 0, y: 16 }}
               transition={{ duration: 0.2 }}
               className="w-full max-w-2xl rounded-2xl p-5 sm:p-7 shadow-2xl relative space-y-5 my-auto"
-              style={{ background: isLight ? '#ffffff' : '#0d2117', border: `1px solid ${isLight ? '#e5e7eb' : 'rgba(255,255,255,0.1)'}` }}
+              style={{ background: isLight ? '#ffffff' : '#1e2433', border: `1px solid ${isLight ? '#e5e7eb' : 'rgba(255,255,255,0.1)'}` }}
               onClick={e => e.stopPropagation()}
             >
               {/* Header */}

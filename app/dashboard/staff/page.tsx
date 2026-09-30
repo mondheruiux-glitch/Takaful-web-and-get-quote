@@ -53,7 +53,7 @@ export default function StaffManagementPage() {
   });
 
   // Theme styling tokens
-  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
+  const BG_PANEL = isLight ? '#ffffff' : '#1e2433';
   const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.06)';
   const TEXT_MAIN = isLight ? 'text-black/90' : 'text-white/90';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/50';
@@ -501,7 +501,7 @@ export default function StaffManagementPage() {
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
               className="fixed right-0 top-0 bottom-0 w-full max-w-md z-50 overflow-y-auto p-6 border-l shadow-2xl flex flex-col justify-between"
-              style={{ background: isLight ? '#ffffff' : '#0a1a14', borderColor: BORDER }}
+              style={{ background: isLight ? '#ffffff' : '#131720', borderColor: BORDER }}
             >
               <div className="space-y-6">
                 {/* Header */}
@@ -646,7 +646,7 @@ export default function StaffManagementPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               className="relative w-full max-w-lg rounded-2xl border p-6 shadow-2xl z-10"
-              style={{ background: isLight ? '#ffffff' : '#0d2117', borderColor: BORDER }}
+              style={{ background: isLight ? '#ffffff' : '#1e2433', borderColor: BORDER }}
             >
               <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: BORDER }}>
                 <div>

@@ -30,7 +30,7 @@ const PARTICIPANT_NAV: NavItem[] = [
   { href: '/portal/contributions', label: 'My Contributions', icon: CreditCard },
   { href: '/portal/documents', label: 'My Documents', icon: Folder },
   { href: '/portal/pool', label: 'Takaful Pool', icon: PieChart },
-  { href: '/portal/support', label: 'Support & Chat', icon: HelpCircle, badge: 1 },
+  { href: '/portal/support', label: 'Support Desk', icon: HelpCircle },
   { href: '/portal/settings', label: 'Settings', icon: Settings },
 ];
 

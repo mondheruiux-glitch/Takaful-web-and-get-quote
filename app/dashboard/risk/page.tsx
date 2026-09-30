@@ -57,7 +57,7 @@ export default function RiskPage() {
   ];
 
   const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
-  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
+  const BG_PANEL = isLight ? '#ffffff' : '#1e2433';
   const TEXT_MAIN = isLight ? 'text-black/90' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/60' : 'text-white/45';
   const TEXT_MUTED = isLight ? 'text-black/40' : 'text-white/35';
@@ -137,7 +137,7 @@ export default function RiskPage() {
                 <CartesianGrid horizontal={false} stroke={CHART_GRID} />
                 <XAxis type="number" tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000000).toFixed(1)}M`} />
                 <YAxis dataKey="region" type="category" tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} width={110} />
-                <RechartsTooltip formatter={(v: any) => `£${v.toLocaleString()}`} contentStyle={{ background: isLight ? '#fff' : '#0d2117', border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }} />
+                <RechartsTooltip formatter={(v: any) => `£${v.toLocaleString()}`} contentStyle={{ background: isLight ? '#fff' : '#1e2433', border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }} />
                 <Bar dataKey="value" name="Total Liability" fill={GREEN} radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>

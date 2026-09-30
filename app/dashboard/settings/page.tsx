@@ -682,7 +682,7 @@ export default function SettingsPage() {
     if (!visible) setActiveSection('profile');
   }, [isManagement, SETTINGS_NAV, activeSection]);
 
-  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
+  const BG_PANEL = isLight ? '#ffffff' : '#1e2433';
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';

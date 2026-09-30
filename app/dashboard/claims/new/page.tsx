@@ -370,7 +370,7 @@ function Step2({ d, setD, errors, isLight }: { d: ClaimDraft; setD: (u: Partial<
 
       {/* Insured property card */}
       {cert && (
-        <div className="p-4 rounded-xl border" style={{ background: isLight ? '#f8faf9' : '#0d2117', borderColor: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)' }}>
+        <div className="p-4 rounded-xl border" style={{ background: isLight ? '#f8faf9' : '#1e2433', borderColor: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)' }}>
           <p className={`text-[10px] font-bold tracking-wider uppercase mb-2 ${isLight ? 'text-black/35' : 'text-white/35'}`}>Your insured property</p>
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${GREEN}18` }}>
@@ -934,7 +934,7 @@ function Step7({ d, goToStep, isLight }: { d: ClaimDraft; goToStep: (n: number) 
   const total = d.items.reduce((s, i) => s + i.value * i.quantity, 0);
 
   const ReviewSection = ({ title, step, children }: { title: string; step: number; children: React.ReactNode }) => (
-    <div className="rounded-xl border" style={{ background: isLight ? '#fff' : '#0d2117', borderColor: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)' }}>
+    <div className="rounded-xl border" style={{ background: isLight ? '#fff' : '#1e2433', borderColor: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)' }}>
       <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)' }}>
         <h3 className={`text-sm font-semibold ${isLight ? 'text-black/80' : 'text-white/80'}`}>{title}</h3>
         <button type="button" onClick={() => goToStep(step)} className="text-xs font-semibold text-[#00c685] flex items-center gap-1 hover:opacity-80 transition-opacity"><Edit2 size={11} />Edit</button>
@@ -1040,7 +1040,7 @@ function Step8({ d, setD, isLight }: { d: ClaimDraft; setD: (u: Partial<ClaimDra
       </InfoBox>
 
       {/* Declaration */}
-      <div className="rounded-xl border p-5 space-y-4" style={{ background: isLight ? '#f8faf9' : '#0d2117', borderColor: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)' }}>
+      <div className="rounded-xl border p-5 space-y-4" style={{ background: isLight ? '#f8faf9' : '#1e2433', borderColor: isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)' }}>
         <h3 className={`text-sm font-semibold ${isLight ? 'text-black/85' : 'text-white'}`}>Declaration</h3>
         <p className={`text-xs leading-relaxed ${isLight ? 'text-black/60' : 'text-white/55'}`}>
           I confirm that the information I have provided in this claim is accurate and complete to the best of my knowledge. I understand that providing false or misleading information may result in my claim being rejected and could constitute fraud.
@@ -1072,7 +1072,7 @@ function ClaimSuccess({ draft, claimId }: { draft: ClaimDraft; claimId: string }
     : `£${grossAmount.toLocaleString('en-GB', { minimumFractionDigits: 2 })}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" style={{ background: '#0a1a14' }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" style={{ background: '#131720' }}>
       {/* Portal background replicated inside modal */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <Particles color="#00c685" quantity={120} ease={20} className="absolute inset-0" />
@@ -1147,7 +1147,7 @@ export default function NewClaimPage() {
   const router = useRouter();
 
   const BG_PAGE = 'transparent';
-  const BG_CARD = isLight ? '#ffffff' : '#0d2117';
+  const BG_CARD = isLight ? '#ffffff' : '#1e2433';
   const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)';
   const TEXT_MAIN = isLight ? 'text-black/85' : 'text-white';
 

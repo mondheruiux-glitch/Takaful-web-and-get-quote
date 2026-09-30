@@ -31,7 +31,7 @@ function ChartTooltip({ active, payload, label, theme }: any) {
   const isLight = theme === 'light';
   return (
     <div className="rounded-xl p-3 text-xs shadow-2xl"
-      style={{ background: isLight ? '#fff' : '#0d2117', border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)', color: isLight ? '#000' : '#fff' }}>
+      style={{ background: isLight ? '#fff' : '#1e2433', border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)', color: isLight ? '#000' : '#fff' }}>
       <p className={`${isLight ? 'text-black/50' : 'text-white/50'} mb-1.5 font-medium`}>{label}</p>
       {payload.map((p: any, i: number) => {
         const val = p?.value;
@@ -230,7 +230,7 @@ function ParticipantClaimsView({ theme }: { theme: string }) {
 function HandlerClaimsView({ theme, isFinance }: { theme: string; isFinance?: boolean }) {
   const isLight = theme === 'light';
   const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.06)';
-  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
+  const BG_PANEL = isLight ? '#ffffff' : '#1e2433';
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
