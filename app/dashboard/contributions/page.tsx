@@ -6,10 +6,7 @@ import {
   CreditCard, Search, CheckCircle2, RefreshCw, X,
   Building2, ShieldCheck, AlertCircle, Loader2, Info, ChevronRight
 } from 'lucide-react';
-import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid,
-  Tooltip as RechartsTooltip, ResponsiveContainer,
-} from 'recharts';
+import { AreaChart } from '@/components/charts';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -556,22 +553,15 @@ function TreasuryContributionsView({ theme }: { theme: string }) {
             <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>Collected</span>
           </div>
         </div>
-        <div className="h-56">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={CONTRIBUTION_TREND}>
-              <defs>
-                <linearGradient id="gC2" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor={GREEN} stopOpacity={0.25} />
-                  <stop offset="95%" stopColor={GREEN} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={CHART_GRID} />
-              <XAxis dataKey="month" tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
-              <RechartsTooltip content={<ChartTooltip theme={theme} />} />
-              <Area type="monotone" dataKey="total" name="Collected" stroke={GREEN} fill="url(#gC2)" strokeWidth={2.5} dot={{ r: 3, fill: GREEN }} />
-            </AreaChart>
-          </ResponsiveContainer>
+        <div className="h-56 w-full">
+          <AreaChart
+            data={CONTRIBUTION_TREND}
+            xKey="month"
+            theme={theme}
+            height="100%"
+            yTickFormatter={(v) => `£${(v / 1000).toFixed(0)}k`}
+            series={[{ dataKey: "total", name: "Collected", color: GREEN }]}
+          />
         </div>
       </motion.div>
 

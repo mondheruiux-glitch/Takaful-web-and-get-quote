@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   ShieldCheck, MapPin, Building, Download,
-  Check, Copy, CheckCheck, ArrowRight, Shield,
+  Check, Copy, CheckCheck, ArrowRight, Shield, Plus,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme } from '../ThemeRoleContext';
@@ -249,6 +249,51 @@ export default function MyCoverPage() {
             </div>
           </div>
         </div>
+      </motion.div>
+
+      {/* ── Quick Claim Actions ── */}
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={1.5} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Link
+          href="/portal/claims/new"
+          className={`flex items-center justify-between p-5 rounded-2xl border transition-all hover:scale-[1.01] ${
+            isLight
+              ? 'bg-emerald-50/60 border-emerald-200/80 hover:bg-emerald-50'
+              : 'bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/15'
+          }`}
+        >
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-[#00c685] text-[#0a1a14] flex items-center justify-center font-bold">
+              <Plus size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-bold" style={{ color: TEXT_MAIN }}>File a New Claim</p>
+              <p className="text-xs mt-0.5" style={{ color: TEXT_SUB }}>Report property or contents damage</p>
+            </div>
+          </div>
+          <ArrowRight size={16} className="text-[#00c685]" />
+        </Link>
+
+        <Link
+          href="/portal/claims"
+          className={`flex items-center justify-between p-5 rounded-2xl border transition-all hover:scale-[1.01] ${
+            isLight
+              ? 'bg-white border-black/[0.06] hover:bg-gray-50'
+              : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]'
+          }`}
+        >
+          <div className="flex items-center gap-3.5">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
+              isLight ? 'bg-gray-100 text-gray-700' : 'bg-white/10 text-white'
+            }`}>
+              <Shield size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-bold" style={{ color: TEXT_MAIN }}>Track Existing Claims</p>
+              <p className="text-xs mt-0.5" style={{ color: TEXT_SUB }}>View status, handlers & payout progress</p>
+            </div>
+          </div>
+          <ArrowRight size={16} style={{ color: TEXT_MUTED }} />
+        </Link>
       </motion.div>
 
       {/* ── 3. What's Covered (was: "Mutually Shared Covered Risks") ── */}

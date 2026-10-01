@@ -1,6 +1,11 @@
-import { redirect } from 'next/navigation';
+'use client';
+
+import React from 'react';
+import { ParticipantDashboard } from '@/features/dashboard';
+import { useTheme } from '@/app/dashboard/ThemeRoleContext';
 
 export default function PortalPage() {
-  redirect('/portal/my-cover');
+  const { theme } = useTheme();
+  return <ParticipantDashboard theme={theme || 'dark'} />;
 }
 

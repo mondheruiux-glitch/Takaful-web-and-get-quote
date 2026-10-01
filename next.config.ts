@@ -57,6 +57,31 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // ─── Redirects ─────────────────────────────────────────────────────────────
+  async redirects() {
+    return [
+      {
+        source: '/clauses',
+        destination: '/policy-clauses',
+        permanent: true,
+      },
+      {
+        source: '/compare',
+        destination: '/compare-plans',
+        permanent: true,
+      },
+      {
+        source: '/file-claim',
+        destination: '/portal/claims/new',
+        permanent: false,
+      },
+      {
+        source: '/track-claim',
+        destination: '/portal/claims',
+        permanent: false,
+      },
+    ];
+  },
   // ─── Reduce bundle size by tree-shaking large packages ─────────────────────
   experimental: {
     optimizePackageImports: [
@@ -64,6 +89,8 @@ const nextConfig: NextConfig = {
       'framer-motion',
       'three',
       '@tabler/icons-react',
+      'chart.js',
+      'react-chartjs-2',
       'recharts',
     ],
   },

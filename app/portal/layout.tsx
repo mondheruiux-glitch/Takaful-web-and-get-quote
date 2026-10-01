@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home, FileText, CreditCard, Folder,
   PieChart, HelpCircle, Bell, Settings,
-  Menu, X, LogOut, ChevronDown,
+  Menu, X, LogOut, ChevronDown, LayoutDashboard, ShieldCheck,
 } from 'lucide-react';
 import { DEMO_USERS } from '@/lib/dashboard/mock-data';
 import { getDicebearAvatar } from '@/lib/dashboard/avatars';
@@ -25,7 +25,8 @@ interface NavItem {
 }
 
 const PARTICIPANT_NAV: NavItem[] = [
-  { href: '/portal/my-cover', label: 'My Cover', icon: Home },
+  { href: '/portal', label: 'Overview', icon: LayoutDashboard },
+  { href: '/portal/my-cover', label: 'My Cover', icon: ShieldCheck },
   { href: '/portal/claims', label: 'My Claims', icon: FileText },
   { href: '/portal/contributions', label: 'My Contributions', icon: CreditCard },
   { href: '/portal/documents', label: 'My Documents', icon: Folder },
@@ -45,10 +46,10 @@ function PortalHeader() {
   const user = DEMO_USERS['participant'];
   const avatarSrc = getDicebearAvatar(user?.name ?? 'Fatima Al-Rashid', 'female');
 
-  const currentTab = PARTICIPANT_NAV.find(
-    (t) => pathname === t.href || pathname.startsWith(t.href)
+  const currentTab = PARTICIPANT_NAV.find((t) =>
+    t.href === '/portal' ? pathname === '/portal' : (pathname === t.href || pathname.startsWith(t.href + '/'))
   );
-  const currentPageLabel = currentTab?.label ?? 'My Cover';
+  const currentPageLabel = currentTab?.label ?? (pathname === '/portal' ? 'Overview' : 'My Cover');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -200,7 +201,7 @@ function PortalHeader() {
               </div>
               <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
                 {PARTICIPANT_NAV.map((item) => {
-                  const active = pathname === item.href || pathname.startsWith(item.href + '/');
+                  const active = item.href === '/portal' ? pathname === '/portal' : (pathname === item.href || pathname.startsWith(item.href + '/'));
                   const Icon = item.icon;
                   return (
                     <Link
@@ -243,7 +244,7 @@ function ParticipantFloatingSideMenu() {
         aria-label="Participant navigation dock"
       >
         {PARTICIPANT_NAV.map((item, idx) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+          const isActive = item.href === '/portal' ? pathname === '/portal' : (pathname === item.href || pathname.startsWith(item.href + '/'));
           const Icon = item.icon;
           const isSeparatorBefore = idx === 6;
 
@@ -287,7 +288,7 @@ function ParticipantFloatingSideMenu() {
         aria-label="Mobile bottom navigation"
       >
         {PARTICIPANT_NAV.slice(0, 5).map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+          const isActive = item.href === '/portal' ? pathname === '/portal' : (pathname === item.href || pathname.startsWith(item.href + '/'));
           const Icon = item.icon;
           return (
             <Link

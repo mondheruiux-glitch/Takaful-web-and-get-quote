@@ -14,10 +14,7 @@ import { Claim } from '@/lib/dashboard/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip as RechartsTooltip, ResponsiveContainer,
-} from 'recharts';
+import { DualAxisTrendChart } from '@/components/charts';
 
 const GREEN = '#00c685';
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -400,28 +397,26 @@ function HandlerClaimsView({ theme, isFinance }: { theme: string; isFinance?: bo
             </div>
           </div>
           <div className="p-5">
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={CLAIMS_TREND}>
-                  <defs>
-                    <linearGradient id="gclaimscount_page" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="gclaimsval_page" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'} />
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-                  <YAxis yAxisId="left" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} />
-                  <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)' }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
-                  <RechartsTooltip content={<ChartTooltip theme={theme} />} />
-                  <Area yAxisId="left" type="monotone" dataKey="count" name="Claims Count" stroke="#3b82f6" fill="url(#gclaimscount_page)" strokeWidth={2.5} dot={{ r: 3, fill: '#3b82f6' }} />
-                  <Area yAxisId="right" type="monotone" dataKey="value" name="Claims Value (£)" stroke="#f59e0b" fill="url(#gclaimsval_page)" strokeWidth={2.5} dot={{ r: 3, fill: '#f59e0b' }} />
-                </AreaChart>
-              </ResponsiveContainer>
+            <div className="h-56 w-full">
+              <DualAxisTrendChart
+                data={CLAIMS_TREND}
+                xKey="month"
+                theme={theme}
+                height="100%"
+                leftSeries={{
+                  dataKey: "count",
+                  name: "Claims Count",
+                  color: "#3b82f6",
+                  axis: "left",
+                }}
+                rightSeries={{
+                  dataKey: "value",
+                  name: "Claims Value (£)",
+                  color: "#f59e0b",
+                  axis: "right",
+                  formatter: (v) => `£${(v / 1000).toFixed(0)}k`,
+                }}
+              />
             </div>
           </div>
         </motion.div>

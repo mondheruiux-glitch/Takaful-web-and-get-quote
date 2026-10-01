@@ -4,13 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Info } from 'lucide-react';
-import {
-  AreaChart, Area, PieChart as RechartsPie, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-} from 'recharts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { TakafulPoolBarChart } from '@/components/ui/takaful-pool-bar-chart';
+import { AreaChart, DonutChart, TakafulPoolBarChart } from '@/components/charts';
 import { useTheme, useRole } from '../ThemeRoleContext';
 import { POOL, POOL_HISTORY, CONTRIBUTION_TREND } from '@/lib/dashboard/mock-data';
 import { ParticipantPoolView } from '@/components/ui/participant-pool-view';
@@ -119,22 +114,15 @@ function StrategicPoolView({ theme, isFinance }: { theme: string; isFinance?: bo
               <span className={isLight ? 'text-black/60 font-medium' : 'text-white/60 font-medium'}>Pool Balance</span>
             </div>
           </div>
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={POOL_HISTORY}>
-                <defs>
-                  <linearGradient id="gpoolBalance" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={GREEN} stopOpacity={0.25} />
-                    <stop offset="95%" stopColor={GREEN} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={CHART_GRID} />
-                <XAxis dataKey="month" tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} />
-                <RechartsTooltip content={<ChartTooltip theme={theme} />} />
-                <Area type="monotone" dataKey="balance" name="Pool Balance" stroke={GREEN} strokeWidth={2.5} fill="url(#gpoolBalance)" dot={{ r: 3, fill: GREEN }} />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="h-56 w-full">
+            <AreaChart
+              data={POOL_HISTORY}
+              xKey="month"
+              theme={theme}
+              height="100%"
+              yTickFormatter={(v) => `£${(v / 1000).toFixed(0)}k`}
+              series={[{ dataKey: "balance", name: "Pool Balance", color: GREEN }]}
+            />
           </div>
         </motion.div>
 
@@ -147,12 +135,13 @@ function StrategicPoolView({ theme, isFinance }: { theme: string; isFinance?: bo
           <div>
             <h3 className={`font-semibold text-sm mb-1 ${isLight ? 'text-black/80' : 'text-white/80'}`}>Capital Allocations</h3>
             <p className={`text-xs mb-4 ${isLight ? 'text-black/45' : 'text-white/40'}`}>How current assets are held</p>
-            <div className="flex justify-center mb-4">
-              <RechartsPie width={140} height={120}>
-                <Pie data={poolDonut} cx={70} cy={60} innerRadius={35} outerRadius={55} dataKey="value" paddingAngle={2}>
-                  {poolDonut.map((e, idx) => <Cell key={idx} fill={e.color} />)}
-                </Pie>
-              </RechartsPie>
+            <div className="h-36 w-full mb-3 relative flex items-center justify-center">
+              <DonutChart
+                data={poolDonut}
+                theme={theme}
+                height="100%"
+                valueFormatter={(v) => `${v}%`}
+              />
             </div>
           </div>
 

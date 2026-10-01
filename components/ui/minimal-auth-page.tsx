@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Particles } from '@/components/ui/particles';
 import { Input } from '@/components/ui/input';
@@ -121,6 +122,7 @@ export function MinimalAuthPage({ onClose }: MinimalAuthPageProps) {
 const InputBaseClasses = "border-white/10 bg-white/5 text-white placeholder:text-gray-500 focus-visible:border-[#00c685] focus-visible:ring-[#00c685]/20 focus-visible:ring-2 transition-all";
 
 function WelcomeView({ onNavigate }: { onNavigate: (v: ViewState, d?: number) => void }) {
+  const router = useRouter();
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-1 text-center sm:text-left">
@@ -132,11 +134,21 @@ function WelcomeView({ onNavigate }: { onNavigate: (v: ViewState, d?: number) =>
         </p>
       </div>
       <div className="space-y-3">
-        <Button type="button" size="lg" className="w-full bg-[#00c685] hover:bg-[#00a871] text-[#0a1a14] font-bold transition-colors cursor-pointer">
+        <Button
+          type="button"
+          size="lg"
+          onClick={() => router.push('/portal')}
+          className="w-full bg-[#00c685] hover:bg-[#00a871] text-[#0a1a14] font-bold transition-colors cursor-pointer"
+        >
           <img src="/icons/google.svg" alt="Google Logo" className="me-2 size-4" loading="lazy" decoding="async" />
           Continue with Google
         </Button>
-        <Button type="button" size="lg" className="w-full border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-colors cursor-pointer">
+        <Button
+          type="button"
+          size="lg"
+          onClick={() => router.push('/portal')}
+          className="w-full border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-colors cursor-pointer"
+        >
           <img src="/icons/apple.svg" alt="Apple Logo" className="me-2 size-4" loading="lazy" decoding="async" />
           Continue with Apple
         </Button>
@@ -171,6 +183,7 @@ function WelcomeView({ onNavigate }: { onNavigate: (v: ViewState, d?: number) =>
 }
 
 function SignInView({ onNavigate, email, setEmail }: { onNavigate: (v: ViewState, d?: number) => void, email: string, setEmail: (e: string) => void }) {
+  const router = useRouter();
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -185,13 +198,8 @@ function SignInView({ onNavigate, email, setEmail }: { onNavigate: (v: ViewState
       setError('Please enter a valid email address.');
       return;
     }
-    // Mock login failure for demo
-    if (password !== 'password123') {
-      setError('Incorrect email or password. Please try again.');
-      return;
-    }
     setError('');
-    // Proceed to dashboard...
+    router.push('/portal');
   };
 
   return (
@@ -404,6 +412,7 @@ function SignUpView({ onNavigate, email, setEmail }: { onNavigate: (v: ViewState
 }
 
 function VerifyOTPView({ onNavigate, email }: { onNavigate: (v: ViewState, d?: number) => void, email: string }) {
+  const router = useRouter();
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
   const [timeLeft, setTimeLeft] = useState(59);
@@ -448,8 +457,7 @@ function VerifyOTPView({ onNavigate, email }: { onNavigate: (v: ViewState, d?: n
       return;
     }
     setError('');
-    // Proceed to dashboard (mock success)
-    alert("Verification successful! Redirecting to dashboard...");
+    router.push('/portal');
   };
 
   return (

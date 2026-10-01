@@ -6,7 +6,7 @@ import { ShieldAlert, AlertTriangle, ShieldCheck, TrendingUp, Info } from 'lucid
 import Link from 'next/link';
 import { useTheme } from '../ThemeRoleContext';
 import { usePermission } from '@/lib/dashboard/permissions';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
+import { BarChart, DonutChart } from '@/components/charts';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -101,12 +101,13 @@ export default function RiskPage() {
           <div>
             <h3 className={`font-semibold text-sm mb-1 ${TEXT_MAIN}`}>Exposure by Risk Type</h3>
             <p className={`text-xs mb-5 ${TEXT_SUB}`}>Percentage of total insured asset value</p>
-            <div className="flex justify-center mb-6">
-              <PieChart width={160} height={140}>
-                <Pie data={riskConcentrations} cx={80} cy={70} innerRadius={40} outerRadius={60} dataKey="value" paddingAngle={2}>
-                  {riskConcentrations.map((e, idx) => <Cell key={idx} fill={e.color} />)}
-                </Pie>
-              </PieChart>
+            <div className="h-36 w-full mb-4 relative flex items-center justify-center">
+              <DonutChart
+                data={riskConcentrations}
+                theme={theme}
+                height="100%"
+                valueFormatter={(v) => `${v}%`}
+              />
             </div>
           </div>
 
@@ -131,16 +132,16 @@ export default function RiskPage() {
         >
           <h3 className={`font-semibold text-sm mb-1 ${TEXT_MAIN}`}>Insured Value by Region</h3>
           <p className={`text-xs mb-5 ${TEXT_SUB}`}>Total liability concentration limits in GBP</p>
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={regionalExposures} layout="vertical">
-                <CartesianGrid horizontal={false} stroke={CHART_GRID} />
-                <XAxis type="number" tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000000).toFixed(1)}M`} />
-                <YAxis dataKey="region" type="category" tick={{ fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)', fontSize: 10 }} axisLine={false} tickLine={false} width={110} />
-                <RechartsTooltip formatter={(v: any) => `£${v.toLocaleString()}`} contentStyle={{ background: isLight ? '#fff' : '#1e2433', border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }} />
-                <Bar dataKey="value" name="Total Liability" fill={GREEN} radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="h-56 w-full">
+            <BarChart
+              data={regionalExposures}
+              xKey="region"
+              indexAxis="y"
+              theme={theme}
+              height="100%"
+              series={[{ dataKey: "value", name: "Total Liability", color: GREEN }]}
+              xTickFormatter={(v) => `£${(v / 1000000).toFixed(1)}M`}
+            />
           </div>
         </motion.div>
 
