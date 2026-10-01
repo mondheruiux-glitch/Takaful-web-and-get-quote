@@ -51,7 +51,7 @@ function ChartTooltip({ active, payload, label, theme }: any) {
   const isLight = theme === 'light';
   return (
     <div className="rounded-xl p-3 text-xs shadow-2xl"
-      style={{ background: isLight ? '#fff' : '#1e2433', border: `1px solid ${isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)'}`, color: isLight ? '#000' : '#fff' }}>
+      style={{ background: isLight ? '#fff' : '#0d2117', border: `1px solid ${isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)'}`, color: isLight ? '#000' : '#fff' }}>
       <p className="opacity-50 mb-1.5">{label}</p>
       {payload.map((p: any) => (
         <div key={p.name} className="flex items-center gap-2">
@@ -489,7 +489,7 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
 function TreasuryContributionsView({ theme }: { theme: string }) {
   const isLight = theme === 'light';
   const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
-  const BG_PANEL = isLight ? '#ffffff' : '#1e2433';
+  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
   const CHART_GRID = isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.04)';
 
   const [activeTab, setActiveTab] = useState('all');

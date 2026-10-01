@@ -84,7 +84,7 @@ export default function CertificatesPage() {
 
   // Dynamic styles
   const GREEN = '#00c685';
-  const BG_PANEL = isLight ? '#ffffff' : '#1e2433';
+  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
   const TEXT_MUTED = isLight ? 'text-black/35' : 'text-white/30';

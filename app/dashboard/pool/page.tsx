@@ -25,7 +25,7 @@ function ChartTooltip({ active, payload, label, theme }: any) {
   return (
     <div className="rounded-xl p-3 text-xs shadow-2xl transition-colors duration-200"
       style={{
-        background: isLight ? '#ffffff' : '#1e2433',
+        background: isLight ? '#ffffff' : '#0d2117',
         border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)',
         color: isLight ? '#000000' : '#ffffff'
       }}>
@@ -45,7 +45,7 @@ function MetricCard({ label, value, sub, color, tooltip, theme }: { label: strin
   const isLight = theme === 'light';
   const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
   return (
-    <div className={`rounded-2xl p-5 flex flex-col gap-3 transition-colors duration-200 ${isLight ? 'shadow-sm' : ''}`} style={{ background: isLight ? '#ffffff' : '#1e2433', border: `1px solid ${BORDER}` }}>
+    <div className={`rounded-2xl p-5 flex flex-col gap-3 transition-colors duration-200 ${isLight ? 'shadow-sm' : ''}`} style={{ background: isLight ? '#ffffff' : '#0d2117', border: `1px solid ${BORDER}` }}>
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-1.5">
           <p className={`text-xs font-semibold uppercase tracking-wider ${isLight ? 'text-black/45' : 'text-white/40'}`}>{label}</p>
@@ -70,7 +70,7 @@ function MetricCard({ label, value, sub, color, tooltip, theme }: { label: strin
 function StrategicPoolView({ theme, isFinance }: { theme: string; isFinance?: boolean }) {
   const isLight = theme === 'light';
   const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.05)';
-  const BG_PANEL = isLight ? '#ffffff' : '#1e2433';
+  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
   const CHART_GRID = isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.04)';
 
   const poolDonut = [

@@ -53,7 +53,7 @@ export default function StaffManagementPage() {
   });
 
   // Theme styling tokens
-  const BG_PANEL = isLight ? '#ffffff' : '#1e2433';
+  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
   const BORDER = isLight ? '#E4E7EC' : 'rgba(255,255,255,0.06)';
   const TEXT_MAIN = isLight ? 'text-black/90' : 'text-white/90';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/50';
@@ -646,7 +646,7 @@ export default function StaffManagementPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               className="relative w-full max-w-lg rounded-2xl border p-6 shadow-2xl z-10"
-              style={{ background: isLight ? '#ffffff' : '#1e2433', borderColor: BORDER }}
+              style={{ background: isLight ? '#ffffff' : '#0d2117', borderColor: BORDER }}
             >
               <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: BORDER }}>
                 <div>

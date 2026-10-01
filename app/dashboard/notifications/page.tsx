@@ -61,7 +61,7 @@ export default function NotificationsPage() {
 
   // Dynamic Theme Colors
   const GREEN = '#00c685';
-  const BG_PANEL = isLight ? '#ffffff' : '#1e2433';
+  const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
   const BG_PANEL2 = isLight ? '#F8FAFC' : '#112218';
   const TEXT_MAIN = isLight ? 'text-black' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/50' : 'text-white/40';
