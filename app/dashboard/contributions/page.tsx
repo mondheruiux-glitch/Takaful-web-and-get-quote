@@ -4,13 +4,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CreditCard, Search, CheckCircle2, RefreshCw, X,
-  Building2, ShieldCheck, AlertCircle, Loader2, Info, ChevronRight
+  Building2, ShieldCheck, AlertCircle, Loader2, Info, ChevronRight,
+  Clock, AlertTriangle, Phone, Mail, Ban, Lock, ArrowRight,
+  CheckCheck, ShieldAlert, ExternalLink,
 } from 'lucide-react';
+import Link from 'next/link';
 import { AreaChart } from '@/components/charts';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { MultiStepForm } from '@/components/ui/multi-step-form';
 import { useTheme, useRole } from '../ThemeRoleContext';
@@ -37,6 +39,8 @@ function StatusBadge({ status }: { status: string }) {
         ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
         : status === 'Failed'
         ? 'bg-rose-50 text-rose-700 border border-rose-200/60'
+        : status === 'Retried'
+        ? 'bg-amber-50 text-amber-700 border border-amber-200/60'
         : 'bg-amber-50 text-amber-700 border border-amber-200/60'
     }`}>
       <span className={`w-1.5 h-1.5 rounded-full ${isPaid ? 'bg-emerald-500' : status === 'Failed' ? 'bg-rose-500' : 'bg-amber-500'}`} />
@@ -45,21 +49,210 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-/* ─── Chart Tooltip ──────────────────────────────────────────────────────── */
-function ChartTooltip({ active, payload, label, theme }: any) {
-  if (!active || !payload?.length) return null;
-  const isLight = theme === 'light';
+/* ─── Grace Period Timer ─────────────────────────────────────────────────── */
+function GracePeriodBanner({ isLight, daysLeft = 11 }: { isLight: boolean; daysLeft?: number }) {
+  const pct = Math.round(((14 - daysLeft) / 14) * 100);
   return (
-    <div className="rounded-xl p-3 text-xs shadow-2xl"
-      style={{ background: isLight ? '#fff' : '#0d2117', border: `1px solid ${isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)'}`, color: isLight ? '#000' : '#fff' }}>
-      <p className="opacity-50 mb-1.5">{label}</p>
-      {payload.map((p: any) => (
-        <div key={p.name} className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-          <span className="opacity-70">{p.name}:</span>
-          <span className="font-semibold">£{p.value.toLocaleString()}</span>
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`rounded-2xl border p-5 ${isLight ? 'bg-amber-50 border-amber-200' : 'bg-amber-900/20 border-amber-500/30'}`}
+    >
+      <div className="flex items-start gap-3">
+        <div className={`mt-0.5 p-2 rounded-xl ${isLight ? 'bg-amber-100' : 'bg-amber-500/20'}`}>
+          <Clock size={16} className="text-amber-500" />
         </div>
-      ))}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <p className={`text-sm font-bold ${isLight ? 'text-amber-900' : 'text-amber-300'}`}>
+                14-Day Statutory Grace Period Active — Maryam Patel
+              </p>
+              <p className={`text-xs mt-0.5 ${isLight ? 'text-amber-700' : 'text-amber-400/80'}`}>
+                Policy TK-2024-0098 · DD Failed: 1 Jul 2026 · <span className="font-semibold">{daysLeft} days remaining</span>
+              </p>
+            </div>
+            <span className={`shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg ${isLight ? 'bg-amber-200 text-amber-800' : 'bg-amber-500/20 text-amber-300'}`}>
+              {daysLeft}d left
+            </span>
+          </div>
+          {/* Progress bar */}
+          <div className={`mt-3 h-1.5 rounded-full ${isLight ? 'bg-amber-200' : 'bg-amber-900/50'}`}>
+            <div className="h-full rounded-full bg-amber-500 transition-all" style={{ width: `${pct}%` }} />
+          </div>
+          <div className={`mt-2.5 grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] ${isLight ? 'text-amber-700' : 'text-amber-400'}`}>
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck size={11} className="text-amber-500 shrink-0" />
+              Coverage still active — claims payable
+            </div>
+            <div className="flex items-center gap-1.5">
+              <AlertTriangle size={11} className="text-amber-500 shrink-0" />
+              Outstanding: £18.90 deductible from payout
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Ban size={11} className="text-red-400 shrink-0" />
+              Day 15: Policy placed On Hold
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── BACS Workflow Steps ─────────────────────────────────────────────────── */
+function FailedDDWorkflow({
+  isLight,
+  retryCount,
+  onRetry,
+  onEscalate,
+  retried,
+}: {
+  isLight: boolean;
+  retryCount: number;
+  onRetry: () => void;
+  onEscalate: () => void;
+  retried: boolean;
+}) {
+  const steps = [
+    {
+      num: 1,
+      label: 'BACS Return Received',
+      desc: 'Unpaid DD bounced — Ref DD-2024-0098-JUL, £18.90',
+      done: true,
+      color: 'text-red-400',
+      bg: 'bg-red-500/10',
+      border: 'border-red-500/20',
+    },
+    {
+      num: 2,
+      label: 'Retry (BACS Representation)',
+      desc: retried
+        ? `Re-presented ${retryCount}/3 — 5 working days for funds to clear`
+        : `Retry ${retryCount}/3 available — re-present within 5 working days`,
+      done: retried,
+      active: !retried,
+      color: retried ? 'text-emerald-400' : 'text-amber-400',
+      bg: retried ? 'bg-emerald-500/10' : 'bg-amber-500/10',
+      border: retried ? 'border-emerald-500/20' : 'border-amber-500/20',
+      action: !retried ? (
+        <button
+          onClick={onRetry}
+          className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-[#0a1a14] text-[11px] font-bold transition-all"
+        >
+          <RefreshCw size={10} /> Trigger BACS Retry
+        </button>
+      ) : null,
+    },
+    {
+      num: 3,
+      label: 'Grace Period Notice Sent',
+      desc: '14-day notice emailed + SMS — participant informed of outstanding balance',
+      done: true,
+      color: 'text-emerald-400',
+      bg: 'bg-emerald-500/10',
+      border: 'border-emerald-500/20',
+    },
+    {
+      num: 4,
+      label: 'Manual Payment / Reconcile',
+      desc: 'If participant pays by card or portal: reconcile TXN-8808 in Treasury Cash Book',
+      done: false,
+      action: (
+        <Link
+          href="/dashboard/transactions"
+          className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-semibold hover:border-[#00c685] hover:text-[#00c685] transition-colors"
+          style={{ borderColor: isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.15)' }}
+        >
+          <ArrowRight size={10} /> Go to Treasury Cash Book
+        </Link>
+      ),
+      color: isLight ? 'text-black/50' : 'text-white/40',
+      bg: isLight ? 'bg-black/[0.03]' : 'bg-white/[0.03]',
+      border: isLight ? 'border-black/10' : 'border-white/10',
+    },
+    {
+      num: 5,
+      label: retryCount >= 3 ? 'Policy Hold / Cancellation — ESCALATE' : 'Policy Hold (if 3 retries fail)',
+      desc:
+        retryCount >= 3
+          ? 'Max retries reached — escalate to Management immediately to cancel policy'
+          : 'After 3 failed attempts + 14 days: flag to Management → certificate → On Hold',
+      done: false,
+      color: retryCount >= 3 ? 'text-red-400' : isLight ? 'text-black/40' : 'text-white/35',
+      bg: retryCount >= 3 ? 'bg-red-500/10' : isLight ? 'bg-black/[0.02]' : 'bg-white/[0.02]',
+      border: retryCount >= 3 ? 'border-red-500/20' : isLight ? 'border-black/[0.06]' : 'border-white/[0.06]',
+      action:
+        retryCount >= 3 ? (
+          <button
+            onClick={onEscalate}
+            className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-400 text-white text-[11px] font-bold transition-all"
+          >
+            <ShieldAlert size={10} /> Flag to Management
+          </button>
+        ) : null,
+    },
+  ];
+
+  return (
+    <div className={`rounded-2xl border p-5 ${isLight ? 'bg-white border-black/[0.06]' : 'bg-[#0d2117] border-white/[0.05]'}`}>
+      <div className="flex items-center gap-2 mb-5">
+        <AlertTriangle size={15} className="text-red-400 shrink-0" />
+        <h3 className={`text-sm font-bold ${isLight ? 'text-black/85' : 'text-white/90'}`}>
+          Failed Direct Debit Recovery Workflow — TXN-8808
+        </h3>
+      </div>
+      <div className="space-y-3">
+        {steps.map((s) => (
+          <div key={s.num} className={`flex gap-3 p-3.5 rounded-xl border ${s.bg} ${s.border}`}>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[11px] font-bold ${s.done ? 'bg-emerald-500 text-[#0a1a14]' : s.active ? 'bg-amber-500 text-[#0a1a14]' : isLight ? 'bg-black/10 text-black/50' : 'bg-white/10 text-white/40'}`}>
+              {s.done ? <CheckCircle2 size={12} /> : s.num}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className={`text-xs font-bold ${s.color}`}>{s.label}</p>
+              <p className={`text-[11px] mt-0.5 ${isLight ? 'text-black/55' : 'text-white/50'}`}>{s.desc}</p>
+              {s.action}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Quick Reply Panel ───────────────────────────────────────────────────── */
+function QuickReplyPanel({ isLight, onSend }: { isLight: boolean; onSend: (msg: string) => void }) {
+  const replies = [
+    { id: 'mandate', label: 'Mandate Updated', text: 'Your Direct Debit mandate has been updated and will take effect from your next billing date.' },
+    { id: 'payment', label: 'Payment Confirmed', text: 'We have confirmed receipt of your payment. Your coverage remains fully active.' },
+    { id: 'grace', label: 'Grace Period Notice', text: 'Your recent Direct Debit was unsuccessful. You have 14 days to resolve the outstanding balance of £18.90 before your coverage is placed on hold.' },
+    { id: 'retry', label: 'BACS Retry Notice', text: 'We have re-presented your Direct Debit to your bank. Please ensure sufficient funds are available within 5 working days.' },
+  ];
+  return (
+    <div className={`rounded-2xl border p-5 ${isLight ? 'bg-white border-black/[0.06]' : 'bg-[#0d2117] border-white/[0.05]'}`}>
+      <div className="flex items-center gap-2 mb-4">
+        <Mail size={14} className="text-[#00c685] shrink-0" />
+        <h3 className={`text-sm font-bold ${isLight ? 'text-black/85' : 'text-white/90'}`}>
+          Support Quick Replies
+        </h3>
+        <Link href="/dashboard/support" className="ml-auto text-[11px] text-[#00c685] flex items-center gap-0.5 hover:underline">
+          Finance Inbox <ExternalLink size={10} />
+        </Link>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {replies.map((r) => (
+          <button
+            key={r.id}
+            onClick={() => onSend(r.text)}
+            className={`flex flex-col gap-1 p-3 rounded-xl border text-left transition-all hover:border-[#00c685]/40 ${
+              isLight ? 'border-black/[0.08] hover:bg-[#00c685]/[0.04]' : 'border-white/[0.08] hover:bg-[#00c685]/[0.06]'
+            }`}
+          >
+            <span className="text-[11px] font-bold text-[#00c685]">{r.label}</span>
+            <span className={`text-[10px] leading-relaxed line-clamp-2 ${isLight ? 'text-black/55' : 'text-white/45'}`}>{r.text}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -276,7 +469,7 @@ const PARTICIPANT_CONTRIBUTIONS = [
   { id: 'CONT-2025-8770', dueDate: '1 Dec 2025', collectedDate: '1 Dec 2025', method: 'Direct Debit', amount: 38.50, status: 'Collected' },
 ];
 
-/* ─── Participant View (Editorial, Consumer-Grade) ────────────────────────── */
+/* ─── Participant View ────────────────────────────────────────────────────── */
 function ParticipantContributionsView({ theme }: { theme: string }) {
   const isLight = theme === 'light';
   const BORDER = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
@@ -310,7 +503,6 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
         )}
       </AnimatePresence>
 
-      {/* ── 1. Header ── */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5">
           <div>
@@ -318,7 +510,7 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
               My Payments
             </h1>
             <p className="mt-2 text-base sm:text-lg leading-relaxed max-w-xl" style={{ color: TEXT_SUB }}>
-              You pay £38.50 a month to protect your home. Here's your full history.
+              You pay £38.50 a month to protect your home. Here&apos;s your full history.
             </p>
           </div>
 
@@ -334,7 +526,6 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
         </div>
       </motion.div>
 
-      {/* Toast Alert */}
       <AnimatePresence>
         {toast && (
           <motion.div
@@ -349,7 +540,6 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
         )}
       </AnimatePresence>
 
-      {/* ── 2. Next Payment Card ── */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={1}>
         <div
           className="relative overflow-hidden rounded-3xl border transition-all duration-300"
@@ -358,7 +548,6 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
           <div className="p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                {/* Was: "Next Scheduled Contribution" + "Auto-Collection" */}
                 <span className="text-[11px] font-bold tracking-wider uppercase" style={{ color: TEXT_MUTED }}>
                   Next Payment
                 </span>
@@ -393,7 +582,6 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
             </div>
           </div>
 
-          {/* Simplified Metrics Bar — was: "Total Contributed (YTD)" + "Successful Collections" */}
           <div className="px-6 sm:px-8 py-4 border-t flex flex-wrap items-center justify-between gap-4" style={{ borderColor: BORDER, background: BG_SUBTLE }}>
             <div className="flex items-center gap-6 text-xs">
               <div>
@@ -409,7 +597,6 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
         </div>
       </motion.div>
 
-      {/* ── 3. Payment History — simplified: date, amount, status only ── */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2} className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
@@ -436,7 +623,6 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
                 }`}>
                   <CheckCircle2 size={18} />
                 </div>
-                {/* Show: month + year only. No ref IDs. */}
                 <div className="min-w-0">
                   <p className="text-sm font-semibold" style={{ color: TEXT_MAIN }}>
                     {c.dueDate}
@@ -458,7 +644,6 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
         </div>
       </motion.div>
 
-      {/* ── 4. Simple explainer — replaces Tabarru wall of text ── */}
       <motion.div
         variants={fadeUp}
         initial="hidden"
@@ -480,25 +665,47 @@ function ParticipantContributionsView({ theme }: { theme: string }) {
           </p>
         </div>
       </motion.div>
-
     </div>
   );
 }
 
-/* ─── Treasury View ─────────────────────────────────────────────────────── */
+/* ─── Treasury View (Finance / Staff) ───────────────────────────────────── */
 function TreasuryContributionsView({ theme }: { theme: string }) {
   const isLight = theme === 'light';
   const BORDER = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)';
   const BG_PANEL = isLight ? '#ffffff' : '#0d2117';
-  const CHART_GRID = isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.04)';
 
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch]       = useState('');
   const [list, setList]           = useState<Contribution[]>(() => CONTRIBUTIONS);
   const [toast, setToast]         = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(1);
+  const [retried, setRetried] = useState(false);
+  const [escalated, setEscalated] = useState(false);
+  const [sentReply, setSentReply] = useState<string | null>(null);
 
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
-  const handleRetry = (id: string) => { setList(p => p.map(c => c.id === id ? { ...c, status: 'Retried' } : c)); showToast(`Retry initiated for ${id}`); };
+  const showToast = (msg: string, color = 'bg-[#00c685]') => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  const handleRetry = (id: string) => {
+    setList(p => p.map(c => c.id === id ? { ...c, status: 'Retried', retryCount: (c.retryCount ?? 1) + 1 } : c));
+    setRetried(true);
+    setRetryCount(prev => prev + 1);
+    showToast(`BACS Representation triggered for ${id} — bank has 5 working days to clear`);
+  };
+
+  const handleEscalate = () => {
+    setEscalated(true);
+    showToast('Policy TK-2024-0098 flagged to Management — Ahmed Khan notified');
+  };
+
+  const handleQuickReply = (msg: string) => {
+    setSentReply(msg);
+    showToast('Quick reply sent to participant via secure messaging');
+  };
+
   const handleReconcile = () => showToast('All collected contributions reconciled with treasury records.');
 
   const filtered = list.filter(t => {
@@ -512,17 +719,33 @@ function TreasuryContributionsView({ theme }: { theme: string }) {
 
   return (
     <div className="p-4 sm:p-6 space-y-6">
+      {/* Toast */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            key="toast"
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.95 }}
+            className="fixed top-5 right-5 z-[500] flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-white font-semibold text-xs max-w-sm"
+            style={{ background: GREEN }}
+          >
+            <CheckCircle2 size={14} />
+            <span>{toast}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className={`text-xl font-bold ${isLight ? 'text-black/90' : 'text-white'}`}>Contributions Control</h1>
-          <p className={`text-sm mt-0.5 ${isLight ? 'text-black/50' : 'text-white/45'}`}>Treasury ledger collection verification and audits.</p>
+          <p className={`text-sm mt-0.5 ${isLight ? 'text-black/50' : 'text-white/45'}`}>Treasury ledger · BACS recovery workflows · Grace period management</p>
         </div>
         <Button onClick={handleReconcile} className="gap-2 text-xs text-white" style={{ background: GREEN }}>
           <CheckCircle2 size={14} /> Reconcile Ledger
         </Button>
       </div>
-
-      {toast && <div className="p-4 rounded-xl text-xs font-semibold text-white bg-blue-500">{toast}</div>}
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -539,6 +762,60 @@ function TreasuryContributionsView({ theme }: { theme: string }) {
           </div>
         ))}
       </div>
+
+      {/* Grace Period Banner — always shown for the failed TXN-8808 */}
+      <GracePeriodBanner isLight={isLight} daysLeft={11} />
+
+      {/* BACS Workflow */}
+      <FailedDDWorkflow
+        isLight={isLight}
+        retryCount={retryCount}
+        retried={retried}
+        onRetry={() => handleRetry('CONT-2024-8808')}
+        onEscalate={handleEscalate}
+      />
+
+      {/* Escalation notice */}
+      <AnimatePresence>
+        {escalated && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className={`rounded-2xl border p-4 flex items-start gap-3 ${isLight ? 'bg-red-50 border-red-200' : 'bg-red-900/20 border-red-500/30'}`}
+          >
+            <Lock size={14} className="text-red-400 mt-0.5 shrink-0" />
+            <div>
+              <p className={`text-xs font-bold ${isLight ? 'text-red-800' : 'text-red-300'}`}>
+                Policy TK-2024-0098 escalated to Management
+              </p>
+              <p className={`text-[11px] mt-1 ${isLight ? 'text-red-600' : 'text-red-400'}`}>
+                Ahmed Khan has been notified. Certificate status will be set to <strong>On Hold</strong> pending resolution.{' '}
+                <Link href="/dashboard/certificates" className="underline font-semibold">View Certificate →</Link>
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Quick Replies */}
+      <QuickReplyPanel isLight={isLight} onSend={handleQuickReply} />
+
+      {/* Sent reply preview */}
+      <AnimatePresence>
+        {sentReply && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className={`rounded-xl p-4 border flex items-start gap-2 ${isLight ? 'bg-emerald-50 border-emerald-200' : 'bg-emerald-900/20 border-emerald-500/30'}`}
+          >
+            <Mail size={13} className="text-emerald-400 mt-0.5 shrink-0" />
+            <div>
+              <p className={`text-[11px] font-bold ${isLight ? 'text-emerald-800' : 'text-emerald-300'}`}>Message sent to participant</p>
+              <p className={`text-[11px] mt-1 italic ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>&quot;{sentReply}&quot;</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Chart */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={4}
@@ -565,7 +842,7 @@ function TreasuryContributionsView({ theme }: { theme: string }) {
         </div>
       </motion.div>
 
-      {/* Table */}
+      {/* Contributions Table */}
       <div className={`rounded-2xl overflow-hidden ${isLight ? 'shadow-sm' : ''}`} style={{ background: BG_PANEL, border: `1px solid ${BORDER}` }}>
         <div className="flex flex-col md:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b" style={{ borderColor: BORDER }}>
           <div className="relative flex-1 max-w-xs">
@@ -574,7 +851,7 @@ function TreasuryContributionsView({ theme }: { theme: string }) {
               className={`pl-9 text-xs h-9 ${isLight ? 'border-[#E4E7EC]' : 'border-white/[0.05] bg-white/[0.02] text-white'}`} />
           </div>
           <div className="flex gap-1.5 flex-wrap">
-            {['all', 'Collected', 'Failed', 'Pending'].map(tab => (
+            {['all', 'Collected', 'Failed', 'Pending', 'Retried'].map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${activeTab === tab
                   ? 'bg-[#00c685]/15 border-[#00c685]/35 text-[#00c685]'
@@ -588,26 +865,33 @@ function TreasuryContributionsView({ theme }: { theme: string }) {
           <table className="w-full text-xs text-left">
             <thead>
               <tr className={isLight ? 'text-black/40 border-b border-[#E4E7EC]' : 'text-white/35 border-b border-white/[0.04]'}>
-                {['ID', 'Participant', 'Certificate', 'Due Date', 'Collected Date', 'Amount', 'Status', 'Action'].map(h => (
+                {['ID', 'Participant', 'Certificate', 'Due Date', 'Collected Date', 'Amount', 'Retry', 'Status', 'Action'].map(h => (
                   <th key={h} className="px-5 py-3.5 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {filtered.map(c => (
-                <tr key={c.id} className={`transition-colors ${isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]'}`}>
+                <tr key={c.id} className={`transition-colors ${isLight ? 'hover:bg-black/[0.04]' : 'hover:bg-white/[0.04]'} ${c.status === 'Failed' ? isLight ? 'bg-red-50/60' : 'bg-red-900/10' : ''}`}>
                   <td className="px-5 py-4 font-mono font-semibold" style={{ color: GREEN }}>{c.id}</td>
                   <td className={`px-5 py-4 font-medium ${isLight ? 'text-black/75' : 'text-white/70'}`}>{c.participantName}</td>
                   <td className="px-5 py-4 font-mono text-[11px]">{c.certificateId}</td>
                   <td className={`px-5 py-4 ${isLight ? 'text-black/60' : 'text-white/55'}`}>{c.dueDate}</td>
                   <td className={`px-5 py-4 ${isLight ? 'text-black/60' : 'text-white/55'}`}>{c.collectedDate ?? '—'}</td>
                   <td className={`px-5 py-4 font-bold ${isLight ? 'text-black/80' : 'text-white/80'}`}>£{c.amount.toFixed(2)}</td>
+                  <td className={`px-5 py-4 text-[11px] font-semibold ${isLight ? 'text-black/50' : 'text-white/40'}`}>
+                    {c.retryCount !== undefined ? `${c.retryCount}/3` : '—'}
+                  </td>
                   <td className="px-5 py-4"><StatusBadge status={c.status} /></td>
                   <td className="px-5 py-4">
                     {c.status === 'Failed'
                       ? <button onClick={() => handleRetry(c.id)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 text-[10px] font-bold transition-all">
-                          <RefreshCw size={10} /> Retry
+                          <RefreshCw size={10} /> BACS Retry
                         </button>
+                      : c.status === 'Retried'
+                      ? <Link href="/dashboard/transactions" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-[10px] font-bold transition-all">
+                          <ArrowRight size={10} /> Reconcile
+                        </Link>
                       : <span className={`text-[10px] ${isLight ? 'text-black/35' : 'text-white/30'}`}>—</span>}
                   </td>
                 </tr>
