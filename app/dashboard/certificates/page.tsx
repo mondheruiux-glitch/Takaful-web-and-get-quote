@@ -93,6 +93,30 @@ export default function CertificatesPage() {
   const BORDER_INPUT = isLight ? 'border-black/[0.06]' : 'border-white/[0.05]';
   const ROW_HOVER = isLight ? 'hover:bg-black/[0.015]' : 'hover:bg-white/[0.02]';
 
+  const handleExportCSV = () => {
+    const headers = ['Certificate ID', 'Participant', 'Property Address', 'Cover Type', 'Monthly Contribution', 'Sum Insured Limit', 'Status', 'Renewal Date', 'Start Date'];
+    const rows = filtered.map(c => [
+      c.id,
+      `"${c.participant}"`,
+      `"${c.property}"`,
+      c.type,
+      `"${c.contribution}"`,
+      `"${c.limit}"`,
+      c.status,
+      c.renewal,
+      c.started,
+    ]);
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `takaful-certificates-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="p-4 sm:p-6 space-y-5 transition-colors duration-200">
       {/* Header */}
@@ -130,8 +154,12 @@ export default function CertificatesPage() {
               className={`w-full pl-9 pr-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-[#00c685]/40 transition-colors ${BG_INPUT} ${BORDER_INPUT} ${TEXT_MAIN}`} />
           </div>
           <div className="flex items-center gap-2">
-            <button className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${BORDER_INPUT} ${TEXT_SUB}`}><Filter size={12} /> Filter</button>
-            <button className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${BORDER_INPUT} ${TEXT_SUB}`}><Download size={12} /> Export</button>
+            <button
+              onClick={handleExportCSV}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer ${BORDER_INPUT} ${TEXT_SUB}`}
+            >
+              <Download size={12} /> Export CSV
+            </button>
           </div>
         </div>
 

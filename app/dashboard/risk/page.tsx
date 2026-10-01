@@ -23,7 +23,7 @@ export default function RiskPage() {
   const isLight = theme === 'light';
 
   // Check access authorization
-  const hasAccess = role === 'management';
+  const hasAccess = role === 'management' || role === 'super_admin';
 
   if (!hasAccess) {
     return (
