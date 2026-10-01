@@ -164,10 +164,13 @@ export function Features8() {
                             viewport={{ once: true, margin: "-50px" }}
                             className="col-span-full lg:col-span-3"
                         >
-                            <Card className="relative overflow-hidden h-full border-0 group">
+                            <Card 
+                                className="relative overflow-hidden h-full border-0 group bg-[#C5D1C0]"
+                                style={{ backgroundColor: "#C5D1C0" }}
+                            >
                                 {/* Background animation */}
                                 <div className="absolute inset-0 z-0">
-                                    <ShaderAnimation />
+                                    <ShaderAnimation background="#C5D1C0" />
                                 </div>
 
                                 <CardContent className="relative grid pt-8 pb-8 sm:grid-cols-2 gap-6 z-10">

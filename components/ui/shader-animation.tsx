@@ -3,7 +3,17 @@
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
 
-export function ShaderAnimation() {
+interface ShaderAnimationProps {
+  className?: string
+  style?: React.CSSProperties
+  background?: string
+}
+
+export function ShaderAnimation({
+  className,
+  style,
+  background = "transparent",
+}: ShaderAnimationProps = {}) {
   const containerRef = useRef<HTMLDivElement>(null)
   const sceneRef = useRef<{
     camera: THREE.Camera
@@ -148,10 +158,11 @@ export function ShaderAnimation() {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 w-full h-full"
+      className={className || "absolute inset-0 w-full h-full"}
       style={{
-        background: "transparent",
+        background,
         overflow: "hidden",
+        ...style,
       }}
     />
   )

@@ -342,10 +342,12 @@ function Hero() {
   }, [handleResize, handleMouseMove, animateDots]);
 
   return (
-    <section className="relative w-full flex flex-col items-center justify-center bg-black overflow-hidden pt-32 pb-24">
-      <canvas ref={canvasRef} className="absolute inset-0 z-10 pointer-events-none" />
-      <div className="absolute inset-0 bg-[#0a1a14] z-0 hero-zoom" />
-      <div className="absolute inset-0 z-20 bg-gradient-to-b from-black/40 via-black/20 to-black/70" />
+    <section className="relative w-full flex flex-col items-center justify-center bg-[#0a1a14] overflow-hidden pt-32 pb-24">
+      <Particles color="#00c685" quantity={120} ease={20} className="absolute inset-0" />
+      <div aria-hidden className="absolute inset-0 isolate -z-10 contain-strict">
+        <div className="bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,rgba(255,255,255,0.02)_0,rgba(255,255,255,0.01)_50%,transparent_80%)] absolute top-0 left-0 h-[80rem] w-[35rem] -translate-y-[21rem] -rotate-45 rounded-full" />
+        <div className="bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,198,133,0.04)_0,rgba(0,198,133,0.01)_80%,transparent_100%)] absolute top-0 left-0 h-[80rem] w-[15rem] [translate:5%_-50%] -rotate-45 rounded-full" />
+      </div>
       
       <div className="relative z-50 flex flex-col items-center text-center px-5 max-w-4xl mx-auto">
         

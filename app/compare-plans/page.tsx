@@ -28,6 +28,11 @@ import {
 } from '@/components/ui/pricing-table';
 import { cn } from '@/lib/utils';
 
+const Particles = dynamic(
+  () => import('@/components/ui/particles').then(m => ({ default: m.Particles })),
+  { ssr: false }
+);
+
 // ─── ANIMATED DOT GRID (same as how-it-works hero) ────────────────────────────
 interface Dot {
   x: number; y: number;
@@ -693,27 +698,19 @@ export default function PlanComparisonPage() {
       className="min-h-screen bg-[#0a1a14] text-white overflow-x-hidden tracking-[-0.02em] relative"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      {/* 1. Animated dot canvas — covers the entire page background (Nexus-style) */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <DotCanvas />
+      {/* Auth-style Particles background */}
+      <Particles color="#00c685" quantity={120} ease={20} className="fixed inset-0 z-0 pointer-events-none" />
+      <div aria-hidden className="fixed inset-0 z-[1] isolate pointer-events-none">
+        <div className="bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,rgba(255,255,255,0.02)_0,rgba(255,255,255,0.01)_50%,transparent_80%)] absolute top-0 left-0 h-[80rem] w-[35rem] -translate-y-[21rem] -rotate-45 rounded-full" />
+        <div className="bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,198,133,0.04)_0,rgba(0,198,133,0.01)_80%,transparent_100%)] absolute top-0 left-0 h-[80rem] w-[15rem] [translate:5%_-50%] -rotate-45 rounded-full" />
       </div>
-      {/* 2. Nexus-style vignette — fades dots at bottom and edges so content stays readable */}
-      <div
-        className="fixed inset-0 z-[1] pointer-events-none"
-        style={{
-          background:
-            'linear-gradient(to bottom, transparent 0%, #0a1a14 90%), radial-gradient(ellipse at center, transparent 40%, #0a1a14 95%)',
-        }}
-      />
 
       <Nav />
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          HERO SECTION — same bg & text style as how-it-works
+          HERO SECTION — auth-style Particles background
       ═══════════════════════════════════════════════════════════════════════ */}
       <header ref={heroRef} className="relative w-full flex flex-col items-center justify-center overflow-hidden pt-32 pb-24">
-        {/* hero-zoom subtle scale animation on the bg — transparent so page canvas shows */}
-        <div className="absolute inset-0 z-0 hero-zoom" />
 
         {/* Content */}
         <div className="relative z-50 flex flex-col items-center text-center px-5 max-w-4xl mx-auto">
