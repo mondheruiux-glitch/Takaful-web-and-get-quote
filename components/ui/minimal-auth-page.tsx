@@ -137,7 +137,7 @@ function WelcomeView({ onNavigate }: { onNavigate: (v: ViewState, d?: number) =>
         <Button
           type="button"
           size="lg"
-          onClick={() => router.push('/portal')}
+          onClick={() => router.push('/portal/my-cover')}
           className="w-full bg-[#00c685] hover:bg-[#00a871] text-[#0a1a14] font-bold transition-colors cursor-pointer"
         >
           <img src="/icons/google.svg" alt="Google Logo" className="me-2 size-4" loading="lazy" decoding="async" />
@@ -146,7 +146,7 @@ function WelcomeView({ onNavigate }: { onNavigate: (v: ViewState, d?: number) =>
         <Button
           type="button"
           size="lg"
-          onClick={() => router.push('/portal')}
+          onClick={() => router.push('/portal/my-cover')}
           className="w-full border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-colors cursor-pointer"
         >
           <img src="/icons/apple.svg" alt="Apple Logo" className="me-2 size-4" loading="lazy" decoding="async" />
@@ -199,7 +199,7 @@ function SignInView({ onNavigate, email, setEmail }: { onNavigate: (v: ViewState
       return;
     }
     setError('');
-    router.push('/portal');
+    router.push('/portal/my-cover');
   };
 
   return (
@@ -457,7 +457,7 @@ function VerifyOTPView({ onNavigate, email }: { onNavigate: (v: ViewState, d?: n
       return;
     }
     setError('');
-    router.push('/portal');
+    router.push('/portal/my-cover');
   };
 
   return (

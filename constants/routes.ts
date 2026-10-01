@@ -22,7 +22,7 @@ export const ROUTES = {
 
   // ─── Participant Portal Journey ──────────────────────────────────────────────
   portal: {
-    home: '/portal',           // Overview / ParticipantDashboard
+    home: '/portal/my-cover',           // Entry / My Cover
     myCover: '/portal/my-cover',
     claims: '/portal/claims',
     newClaim: '/portal/claims/new',

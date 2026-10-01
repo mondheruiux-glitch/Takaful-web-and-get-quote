@@ -71,6 +71,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: '/portal',
+        destination: '/portal/my-cover',
+        permanent: false,
+      },
+      {
         source: '/file-claim',
         destination: '/portal/claims/new',
         permanent: false,

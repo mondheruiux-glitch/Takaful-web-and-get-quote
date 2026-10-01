@@ -1,18 +1,18 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Home, FileText, CreditCard, Folder,
-  PieChart, HelpCircle, Bell, Settings,
-  Menu, X, LogOut, ChevronDown, LayoutDashboard, ShieldCheck,
+  FileText, CreditCard, Folder,
+  PieChart, HelpCircle, Settings,
+  Menu, X, LogOut, ChevronDown, ShieldCheck,
 } from 'lucide-react';
 import { DEMO_USERS } from '@/lib/dashboard/mock-data';
 import { getDicebearAvatar } from '@/lib/dashboard/avatars';
 import { Particles } from '@/components/ui/particles';
-import { RoleContext, ThemeContext, ThemeMode, DashboardRole } from '@/app/dashboard/ThemeRoleContext';
+import { RoleContext, ThemeContext, DashboardRole } from '@/app/dashboard/ThemeRoleContext';
 import { FeedbackWidget } from '@/components/ui/feedback-widget';
 import { NotificationPopover } from '@/components/ui/notification-popover';
 
@@ -25,15 +25,81 @@ interface NavItem {
 }
 
 const PARTICIPANT_NAV: NavItem[] = [
-  { href: '/portal', label: 'Overview', icon: LayoutDashboard },
-  { href: '/portal/my-cover', label: 'My Cover', icon: ShieldCheck },
-  { href: '/portal/claims', label: 'My Claims', icon: FileText },
-  { href: '/portal/contributions', label: 'My Contributions', icon: CreditCard },
-  { href: '/portal/documents', label: 'My Documents', icon: Folder },
-  { href: '/portal/pool', label: 'Takaful Pool', icon: PieChart },
-  { href: '/portal/support', label: 'Support Desk', icon: HelpCircle },
-  { href: '/portal/settings', label: 'Settings', icon: Settings },
+  { href: '/portal/my-cover',       label: 'My Cover',          icon: ShieldCheck },
+  { href: '/portal/claims',         label: 'My Claims',         icon: FileText },
+  { href: '/portal/contributions',  label: 'My Contributions',  icon: CreditCard },
+  { href: '/portal/documents',      label: 'My Documents',      icon: Folder },
+  { href: '/portal/pool',           label: 'Takaful Pool',      icon: PieChart },
+  { href: '/portal/support',        label: 'Support Desk',      icon: HelpCircle },
+  { href: '/portal/settings',       label: 'Settings',          icon: Settings },
 ];
+
+/* ─── Route Progress Bar ────────────────────────────────────────────────── */
+function RouteProgressBar() {
+  const pathname = usePathname();
+  const [progress, setProgress] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prevPath = useRef(pathname);
+
+  const start = useCallback(() => {
+    setVisible(true);
+    setProgress(15);
+    intervalRef.current = setInterval(() => {
+      setProgress(p => {
+        if (p >= 85) { clearInterval(intervalRef.current!); return 85; }
+        return p + Math.random() * 10;
+      });
+    }, 150);
+  }, []);
+
+  const finish = useCallback(() => {
+    clearInterval(intervalRef.current!);
+    setProgress(100);
+    timerRef.current = setTimeout(() => {
+      setVisible(false);
+      setProgress(0);
+    }, 300);
+  }, []);
+
+  useEffect(() => {
+    if (pathname !== prevPath.current) {
+      prevPath.current = pathname;
+      finish();
+    }
+  }, [pathname, finish]);
+
+  // Trigger start on link clicks inside the portal
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest('a[href]') as HTMLAnchorElement | null;
+      if (!target) return;
+      const href = target.getAttribute('href') ?? '';
+      if (href.startsWith('/portal') && href !== pathname) start();
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [pathname, start]);
+
+  useEffect(() => () => {
+    clearInterval(intervalRef.current!);
+    clearTimeout(timerRef.current!);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-[9999] h-[2px] pointer-events-none">
+      <motion.div
+        className="h-full bg-gradient-to-r from-[#00c685] via-[#00e6a0] to-[#00c685]"
+        style={{ width: `${progress}%` }}
+        transition={{ ease: 'easeOut', duration: 0.15 }}
+        animate={{ width: `${progress}%` }}
+      />
+    </div>
+  );
+}
 
 /* ─── Participant Portal Header ─────────────────────────────────────────── */
 function PortalHeader() {
@@ -41,15 +107,15 @@ function PortalHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const profileRef = React.useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
 
   const user = DEMO_USERS['participant'];
   const avatarSrc = getDicebearAvatar(user?.name ?? 'Fatima Al-Rashid', 'female');
 
   const currentTab = PARTICIPANT_NAV.find((t) =>
-    t.href === '/portal' ? pathname === '/portal' : (pathname === t.href || pathname.startsWith(t.href + '/'))
+    pathname === t.href || pathname.startsWith(t.href + '/')
   );
-  const currentPageLabel = currentTab?.label ?? (pathname === '/portal' ? 'Overview' : 'My Cover');
+  const currentPageLabel = currentTab?.label ?? 'My Cover';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -67,6 +133,9 @@ function PortalHeader() {
     return () => document.removeEventListener('mousedown', handler);
   }, [profileOpen]);
 
+  // Close mobile menu on route change
+  useEffect(() => { setMobileMenuOpen(false); }, [pathname]);
+
   const BORDER = 'rgba(255,255,255,0.08)';
   const SURFACE = '#0d2117';
 
@@ -81,7 +150,7 @@ function PortalHeader() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Left: Brand logo */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 group">
+            <Link href="/" className="flex items-center gap-2 group" prefetch>
               <img
                 src="/brand/logo-light.png"
                 alt="Takaful UK"
@@ -142,6 +211,7 @@ function PortalHeader() {
                         { icon: HelpCircle, label: 'Support Desk', href: '/portal/support' },
                       ].map(({ icon: Icon, label, href }) => (
                         <Link key={label} href={href} onClick={() => setProfileOpen(false)}
+                          prefetch
                           className="flex items-center gap-3.5 px-5 py-3 text-sm font-medium transition-colors text-white/70 hover:bg-white/5"
                         >
                           <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white/60">
@@ -201,12 +271,12 @@ function PortalHeader() {
               </div>
               <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
                 {PARTICIPANT_NAV.map((item) => {
-                  const active = item.href === '/portal' ? pathname === '/portal' : (pathname === item.href || pathname.startsWith(item.href + '/'));
+                  const active = pathname === item.href || pathname.startsWith(item.href + '/');
                   const Icon = item.icon;
                   return (
                     <Link
                       key={item.href} href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
+                      prefetch
                       className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${active ? 'bg-[#00c685]/15 text-[#00c685]' : 'text-gray-300 hover:bg-white/[0.07] hover:text-white'
                         }`}
                     >
@@ -244,9 +314,9 @@ function ParticipantFloatingSideMenu() {
         aria-label="Participant navigation dock"
       >
         {PARTICIPANT_NAV.map((item, idx) => {
-          const isActive = item.href === '/portal' ? pathname === '/portal' : (pathname === item.href || pathname.startsWith(item.href + '/'));
+          const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           const Icon = item.icon;
-          const isSeparatorBefore = idx === 6;
+          const isSeparatorBefore = idx === 5;
 
           return (
             <React.Fragment key={item.href}>
@@ -255,6 +325,7 @@ function ParticipantFloatingSideMenu() {
               )}
               <Link
                 href={item.href}
+                prefetch
                 className={`group relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 ${isActive
                     ? 'bg-[#00c685] text-[#061510] font-bold shadow-md shadow-[#00c685]/30'
                     : 'text-white/60 hover:text-white hover:bg-white/[0.08]'
@@ -287,13 +358,14 @@ function ParticipantFloatingSideMenu() {
         className="md:hidden fixed bottom-3 left-3 right-3 z-50 flex items-center justify-around px-3 py-2 rounded-2xl transition-all duration-300 bg-[#061510]/90 border border-white/[0.12] shadow-[0_12px_32px_rgba(0,0,0,0.6)] backdrop-blur-xl"
         aria-label="Mobile bottom navigation"
       >
-        {PARTICIPANT_NAV.slice(0, 5).map((item) => {
-          const isActive = item.href === '/portal' ? pathname === '/portal' : (pathname === item.href || pathname.startsWith(item.href + '/'));
+        {PARTICIPANT_NAV.slice(0, 6).map((item) => {
+          const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
+              prefetch
               className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all ${isActive
                   ? 'bg-[#00c685] text-[#061510] font-bold shadow-md shadow-[#00c685]/30'
                   : 'text-white/60 hover:text-white'
@@ -307,19 +379,6 @@ function ParticipantFloatingSideMenu() {
             </Link>
           );
         })}
-        <Link
-          href="/portal/support"
-          className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all ${pathname === '/portal/support' || pathname.startsWith('/portal/support/')
-              ? 'bg-[#00c685] text-[#061510] font-bold shadow-md shadow-[#00c685]/30'
-              : 'text-white/60 hover:text-white'
-            }`}
-          aria-label="Support & Chat"
-        >
-          <HelpCircle size={18} />
-          {pathname !== '/portal/support' && (
-            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#00c685]" />
-          )}
-        </Link>
       </motion.nav>
     </>
   );
@@ -331,28 +390,20 @@ function ClaimFeedbackFloatingTrigger() {
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
-    // Never show on the claim submission form itself
     if (pathname.includes('/portal/claims/new')) {
       setShowFeedback(false);
       return;
     }
-
-    // Check if user has submitted a claim recently
     const hasRecentlySubmitted =
       typeof window !== 'undefined' &&
       sessionStorage.getItem('takaful_claim_submitted_recently') === 'true';
 
     if (hasRecentlySubmitted) {
-      // Trigger after a pleasant duration: 2500ms
-      const timer = setTimeout(() => {
-        setShowFeedback(true);
-      }, 2500);
-
+      const timer = setTimeout(() => setShowFeedback(true), 2500);
       return () => clearTimeout(timer);
     }
   }, [pathname]);
 
-  // Also support manual event for testing or direct trigger
   useEffect(() => {
     const handleTrigger = () => setShowFeedback(true);
     window.addEventListener('trigger-claim-feedback', handleTrigger);
@@ -397,15 +448,34 @@ function ClaimFeedbackFloatingTrigger() {
 /* ─── Portal Layout Component ───────────────────────────────────────────── */
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const role: DashboardRole = 'participant';
+  const router = useRouter();
 
   useEffect(() => {
     document.documentElement.classList.add('dark');
-  }, []);
+
+    // Warm client cache by prefetching all participant routes on idle
+    const prefetchRoutes = () => {
+      PARTICIPANT_NAV.forEach((nav) => {
+        router.prefetch(nav.href);
+      });
+      router.prefetch('/portal/claims/new');
+    };
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(prefetchRoutes);
+    } else {
+      setTimeout(prefetchRoutes, 200);
+    }
+  }, [router]);
+
 
   return (
     <ThemeContext.Provider value={{ theme: 'dark', setTheme: () => { } }}>
       <RoleContext.Provider value={{ role, setRole: () => { } }}>
         <div className="min-h-screen flex flex-col relative overflow-x-hidden bg-[#0a1a14] text-white" style={{ background: '#0a1a14', fontFamily: "'Inter', sans-serif" }}>
+          {/* Route progress bar */}
+          <RouteProgressBar />
+
           {/* Animated Background: Particles + radial glows */}
           <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
             <Particles
