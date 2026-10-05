@@ -9,10 +9,12 @@ import {
   Folder, Bell, Settings, ChevronDown, Menu, X, LogOut,
   ChevronRight, TrendingUp, Sun, Moon,
   ClipboardList, Banknote, ArrowLeftRight,
-  ShieldAlert, HelpCircle, UserCog,
+  ShieldAlert, HelpCircle, UserCog, Search, Users,
 } from 'lucide-react';
 import { DEMO_USERS } from '@/lib/dashboard/mock-data';
 import { getDicebearAvatar } from '@/lib/dashboard/avatars';
+import { GlobalSearchModal } from '@/components/ui/GlobalSearchModal';
+
 
 import { RoleContext, ThemeContext, useRole, useTheme, ThemeMode, DashboardRole } from './ThemeRoleContext';
 import { NotificationPopover } from '@/components/ui/notification-popover';
@@ -32,8 +34,10 @@ const CLAIM_HANDLER_NAV: NavItem[] = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
   { href: '/dashboard/queue', label: 'My Queue', icon: ClipboardList, badge: 8 },
   { href: '/dashboard/claims', label: 'All Claims', icon: FileText },
+  { href: '/dashboard/participants', label: 'Participants', icon: Users },
   { href: '/dashboard/documents', label: 'Documents', icon: Folder },
   { href: '/dashboard/support', label: 'Support Tickets', icon: HelpCircle, badge: 3 },
+  { href: '/dashboard/notifications', label: 'Notifications', icon: Bell, badge: 4 },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -43,6 +47,7 @@ const FINANCE_NAV: NavItem[] = [
   { href: '/dashboard/contributions', label: 'Contributions', icon: CreditCard },
   { href: '/dashboard/claims-payments', label: 'Claims Payments', icon: Banknote, badge: 3 },
   { href: '/dashboard/transactions', label: 'Transactions', icon: ArrowLeftRight },
+  { href: '/dashboard/participants', label: 'Participants', icon: Users },
   { href: '/dashboard/documents', label: 'Documents', icon: Folder },
   { href: '/dashboard/support', label: 'Support Tickets', icon: HelpCircle, badge: 1 },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
@@ -50,6 +55,7 @@ const FINANCE_NAV: NavItem[] = [
 
 const MANAGEMENT_NAV: NavItem[] = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/dashboard/participants', label: 'Participants', icon: Users },
   { href: '/dashboard/certificates', label: 'Certificates', icon: Shield },
   { href: '/dashboard/claims', label: 'Claims', icon: FileText },
   { href: '/dashboard/pool', label: 'Takaful Pool', icon: PieChart },
@@ -63,6 +69,7 @@ const MANAGEMENT_NAV: NavItem[] = [
 const SUPER_ADMIN_NAV: NavItem[] = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
   { href: '/dashboard/staff', label: 'Staff & Roles', icon: UserCog, badge: 6 },
+  { href: '/dashboard/participants', label: 'Participants', icon: Users },
   { href: '/dashboard/certificates', label: 'Certificates', icon: Shield },
   { href: '/dashboard/claims', label: 'Claims', icon: FileText },
   { href: '/dashboard/pool', label: 'Takaful Pool', icon: PieChart },
@@ -205,7 +212,20 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
   const { theme, setTheme } = useTheme();
   const [roleOpen, setRoleOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const profileRef = React.useRef<HTMLDivElement>(null);
+
+  // Global ⌘K shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const crumb = pathname.replace('/dashboard', '').replace(/^\//, '').split('/')[0];
   const pageTitle = crumb
@@ -232,30 +252,53 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
   }, [profileOpen]);
 
   return (
-    <header
-      className="sticky top-0 z-[100] flex items-center gap-4 px-4 sm:px-6 h-14 shrink-0 transition-colors duration-200"
-      style={{ background: BG_COLOR, borderBottom: `1px solid ${BORDER}` }}
-    >
-      {/* Mobile hamburger */}
-      <button
-        onClick={onMenuClick}
-        className={`md:hidden p-2 rounded-lg transition-colors ${theme === 'light' ? 'text-black/50 hover:text-black hover:bg-black/5' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+    <>
+      <header
+        className="sticky top-0 z-[100] flex items-center gap-4 px-4 sm:px-6 h-14 shrink-0 transition-colors duration-200"
+        style={{ background: BG_COLOR, borderBottom: `1px solid ${BORDER}` }}
       >
-        <Menu size={20} />
-      </button>
+        {/* Mobile hamburger */}
+        <button
+          onClick={onMenuClick}
+          className={`md:hidden p-2 rounded-lg transition-colors ${theme === 'light' ? 'text-black/50 hover:text-black hover:bg-black/5' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+        >
+          <Menu size={20} />
+        </button>
 
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm">
-        <span className={theme === 'light' ? 'text-black/40' : 'text-white/35'}>Dashboard</span>
-        {pageTitle !== 'Overview' && (
-          <>
-            <ChevronRight size={13} className={theme === 'light' ? 'text-black/30' : 'text-white/25'} />
-            <span className={`font-medium ${theme === 'light' ? 'text-black/80' : 'text-white/80'}`}>{pageTitle}</span>
-          </>
-        )}
-      </div>
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm">
+          <span className={theme === 'light' ? 'text-black/40' : 'text-white/35'}>Dashboard</span>
+          {pageTitle !== 'Overview' && (
+            <>
+              <ChevronRight size={13} className={theme === 'light' ? 'text-black/30' : 'text-white/25'} />
+              <span className={`font-medium ${theme === 'light' ? 'text-black/80' : 'text-white/80'}`}>{pageTitle}</span>
+            </>
+          )}
+        </div>
 
-      <div className="flex-1" />
+        <div className="flex-1" />
+
+        {/* Global Search trigger (⌘K) */}
+        <button
+          onClick={() => setSearchOpen(true)}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs transition-all cursor-pointer ${
+            theme === 'light'
+              ? 'bg-gray-50 border-gray-200/80 text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+              : 'bg-white/[0.03] border-white/[0.08] text-white/50 hover:bg-white/[0.07] hover:text-white'
+          }`}
+          title="Search records across all systems (⌘K)"
+        >
+          <Search size={14} className="text-[#00c685]" />
+          <span className="hidden md:inline font-medium">Search...</span>
+          <kbd
+            className={`hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono border ${
+              theme === 'light' ? 'bg-white border-gray-200 text-gray-400' : 'bg-white/5 border-white/10 text-white/35'
+            }`}
+          >
+            ⌘K
+          </kbd>
+        </button>
+
 
       {/* Theme Toggle */}
       <button
@@ -394,7 +437,13 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
         </AnimatePresence>
       </div>
     </header>
-  );
+    <GlobalSearchModal
+      isOpen={searchOpen}
+      onClose={() => setSearchOpen(false)}
+      theme={theme}
+    />
+  </>
+);
 }
 
 

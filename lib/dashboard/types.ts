@@ -47,7 +47,7 @@ export interface Participant {
   memberSince: string;
   status: 'Active' | 'Review' | 'Suspended' | 'Cancelled' | 'Pending';
   riskRating: 'Low' | 'Medium' | 'High';
-  accountStatus?: 'Active' | 'Under Investigation' | 'Frozen' | 'Suspended' | 'Warning Issued';
+  accountStatus?: 'Active' | 'Under Investigation' | 'Frozen' | 'Suspended' | 'Warning Issued' | 'Banned';
   flagCount?: number;
   totalClaims?: number;
   totalClaimValue?: number;
@@ -55,6 +55,7 @@ export interface Participant {
   accountActionReason?: string;
   accountActionDate?: string;
   accountActionBy?: string;
+  managementPreAction?: string;
 }
 
 export interface Certificate {
@@ -308,3 +309,17 @@ export interface RoutingRule {
   urgencyHint: string;
   color: string;
 }
+
+export interface ParticipantActivity {
+  id: string;
+  participantId: string;
+  date: string;
+  time?: string;
+  type: 'notification' | 'payment' | 'claim' | 'certificate' | 'account' | 'security';
+  title: string;
+  description: string;
+  channel?: string;
+  status?: 'completed' | 'failed' | 'pending' | 'warning';
+  actor?: string;
+}
+

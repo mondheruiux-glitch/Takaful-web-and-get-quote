@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DualAxisTrendChart } from '@/components/charts';
+import { ParticipantChip } from '@/components/ui/ParticipantChip';
+
 
 const GREEN = '#00c685';
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -332,7 +334,16 @@ function HandlerClaimsView({ theme, isFinance }: { theme: string; isFinance?: bo
               {filtered.map(c => (
                 <tr key={c.id} className={`transition-colors ${isLight ? 'hover:bg-gray-50/60' : 'hover:bg-white/[0.02]'}`}>
                   <td className={`px-5 py-4 font-mono font-semibold ${isLight ? 'text-gray-900' : 'text-white/90'}`}>{c.id}</td>
-                  <td className={`px-5 py-4 font-medium ${isLight ? 'text-gray-900' : 'text-white/80'}`}>{c.participantName}</td>
+                  <td className="px-5 py-4">
+                    <ParticipantChip
+                      name={c.participantName}
+                      participantId={c.participantId}
+                      certificateId={c.certificateId}
+                      size="sm"
+                      theme={theme}
+                    />
+                  </td>
+
                   <td className={`px-5 py-4 ${isLight ? 'text-gray-600' : 'text-white/60'}`}>{c.type}</td>
                   <td className={`px-5 py-4 font-bold ${isLight ? 'text-gray-900' : 'text-white/80'}`}>£{c.amountClaimed.toLocaleString()}</td>
                   {isFinance ? (

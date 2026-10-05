@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme } from '../ThemeRoleContext';
+import { ParticipantChip } from '@/components/ui/ParticipantChip';
+
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -204,7 +206,16 @@ export default function CertificatesPage() {
                     <td className="px-5 py-3.5">
                       <Link href={`/dashboard/certificates/${c.id}`} className="font-mono text-[#00c685] hover:underline text-[11px] font-semibold">{c.id}</Link>
                     </td>
-                    <td className={`px-5 py-3.5 font-medium whitespace-nowrap ${TEXT_MAIN}`}>{c.participant}</td>
+                    <td className="px-5 py-3.5">
+                      <ParticipantChip
+                        name={c.participant}
+                        participantId={c.id.replace('TK-2024-', 'P-')}
+                        certificateId={c.id}
+                        size="sm"
+                        theme={theme}
+                      />
+                    </td>
+
                     <td className={`px-5 py-3.5 max-w-[200px] truncate ${TEXT_SUB}`}>{c.property}</td>
                     <td className="px-5 py-3.5">
                       <span className={`flex items-center gap-1.5 ${TEXT_SUB}`}>

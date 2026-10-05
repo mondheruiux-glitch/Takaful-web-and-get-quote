@@ -141,28 +141,7 @@ export function SectionCard({
   );
 }
 
-export function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    Submitted: 'bg-blue-500/15 text-blue-500',
-    'Under Review': 'bg-amber-500/15 text-amber-500',
-    'Awaiting Information': 'bg-orange-500/15 text-orange-500',
-    Approved: 'bg-green-500/15 text-green-500',
-    Rejected: 'bg-red-500/15 text-red-500',
-    Paid: 'bg-emerald-500/15 text-emerald-500',
-    Active: 'bg-green-500/15 text-green-500',
-    Expiring: 'bg-amber-500/15 text-amber-500',
-    Collected: 'bg-emerald-500/15 text-emerald-500',
-    Failed: 'bg-red-500/15 text-red-500',
-    Pending: 'bg-blue-500/15 text-blue-500',
-    Retried: 'bg-orange-500/15 text-orange-500',
-    Low: 'bg-emerald-500/15 text-emerald-500',
-    Medium: 'bg-amber-500/15 text-amber-500',
-    High: 'bg-orange-500/15 text-orange-500',
-    Critical: 'bg-red-500/15 text-red-500',
-  };
-  return (
-    <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${map[status] ?? 'bg-gray-500/15 text-gray-500'}`}>
-      {status}
-    </span>
-  );
-}
+export { StatusBadge, VerifiedBadge } from "@/components/ui/ds/StatusBadge";
+export { ActionButton } from "@/components/ui/ds/ActionButton";
+export { DashboardTable } from "@/components/ui/ds/DashboardTable";
+

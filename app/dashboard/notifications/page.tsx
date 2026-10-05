@@ -117,7 +117,7 @@ export default function NotificationsPage() {
             </p>
           </div>
           <Link
-            href="/dashboard/claims"
+            href="/portal/claims"
             className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg text-white transition-opacity hover:opacity-90"
             style={{ background: GREEN }}
           >

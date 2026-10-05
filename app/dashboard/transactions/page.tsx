@@ -2,12 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeftRight, Search, Download, CheckCircle2, ShieldAlert, Check, CheckCheck, RefreshCw } from 'lucide-react';
+import { ArrowLeftRight, Search, Download, ShieldAlert, Check, CheckCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme } from '../ThemeRoleContext';
 import { usePermission } from '@/lib/dashboard/permissions';
 import { TRANSACTIONS } from '@/lib/dashboard/mock-data';
 import { Transaction } from '@/lib/dashboard/types';
+import { ActionButton } from '@/components/ui/ds/ActionButton';
+import { StatusBadge, VerifiedBadge } from '@/components/ui/ds/StatusBadge';
+import { ParticipantChip } from '@/components/ui/ParticipantChip';
+import { TransactionDetailDrawer } from '@/components/ui/TransactionDetailDrawer';
+
+import {
+  getStoredReconciledTxIds,
+  reconcileTransaction,
+  reconcileBatchTransactions,
+  resetAllReconciliations,
+  SYNC_EVENT_NAME,
+} from '@/lib/dashboard/reconciliation-sync';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -17,7 +29,6 @@ const fadeUp = {
 };
 
 const GREEN = '#00c685';
-const LOCAL_STORAGE_KEY = 'takaful_reconciled_tx_ids';
 
 export default function TransactionsPage() {
   const { theme } = useTheme();
@@ -29,19 +40,24 @@ export default function TransactionsPage() {
   const [reconciledIds, setReconciledIds] = useState<string[]>([]);
   const [toast, setToast] = useState<string | null>(null);
 
+  // Selected transaction for drawer inspection
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+
   // Check access authorization: Finance, Management, and Super Admin
   const hasAccess = role === 'finance' || role === 'management' || role === 'super_admin';
 
-  // Hydrate from localStorage on mount
+  // Hydrate from localStorage on mount and listen for real-time synchronization
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (stored) {
-        setReconciledIds(JSON.parse(stored));
-      }
-    } catch (e) {
-      console.error('Failed to read reconciled transactions from localStorage', e);
-    }
+    const sync = () => {
+      setReconciledIds(getStoredReconciledTxIds());
+    };
+    sync();
+    window.addEventListener(SYNC_EVENT_NAME, sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener(SYNC_EVENT_NAME, sync);
+      window.removeEventListener('storage', sync);
+    };
   }, []);
 
   if (!hasAccess) {
@@ -68,35 +84,32 @@ export default function TransactionsPage() {
   });
 
   const handleReconcileSingle = (id: string) => {
-    const updated = [...reconciledIds, id];
-    setReconciledIds(updated);
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-    } catch (e) {
-      console.error('Failed to save to localStorage', e);
+    const { matchingContrib, updatedTxIds } = reconcileTransaction(id);
+    setReconciledIds(updatedTxIds);
+    // Also update selected transaction if open
+    setSelectedTransaction(prev => (prev && prev.id === id ? { ...prev, status: 'Reconciled', reconciled: true } : prev));
+    if (matchingContrib) {
+      setToast(`Transaction ${id} verified & reconciled. ${matchingContrib.participantName}'s contribution (${matchingContrib.id}) status automatically updated to Collected.`);
+    } else {
+      setToast(`Transaction ${id} verified and reconciled in treasury.`);
     }
-    setToast(`Transaction ${id} verified and reconciled.`);
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToast(null), 4000);
   };
 
   const handleReconcileAllPending = () => {
     const allPendingIds = filtered.filter(t => !t.reconciled).map(t => t.id);
     if (allPendingIds.length === 0) return;
-    const updated = Array.from(new Set([...reconciledIds, ...allPendingIds]));
+    const updated = reconcileBatchTransactions(allPendingIds);
     setReconciledIds(updated);
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-    } catch (e) {
-      console.error('Failed to save to localStorage', e);
-    }
-    setToast(`Batch reconciled ${allPendingIds.length} transactions.`);
-    setTimeout(() => setToast(null), 3500);
+    setToast(`Batch reconciled ${allPendingIds.length} transactions. Related contributions automatically updated to Collected.`);
+    setTimeout(() => setToast(null), 4000);
   };
 
   const handleResetReconciled = () => {
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    resetAllReconciliations();
     setReconciledIds([]);
-    setToast('Reconciliation ledger reset to initial state');
+    setSelectedTransaction(prev => (prev ? { ...prev, status: 'Failed', reconciled: false } : null));
+    setToast('Reconciliation ledger reset to initial state. Contributions reverted to defaults.');
     setTimeout(() => setToast(null), 3000);
   };
 
@@ -132,7 +145,7 @@ export default function TransactionsPage() {
     t.type.toLowerCase().includes(search.toLowerCase())
   );
 
-  const pendingCount = filtered.filter(t => !t.reconciled).length;
+  const pendingCount = filtered.filter(t => !t.reconciled && t.status !== 'Completed').length;
 
   const TEXT_MAIN = isLight ? 'text-black/90' : 'text-white';
   const TEXT_SUB = isLight ? 'text-black/60' : 'text-white/45';
@@ -148,7 +161,7 @@ export default function TransactionsPage() {
             initial={{ opacity: 0, y: -24, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -16, scale: 0.95 }}
-            className="fixed top-5 right-5 z-[500] flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-white font-semibold text-xs max-w-sm"
+            className="fixed top-5 right-5 z-[700] flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-white font-semibold text-xs max-w-sm"
             style={{ background: GREEN }}
           >
             <Check size={14} />
@@ -167,8 +180,8 @@ export default function TransactionsPage() {
           {reconciledIds.length > 0 && (
             <button
               onClick={handleResetReconciled}
-              className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
-                isLight ? 'border-gray-200 text-gray-500 hover:bg-gray-100' : 'border-white/10 text-white/50 hover:bg-white/5'
+              className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors cursor-pointer ${
+                isLight ? 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 shadow-xs' : 'border-white/10 text-white/50 hover:bg-white/5'
               }`}
             >
               Reset Reconciled ({reconciledIds.length})
@@ -176,8 +189,8 @@ export default function TransactionsPage() {
           )}
           <button
             onClick={handleExportCSV}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer ${
-              isLight ? 'border-black/[0.06] text-black/70' : 'border-white/[0.06] text-white/70'
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+              isLight ? 'border-gray-300 bg-white text-gray-800 hover:bg-gray-50 shadow-xs' : 'border-white/15 bg-white/5 text-white/80 hover:bg-white/10'
             }`}
           >
             <Download size={13} /> Export Ledger CSV
@@ -193,19 +206,21 @@ export default function TransactionsPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search transactions, participants, refs..."
-            className={`w-full pl-9 pr-3 py-2 rounded-lg border text-xs focus:outline-none focus:border-[#00c685]/40 bg-black/[0.01] dark:bg-white/[0.01] ${
-              isLight ? 'border-black/[0.06] text-black' : 'border-white/[0.05] text-white'
+            className={`w-full pl-9 pr-3 py-2 rounded-xl border text-xs focus:outline-none focus:border-[#00c685] transition-all ${
+              isLight ? 'border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 shadow-xs' : 'border-white/10 bg-white/5 text-white placeholder:text-white/35'
             }`}
           />
         </div>
 
         {pendingCount > 0 && (
-          <button
+          <ActionButton
+            variant="primary"
+            size="md"
+            icon={CheckCheck}
             onClick={handleReconcileAllPending}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#0a1a14] bg-[#00c685] hover:bg-[#00a871] transition-all cursor-pointer shadow-xs"
           >
-            <CheckCheck size={14} /> Reconcile All Filtered ({pendingCount})
-          </button>
+            Reconcile All Filtered ({pendingCount})
+          </ActionButton>
         )}
       </div>
 
@@ -218,7 +233,7 @@ export default function TransactionsPage() {
           <table className="w-full text-xs text-left">
             <thead>
               <tr className={isLight ? 'text-black/40 border-b border-[#E4E7EC]' : 'text-white/30 border-b border-white/[0.04]'}>
-                {['ID', 'Date', 'Transaction Type', 'Participant', 'Reference', 'Amount', 'Flow', 'Audit Status', 'Verify'].map(h => (
+                {['ID', 'Date', 'Transaction Type', 'Participant', 'Reference', 'Amount', 'Flow', 'Audit Status', 'Action'].map(h => (
                   <th key={h} className="px-5 py-3 font-semibold whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -226,44 +241,63 @@ export default function TransactionsPage() {
             <tbody className={`divide-y ${isLight ? 'divide-[#E4E7EC]' : 'divide-white/[0.04]'}`}>
               {filtered.map(t => {
                 const isInflow = t.direction === 'Inflow';
+                const isReconciled = t.reconciled || t.status === 'Reconciled' || t.status === 'Completed';
+
                 return (
-                  <tr key={t.id} className={isLight ? 'hover:bg-black/[0.01]' : 'hover:bg-white/[0.015]'}>
-                    <td className="px-5 py-3.5 font-mono font-bold text-[11px]" style={{ color: GREEN }}>{t.id}</td>
+                  <tr
+                    key={t.id}
+                    onClick={() => setSelectedTransaction(t)}
+                    className={`transition-colors cursor-pointer group ${
+                      isLight ? 'hover:bg-emerald-50/40' : 'hover:bg-white/[0.025]'
+                    }`}
+                    title="Click to view transaction details and audit log"
+                  >
+                    <td className="px-5 py-3.5 font-mono font-bold text-[11px] group-hover:underline" style={{ color: GREEN }}>
+                      {t.id}
+                    </td>
                     <td className={`px-5 py-3.5 ${TEXT_SUB}`}>{t.date}</td>
                     <td className={`px-5 py-3.5 font-medium ${TEXT_MAIN}`}>{t.type}</td>
-                    <td className={`px-5 py-3.5 ${TEXT_SUB}`}>{t.participantName ?? '—'}</td>
+                    <td className="px-5 py-3.5">
+                      {t.participantName ? (
+                        <ParticipantChip
+                          name={t.participantName}
+                          participantId={t.participantId}
+                          certificateId={t.certificateId}
+                          status={t.status}
+                          size="sm"
+                          theme={theme}
+                        />
+                      ) : (
+                        <span className={TEXT_MUTED}>—</span>
+                      )}
+                    </td>
                     <td className={`px-5 py-3.5 font-mono text-[11px] ${TEXT_MUTED}`}>{t.reference}</td>
-                    <td className={`px-5 py-3.5 font-bold ${isInflow ? 'text-emerald-400' : 'text-red-400'}`}>
+                    <td className={`px-5 py-3.5 font-bold ${isInflow ? 'text-emerald-500' : 'text-rose-500'}`}>
                       {isInflow ? '+' : '−'}£{t.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${isInflow ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                        isInflow ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
+                      }`}>
                         {isInflow ? 'Inflow' : 'Outflow'}
                       </span>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold ${
-                        t.reconciled
-                          ? 'bg-[#00c685]/10 text-[#00c685]'
-                          : 'bg-amber-500/10 text-amber-500'
-                      }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${t.reconciled ? 'bg-[#00c685]' : 'bg-amber-500'}`} />
-                        {t.status}
-                      </span>
+                      <StatusBadge status={t.status} theme={theme} />
                     </td>
-                    <td className="px-5 py-3.5">
-                      {t.reconciled ? (
-                        <span className="flex items-center gap-1 text-[11px] text-[#00c685] font-semibold">
-                          <CheckCircle2 size={13} /> Verified
-                        </span>
+                    <td className="px-5 py-3.5" onClick={e => e.stopPropagation()}>
+                      {isReconciled ? (
+                        <VerifiedBadge isLight={isLight} />
                       ) : (
-                        <button
+                        <ActionButton
+                          variant="amber"
+                          size="sm"
+                          icon={ArrowLeftRight}
                           onClick={() => handleReconcileSingle(t.id)}
-                          className="px-2.5 py-1 rounded-lg border text-[11px] font-semibold hover:border-[#00c685] hover:text-[#00c685] transition-colors cursor-pointer"
-                          style={{ borderColor: isLight ? '#E4E7EC' : 'rgba(255,255,255,0.1)' }}
+                          title="Reconcile transaction and automatically update related contribution to Collected"
                         >
                           Reconcile
-                        </button>
+                        </ActionButton>
                       )}
                     </td>
                   </tr>
@@ -280,6 +314,19 @@ export default function TransactionsPage() {
           </table>
         </div>
       </motion.div>
+
+      {/* Slide-over Transaction Detail Drawer */}
+      <AnimatePresence>
+        {selectedTransaction && (
+          <TransactionDetailDrawer
+            key={selectedTransaction.id}
+            transaction={selectedTransaction}
+            isLight={isLight}
+            onClose={() => setSelectedTransaction(null)}
+            onReconcile={handleReconcileSingle}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
